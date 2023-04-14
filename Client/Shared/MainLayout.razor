@@ -1,0 +1,90 @@
+﻿@inherits LayoutComponentBase
+@inject AuthenticationStateProvider authStateProvider
+
+
+@switch (_appUserType)
+{
+    case "Academics":
+        <CascadingValue Value="this">
+            <AuthorizeView>
+                <Authorized>
+                    <MudLayout>
+                        <AppBar OnSidebarToggled="ToggleSidebar" OnThemeToggled="ToggleTheme" />
+
+                        <NavMenu SideBarOpen="_sidebarOpen" />
+
+                        <MudMainContent Class="pt-16 px-16">
+                            <MudContainer Class="mt-6">
+                                @Body
+                            </MudContainer>
+                            <div class="d-block pa-2 mr-5 ml-5">
+                                <div Class="d-flex flex-row py-2 px-1">
+                                    <div Class="pa-2 mx-2">
+                                        <MudText Typo="Typo.inherit">@_appTitle</MudText>
+                                    </div>
+                                    <div Class="pa-2 mx-2">
+                                        <MudText Typo="Typo.inherit">Currently Log-On User:&ensp; @_staffname</MudText>
+                                    </div>
+                                    <div Class="pa-2 mx-2">
+                                        <MudText Typo="Typo.inherit">Currently Displayed Page:&ensp; @currentPage</MudText>
+                                    </div>
+                                </div>
+                            </div>
+                        </MudMainContent>
+                    </MudLayout>
+                </Authorized>
+                <NotAuthorized>
+                    <a href="/">Login</a>
+                </NotAuthorized>
+            </AuthorizeView>
+        </CascadingValue>
+
+        <MudThemeProvider Theme="_currentTheme" />
+        <MudSnackbarProvider />
+        <MudDialogProvider Position="DialogPosition.Center" CloseButton="true" DisableBackdropClick="true" />
+        break;
+    case "CBT":
+        <AuthorizeView>
+             <Authorized>
+                <MudLayout>
+                    <AppBarCBT OnSidebarToggled="ToggleSidebar" />
+
+                    <NavMenuCBT SideBarOpen="_sidebarOpen" />
+
+                    <MudMainContent Class="pt-16 px-5">
+                        @Body
+                    </MudMainContent>
+                </MudLayout>
+             </Authorized>
+            <NotAuthorized>
+                <a href="/cbt">Login</a>
+            </NotAuthorized>
+        </AuthorizeView>
+
+        <MudThemeProvider/>
+        <MudDialogProvider FullWidth="true"
+                           MaxWidth="MaxWidth.ExtraSmall"
+                           CloseButton="true"
+                           DisableBackdropClick="true"
+                           NoHeader="true"
+                           Position="DialogPosition.Center"
+                           CloseOnEscapeKey="true" />
+        break;
+    case "ResultChecker":       
+        <MudLayout>
+            <MudMainContent Class="pt-16 px-16">
+                <AppBarResultChecker OnThemeToggled="ToggleTheme" />
+
+                <MudContainer Class="mt-6">
+                    @Body
+                </MudContainer>
+            </MudMainContent>
+        </MudLayout>
+
+        <MudThemeProvider Theme="_currentTheme" />
+        <MudSnackbarProvider />
+        <MudDialogProvider Position="DialogPosition.Center" CloseButton="true" DisableBackdropClick="true" />
+        break;
+}
+
+

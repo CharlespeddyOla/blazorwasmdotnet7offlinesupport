@@ -1,0 +1,92 @@
+﻿@layout CBTLayout
+@page "/cbtobjexaminstructions"
+
+<PageTitle>Computer Based Test</PageTitle>
+
+
+<AuthorizeView>
+    <Authorized>
+        <MudGrid Class="mt-n10">
+            <MudItem xs="12" sm="6" md="12">
+                <MudText Typo="Typo.h6" Style="font-weight:bold;">Examination Instructions</MudText>
+                <MudDivider Style="height: 3px; background-color: #00C853; " />
+                <br />
+                <p style="font-size: 16px">
+                    Welcome, <strong>@studentName - @admissionNo</strong>, to your CBT Examination.
+                    Please select a Subject and Read the Instructions carefully before you proceed!
+                </p>
+            </MudItem>
+        </MudGrid>
+        <MudGrid>
+            <MudItem xs="12" sm="6" md="9">
+                <MudSelect T="string" Label="Please Select Subject" Dense="true" OffsetY="true" @bind-Value="@selectedSubject"
+                           SelectedValuesChanged="OnSelectedSubject">
+                    @foreach (var item in exams)
+                    {
+                        <MudSelectItem T="string" Value="@item.Subject">@item.Subject</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+        </MudGrid>
+        <MudGrid>
+            <MudItem xs="12" sm="12" md="4">
+                <MudText>Academic Session:</MudText>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="6">
+                <MudText>@academicSession</MudText>
+            </MudItem>
+        </MudGrid>
+        <MudGrid>
+            <MudItem xs="12" sm="12" md="4">
+                <MudText>Class:</MudText>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="6">
+                <MudText>@schoolClass</MudText>
+            </MudItem>
+        </MudGrid>
+        <MudGrid>
+            <MudItem xs="12" sm="12" md="4">
+                <MudText>Exam Code:</MudText>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="6">
+                <MudText>@examCode</MudText>
+            </MudItem>
+        </MudGrid>
+        <MudGrid>
+            <MudItem xs="12" sm="12" md="4">
+                <MudText>Exam Name:</MudText>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="6">
+                <MudText>@selectedSubject</MudText>
+            </MudItem>
+        </MudGrid>
+        <MudGrid>
+            <MudItem xs="12" sm="12" md="4">
+                <MudText>Duration (mins):</MudText>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="6">
+                <MudText>@examTime</MudText>
+            </MudItem>
+        </MudGrid>
+        <MudGrid>
+            <MudItem xs="12" sm="6" md="12">
+                <MudField Label="Exam Instructions:" Variant="Variant.Outlined">
+                    @examInstruction
+                </MudField>
+            </MudItem>
+        </MudGrid>
+        <MudGrid>
+            <MudItem xs="12" sm="6" md="12">
+                <div Class="d-flex justify-center">
+                    <MudFab Style="background-color: #00C853;" StartIcon="@Icons.Filled.Start" Label="Start" OnClick="StartExam" />
+                    <MudFab class="ml-5" Style="background-color: #11C855;" StartIcon="@Icons.Filled.Close" Label="Close" OnClick="CloseInstruction" />
+                </div>
+            </MudItem>
+        </MudGrid>
+    </Authorized>
+    <NotAuthorized>
+        <a href="/cbt">Log in</a>
+    </NotAuthorized>
+</AuthorizeView>
+
+

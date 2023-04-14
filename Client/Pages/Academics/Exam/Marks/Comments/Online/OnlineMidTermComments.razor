@@ -1,0 +1,141 @@
+﻿@page "/onlinemidtermcomments"
+@inject ISnackbar Snackbar
+
+
+<div class="d-block pa-2 mr-5 ml-5">
+    <MudPaper Class="d-flex align-center flex-grow-1 gap-x-8" Elevation="20">
+        <div Class="d-flex flex-1">
+            <MudTooltip Text="Refresh">
+                <MudIconButton OnClick="Refresh" Icon="@Icons.Material.Filled.Refresh" Color="Color.Success" />
+            </MudTooltip>
+        </div>
+        <div Class="d-flex flex-1">
+            <MudTooltip Text="Save Comments">
+                <MudButton OnClick="SaveMidTermComments" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Success" Size="Size.Large">Save</MudButton>
+            </MudTooltip>
+        </div>
+        <div Class="d-flex flex-1">
+            <MudTooltip Text="Auto Comments">
+                <MudIconButton OnClick="ApplyAutoCommentsMidTerm" Icon="@Icons.Material.Filled.AutofpsSelect" Color="Color.Success" />
+            </MudTooltip>
+        </div>
+    </MudPaper>
+</div>
+
+<div class="d-block pa-2 mr-5 ml-5">
+    <div class="container-fluid" hidden="@IsShow">
+        <MudText Typo="Typo.subtitle2" Color="Color.Inherit">
+            <b>@progressbarInfo @Math.Round(i)%</b>
+        </MudText>
+        <MudProgressLinear Color="Color.Info" Size="Size.Large" Value="@Convert.ToDouble(i)" Rounded="true" Striped="true">
+        </MudProgressLinear>
+    </div>
+</div>
+
+<div class="d-block pa-2 mr-5 ml-5">
+    <MudGrid>
+        <MudItem xs="12" sm="12" md="2">
+            <MudSelect T="string" Label="School" Strict="true" Dense="true" @bind-Value="selectedSchool"
+                       SelectedValuesChanged="OnSchoolChanged">
+                @foreach (var item in schools)
+                {
+                    <MudSelectItem T="string" Value="@item.School">@item.School</MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12" sm="12" md="2">
+            <MudSelect T="string" Label="Class" Strict="true" Dense="true" @bind-Value="selectedClass"
+                       SelectedValuesChanged="OnClassChanged">
+                @foreach (var item in classList)
+                {
+                    <MudSelectItem T="string" Value="@item.ClassName">@item.ClassName</MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem>
+    </MudGrid>
+</div>
+
+<div class="d-block pa-2 mr-5 ml-5">
+    <SpinLoader IsLoading="isLoading">
+        <LoadingTemplate>
+            <Wave Center="true" Color="#3498db" Size="150px"></Wave>
+            <div Class="d-flex justify-center">
+                <p style="font-size:16px;">@loadingmessage</p>
+            </div>
+        </LoadingTemplate>
+        <ContentTemplate>
+            @if (cognitiveMarks != null)
+            {
+                <MudCard Elevation="20">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">Mid-Term Comments for @schTerm Term</MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudTable Elevation="0" Items="@commentsMidTerm" Dense="true" Hover="true" Breakpoint="Breakpoint.Sm" @bind-SelectedItem="selectedItemMidTermComment"
+                              CommitEditTooltip="Update" OnCommitEditClick="@(() => UpdateMidTermComment())">
+                            <HeaderContent>
+                                <MudTh>S/N</MudTh>
+                                <MudTh>Admission No.</MudTh>
+                                <MudTh>Student Name</MudTh>
+                                <MudTh>Total Mark Obtainable</MudTh>
+                                <MudTh>Total Mark Obtained</MudTh>
+                                <MudTh>Percentage</MudTh>
+                                <MudTh>Position</MudTh>
+                                <MudTh>Grade</MudTh>
+                                <MudTh>Teacher's Comment</MudTh>
+                                <MudTh></MudTh>
+                            </HeaderContent>
+                            <RowTemplate>
+                                <MudTd DataLabel="S/N">@context.SN</MudTd>
+                                <MudTd DataLabel="Admission No.">@context.AdmissionNo</MudTd>
+                                <MudTd DataLabel="Student Name">@context.StudentName</MudTd>
+                                <MudTd DataLabel="Total Mark Obtainable">@context.MarkObtainable</MudTd>
+                                <MudTd DataLabel="Total Mark Obtained">@context.MarkObtained</MudTd>
+                                <MudTd DataLabel="Percentage">@context.AVGPer</MudTd>
+                                <MudTd DataLabel="Position">@context.Position</MudTd>
+                                <MudTd DataLabel="Grade">@context.Grade</MudTd>
+                                <MudTd DataLabel="Teacher's Comment">@context.Comments_Teacher</MudTd>
+                                <MudTh></MudTh>
+                            </RowTemplate>
+                            <RowEditingTemplate>
+                                <MudTd DataLabel="S/N">
+                                    <MudTextField @bind-Value="@context.SN" ReadOnly />
+                                </MudTd>
+                                <MudTd DataLabel="Admission No.">
+                                    <MudTextField @bind-Value="@context.AdmissionNo" ReadOnly />
+                                </MudTd>
+                                <MudTd DataLabel="Student Name">
+                                    <MudTextField @bind-Value="@context.StudentName" ReadOnly />
+                                </MudTd>
+                                <MudTd DataLabel="Total Mark Obtainable">
+                                    <MudTextField @bind-Value="@context.MarkObtainable" ReadOnly />
+                                </MudTd>
+                                <MudTd DataLabel="Total Mark Obtained">
+                                    <MudTextField @bind-Value="@context.MarkObtained" ReadOnly />
+                                </MudTd>
+                                <MudTd DataLabel="Percentage">
+                                    <MudTextField @bind-Value="@context.AVGPer" ReadOnly />
+                                </MudTd>
+                                <MudTd DataLabel="Position">
+                                    <MudTextField @bind-Value="@context.Position" ReadOnly />
+                                </MudTd>
+                                <MudTd DataLabel="Grade">
+                                    <MudTextField @bind-Value="@context.Grade" ReadOnly />
+                                </MudTd>
+                                <MudTd DataLabel="Teacher's Comment">
+                                    <MudTextField @bind-Value="@context.Comments_Teacher" />
+                                </MudTd>
+                            </RowEditingTemplate>
+                        </MudTable>
+                    </MudCardContent>
+                </MudCard>
+            }
+            else
+            {
+                <span>No Data</span>
+            }
+        </ContentTemplate>
+    </SpinLoader>
+</div>

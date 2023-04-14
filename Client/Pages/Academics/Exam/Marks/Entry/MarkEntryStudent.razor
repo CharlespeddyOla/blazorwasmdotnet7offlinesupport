@@ -1,0 +1,164 @@
+﻿@page "/markentrystudent"
+
+<AuthorizeView Roles="Administrator, Class Teacher">
+     <Authorized Context="admin">
+
+        <div class="d-block pa-2 mr-5 ml-5">
+            <MudPaper Class="d-flex align-center flex-grow-1 gap-x-8" Elevation="20">
+                <div Class="d-flex flex-1">
+                    <MudTooltip Text="Refresh">
+                        <MudIconButton OnClick="RefreshCogvitivePerStudent" Icon="@Icons.Material.Filled.Refresh" Color="Color.Success" />
+                    </MudTooltip>
+                </div>
+                <div Class="d-flex flex-1">
+                    <MudTooltip Text="Save">
+                        <MudButton OnClick="SaveCognitiveMarksPerStudent" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Success" Size="Size.Large">Save</MudButton>
+                    </MudTooltip>
+                </div>
+            </MudPaper>
+        </div>
+
+        <div class="d-block pa-2 mr-5 ml-5">
+            <div class="container-fluid" hidden="@IsShow">
+                <MudText Typo="Typo.subtitle2" Color="Color.Inherit">
+                    <b>@progressbarInfo @Math.Round(i)%</b>
+                </MudText>
+                <MudProgressLinear Color="Color.Info" Size="Size.Large" Value="@Convert.ToDouble(i)" Rounded="true" Striped="true">
+                </MudProgressLinear>
+            </div>
+        </div>
+
+        <div class="d-block pa-2 mr-5 ml-5">
+            <MudGrid>
+                <MudItem xs="12" sm="12" md="2">
+                    <MudSelect T="string" Label="School" Strict="true" Dense="true" @bind-Value="selectedSchool"
+                               SelectedValuesChanged="OnSelectedSchoolChanged">
+                        @foreach (var item in schools)
+                        {
+                            <MudSelectItem T="string" Value="@item.School">@item.School</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem>
+                <MudItem xs="12" sm="12" md="2">
+                    <MudSelect T="string" Label="Class" Strict="true" Dense="true" @bind-Value="selectedClass"
+                               SelectedValuesChanged="OnSelectedClassChanged">
+                        @foreach (var item in classList)
+                        {
+                            <MudSelectItem T="string" Value="@item.ClassName">@item.ClassName</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem>
+                <MudItem xs="12" sm="12" md="5">
+                    <MudSelect T="string" Label="Students" Strict="true" Dense="true" @bind-Value="selectedStudent"
+                               SelectedValuesChanged="OnSelectedStudentChanged">
+                        @foreach (var item in students)
+                        {
+                            <MudSelectItem T="string" Value="@item.StudentName">@item.StudentName</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem>
+            </MudGrid>
+            <MudGrid>
+                <MudItem xs="12" sm="12" md="12">
+                    <MudToggleIconButton Toggled="@ToggleDeleteColumn" ToggledChanged="OnToggledChanged"
+                                         Icon="@Icons.Material.Filled.Delete" Color="@Color.Success"
+                                         ToggledIcon="@Icons.Material.Filled.Delete" ToggledColor="@Color.Error" />
+                    <span> @(ToggleDeleteColumn ? "Hide Delete Column" : "Show Delete Column")</span>
+                </MudItem>
+            </MudGrid>
+        </div>
+
+
+        <div class="d-block pa-2 mr-5 ml-5">
+            <MudCard Elevation="20">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Mark Entry Per Student</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudTable Items="@cognitiveMarks" Dense="true" Hover="true" Striped="true" Breakpoint="Breakpoint.Sm"
+                              @bind-SelectedItem="selectedItemCognitiveMark" CommitEditTooltip="Update"
+                              OnCommitEditClick="@(() => UpdateCognitiveMarks())">
+                        <HeaderContent>
+                            <MudTh>S/N</MudTh>
+                            <MudTh>Subject Code</MudTh>
+                            <MudTh>Subject</MudTh>
+                            <MudTh>Check Point / IGCSE</MudTh>
+                            <MudTh>Mid-Term CBT</MudTh>
+                            <MudTh>Mid-Term Theory</MudTh>
+                            <MudTh>CA 1</MudTh>
+                            <MudTh>CA 2</MudTh>
+                            <MudTh>CA 3</MudTh>
+                            <MudTh>CA 4 / CBT</MudTh>
+                            <MudTh>Exam</MudTh>
+                            @if (ShowDeleteColumn)
+                            {
+                                <MudTh>Actions</MudTh>
+                            }
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="S/N">@context.SN</MudTd>
+                            <MudTd DataLabel="Subject Code">@context.SubjectCode</MudTd>
+                            <MudTd DataLabel="Subject">@context.Subject</MudTd>
+                            <MudTd DataLabel="Check Point / IGCSE">@context.Mark_ICGC.ToString("#0.00")</MudTd>
+                            <MudTd DataLabel="Mid-Term CBT">@context.Mark_MidCBT.ToString("#0.00")</MudTd>
+                            <MudTd DataLabel="Mid-Term Theory">@context.Mark_Mid.ToString("#0.00")</MudTd>
+                            <MudTd DataLabel="CA 1">@context.Mark_CA1.ToString("#0.00")</MudTd>
+                            <MudTd DataLabel="CA 2">@context.Mark_CA2.ToString("#0.00")</MudTd>
+                            <MudTd DataLabel="CA 3">@context.Mark_CA3.ToString("#0.00")</MudTd>
+                            <MudTd DataLabel="CA4 / CBT">@context.Mark_CBT.ToString("#0.00")</MudTd>
+                            <MudTd DataLabel="Exam">@context.Mark_Exam.ToString("#0.00")</MudTd>
+                            @if (ShowDeleteColumn)
+                            {
+                                <MudTd DataLabel="">
+                                    <MudFab @onclick="@(()=>DeleteMarkCognitive(context.StudentMarkID))" Color="Color.Primary" Icon="@Icons.Material.Filled.Delete" Size="Size.Small" IconSize="Size.Small" />
+                                </MudTd>
+                            }
+                        </RowTemplate>
+                        <RowEditingTemplate>
+                            <MudTd DataLabel="S/N">
+                                <MudTextField @bind-Value="@context.SN" ReadOnly />
+                            </MudTd>
+                            <MudTd DataLabel="Admission No.">
+                                <MudTextField @bind-Value="@context.AdmissionNo" ReadOnly />
+                            </MudTd>
+                            <MudTd DataLabel="Student Name">
+                                <MudTextField @bind-Value="@context.StudentName" ReadOnly />
+                            </MudTd>
+                            <MudTd DataLabel="Check Point / IGCSE">
+                                <MudTextField @bind-Value="@context.Mark_ICGC" />
+                            </MudTd>
+                            <MudTd DataLabel="Mid-Term CBT">
+                                <MudTextField @bind-Value="@context.Mark_MidCBT" />
+                            </MudTd>
+                            <MudTd DataLabel="Mid-Term Theory">
+                                <MudTextField @bind-Value="@context.Mark_Mid" />
+                            </MudTd>
+                            <MudTd DataLabel="CA 1">
+                                <MudTextField @bind-Value="@context.Mark_CA1" />
+                            </MudTd>
+                            <MudTd DataLabel="CA 2">
+                                <MudTextField @bind-Value="@context.Mark_CA2" />
+                            </MudTd>
+                            <MudTd DataLabel="CA 3">
+                                <MudTextField @bind-Value="@context.Mark_CA3" />
+                            </MudTd>
+                            <MudTd DataLabel="CA 4 / CBT">
+                                <MudTextField @bind-Value="@context.Mark_CBT" />
+                            </MudTd>
+                            <MudTd DataLabel="Exam">
+                                <MudTextField @bind-Value="@context.Mark_Exam" />
+                            </MudTd>
+                        </RowEditingTemplate>
+                    </MudTable>
+                </MudCardContent>
+            </MudCard>
+        </div>
+     </Authorized>
+    <NotAuthorized>
+        <div class="ma-10">
+            <p style="font-size:20px;">You Do Not Have Permission To Access This Page</p>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>

@@ -1,0 +1,99 @@
+﻿@page "/setschoolcalendar"
+
+
+<AuthorizeView Roles="Administrator">
+    <Authorized Context="admin">
+
+        <div class="d-block pa-2 mr-5 ml-5">
+            <MudPaper Class="d-flex align-center flex-grow-1 gap-x-8" Elevation="20">
+                <div Class="d-flex flex-1">
+                    <MudTooltip Text="Go Back">
+                        <MudIconButton OnClick="GoBack" Icon="@Icons.Material.Outlined.ArrowBack" Color="Color.Success" />
+                    </MudTooltip>
+                </div>
+                <div Class="d-flex flex-1">
+                    <MudTooltip Text="Display Calendar">
+                        <MudIconButton OnClick="DisplaySchoolCalendar" Icon="@Icons.Material.Outlined.FormatLineSpacing" Color="Color.Success" />
+                    </MudTooltip>
+                </div>
+                <div Class="d-flex flex-1">
+                    <MudTooltip Text="Update Calendar">
+                        <MudButton OnClick="SaveSchoolCalendar" Disabled="@saveStatus" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Success" Size="Size.Large">Update</MudButton>
+                    </MudTooltip>
+                </div>
+            </MudPaper>
+        </div>
+
+        @if (toolBarMenuId == 1)
+        {
+            <div class="d-block pa-2  mr-5 ml-5">
+                <MudTable Elevation="20" Items="@schoolcalendar" Dense="true" Hover="true" Breakpoint="Breakpoint.Sm">
+                    <HeaderContent>
+                        <MudTh>Term</MudTh>
+                        <MudTh>Start Month</MudTh>
+                        <MudTh>End Month</MudTh>
+                        <MudTh>Edit</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Term">@context.SchTerm</MudTd>
+                        <MudTd DataLabel="Start Month">@context.StartMonth</MudTd>
+                        <MudTd DataLabel="End Month">@context.EndMonth</MudTd>
+                        <MudTd DataLabel="">
+                            <MudFab @onclick="@(()=>EditSchoolCalendar(@context.CalendarID))" Color="Color.Primary" Icon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small" />
+                        </MudTd>
+                    </RowTemplate>
+                </MudTable>
+            </div>
+        }
+        else
+        {
+            <div class="d-block pa-2 mr-5 ml-5">
+                <EditForm Model="@calendar" OnValidSubmit="@SaveSchoolCalendar">
+                    <FluentValidationValidator />
+                    <MudCard Elevation="20">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">Change School Calendar</MudText>
+                            </CardHeaderContent>
+                            @*<CardHeaderActions>
+                        <MudTooltip Text="Save" Color="Color.Tertiary" Placement="Placement.Bottom" Arrow="true">
+                        <MudIconButton Icon="@Icons.Material.Filled.Save" Color="Color.Success" ButtonType="ButtonType.Submit" />
+                        </MudTooltip>
+                        </CardHeaderActions>*@
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudGrid>
+                                <MudItem xs="12" sm="12" md="4">
+                                    <MudTextField Label="Term" @bind-Value="@calendar.SchTerm" For="() => calendar.SchTerm" ReadOnly="true" />
+                                </MudItem>
+                                <MudItem xs="12" sm="12" md="4">
+                                    <MudSelect T="string" Label="Start Month" Dense="true" OffsetY="true" @bind-Value="@calendar.StartMonth"
+                                           SelectedValuesChanged="OnSelectedStartMonthChanged" For="() => calendar.StartMonth">
+                                        @foreach (var item in months)
+                                        {
+                                            <MudSelectItem T="string" Value="@item.StartMonth">@item.StartMonth</MudSelectItem>
+                                        }
+                                    </MudSelect>
+                                </MudItem>
+                                <MudItem xs="12" sm="12" md="4">
+                                    <MudSelect T="string" Label="End Month" Dense="true" OffsetY="true" @bind-Value="@calendar.EndMonth"
+                                           SelectedValuesChanged="OnSelectedEndMonthChanged" For="() => calendar.EndMonth">
+                                        @foreach (var item in months)
+                                        {
+                                            <MudSelectItem T="string" Value="@item.EndMonth">@item.EndMonth</MudSelectItem>
+                                        }
+                                    </MudSelect>
+                                </MudItem>
+                            </MudGrid>
+                        </MudCardContent>
+                    </MudCard>
+                </EditForm>
+            </div>
+        }
+    </Authorized>
+    <NotAuthorized>
+        <div class="ma-10">
+            <p style="font-size:20px;">You Do Not Have Permission To Access This Section</p>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>

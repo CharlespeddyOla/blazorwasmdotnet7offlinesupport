@@ -1,0 +1,84 @@
+﻿@page "/jobtypes"
+
+<AuthorizeView Roles="Administrator, Secretary">
+    <Authorized Context="admin">
+        <div class="d-block pa-2 mr-5 ml-5">
+            <MudPaper Class="d-flex align-center flex-grow-1 gap-x-8" Elevation="20">
+                <MudGrid>
+                    <MudItem xs="12" sm="12" md="3">
+                        <MudTooltip Text="Go Back">
+                            <MudIconButton OnClick="GoBack" Icon="@Icons.Material.Outlined.ArrowBack" Color="Color.Success" />
+                        </MudTooltip>
+                    </MudItem>
+                    <MudItem xs="12" sm="12" md="3">
+                        <MudTooltip Text="Job Type">
+                            <MudIconButton OnClick="JobTypeEvent" Icon="@Icons.Material.Outlined.FormatLineSpacing" Color="Color.Success" />
+                        </MudTooltip>
+                    </MudItem>
+                    <MudItem xs="12" sm="12" md="3">
+                        <MudTooltip Text="Create A New Job Type">
+                            <MudIconButton OnClick="CreateNewJobType" Icon="@Icons.Material.Outlined.LibraryAdd" Color="Color.Success" />
+                        </MudTooltip>
+                    </MudItem>
+                    <MudItem xs="12" sm="12" md="3">
+                        <MudTooltip Text="Save">
+                            <button type="submit" form="@editFormId">
+                                <MudButton Disabled="@disableSaveButton" StartIcon="@Icons.Material.Outlined.Save"
+                                           Color="Color.Success" Size="Size.Large">@buttontitle</MudButton>
+                            </button>
+                        </MudTooltip>
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+        </div>
+
+
+        @if (toolBarMenuId == 1)
+        {
+
+            <div class="d-block pa-2  mr-5 ml-5">
+                <MudTable Elevation="20" Items="@jobtypelist" Dense="true" Hover="true" Breakpoint="Breakpoint.Sm">
+                    <HeaderContent>
+                        <MudTh>Job Type</MudTh>
+                        <MudTh>Edit</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Job Type">@context.JobType</MudTd>
+                        <MudTd DataLabel="Edit">
+                            <MudFab @onclick="@(()=>UpdateJobType(@context.JobTypeID))" Color="Color.Primary" Icon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small" />
+                        </MudTd>
+                    </RowTemplate>
+                </MudTable>
+            </div>
+        }
+        else@if (toolBarMenuId == 2)
+        {
+
+            <div class="d-block pa-2 mr-5 ml-5">
+                <EditForm id="@editFormId" Model="@jobtype" OnValidSubmit="@SubmitValidForm" OnInvalidSubmit="@InvalidEntries">
+                    <FluentValidationValidator />
+                    <MudCard Elevation="20">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">@pagetitle</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudGrid>
+                                <MudItem xs="12" sm="12" md="3">
+                                    <MudTextField Label="Job Type" @bind-Value="@jobtype.JobType" For="() => jobtype.JobType" />
+                                </MudItem>
+                            </MudGrid>
+                        </MudCardContent>
+                    </MudCard>
+                </EditForm>
+            </div>
+        }
+    </Authorized>
+    <NotAuthorized>
+        <div class="ma-10">
+            <p style="font-size:20px;">You Do Not Have Permission To Access This Page</p>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+

@@ -1,0 +1,83 @@
+﻿@page "/departments"
+
+
+<AuthorizeView Roles="Administrator, Secretary">
+    <Authorized Context="admin">
+        <div class="d-block pa-2 mr-5 ml-5">
+            <MudPaper Class="d-flex align-center flex-grow-1 gap-x-8" Elevation="20">
+                <MudGrid>
+                    <MudItem xs="12" sm="12" md="3">
+                        <MudTooltip Text="Go Back">
+                            <MudIconButton OnClick="GoBack" Icon="@Icons.Material.Outlined.ArrowBack" Color="Color.Success" />
+                        </MudTooltip>
+                    </MudItem>
+                    <MudItem xs="12" sm="12" md="3">
+                        <MudTooltip Text="Department List">
+                            <MudIconButton OnClick="DeptListEvent" Icon="@Icons.Material.Outlined.FormatLineSpacing" Color="Color.Success" />
+                        </MudTooltip>
+                    </MudItem>
+                    <MudItem xs="12" sm="12" md="3">
+                        <MudTooltip Text="Create A New Department">
+                            <MudIconButton OnClick="CreateNewDepartment" Icon="@Icons.Material.Outlined.LibraryAdd" Color="Color.Success" />
+                        </MudTooltip>
+                    </MudItem>
+                    <MudItem xs="12" sm="12" md="3">
+                        <MudTooltip Text="Save">
+                            <button type="submit" form="@editFormId">
+                                <MudButton Disabled="@disableSaveButton" StartIcon="@Icons.Material.Outlined.Save"
+                                           Color="Color.Success" Size="Size.Large">@buttontitle</MudButton>
+                            </button>
+                        </MudTooltip>
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+        </div>
+
+
+        @if (toolBarMenuId == 1)
+        {
+            <div class="d-block pa-2  mr-5 ml-5">
+                <MudTable Elevation="20" Items="@deptlist" Dense="true" Hover="true" Breakpoint="Breakpoint.Sm">
+                    <HeaderContent>
+                        <MudTh>Department</MudTh>
+                        <MudTh>Edit</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Department">@context.EmployeeGroup</MudTd>
+                        <MudTd DataLabel="Edit">
+                            <MudFab @onclick="@(()=>UpdateDeptDetails(@context.EmployeeGroupID))" Color="Color.Primary" Icon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small" />
+                        </MudTd>
+                    </RowTemplate>
+                </MudTable>
+            </div>
+        }
+        else if (toolBarMenuId == 2)
+        {
+            <div class="d-block pa-2 mr-5 ml-5">
+                <EditForm id="@editFormId" Model="@dept" OnValidSubmit="@SubmitValidForm" OnInvalidSubmit="@InvalidEntries">
+                    <FluentValidationValidator />
+                    <MudCard Elevation="20">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">@pagetitle</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudGrid>
+                                <MudItem xs="12" sm="12" md="3">
+                                    <MudTextField Label="Department" @bind-Value="@dept.EmployeeGroup" For="() => dept.EmployeeGroup" />
+                                </MudItem>
+                            </MudGrid>
+                        </MudCardContent>
+                    </MudCard>
+                </EditForm>
+            </div>
+        }
+    </Authorized>
+    <NotAuthorized>
+        <div class="ma-10">
+            <p style="font-size:20px;">You Do Not Have Permission To Access This Page</p>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+

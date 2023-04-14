@@ -1,0 +1,116 @@
+﻿@page "/updatestaffinfo"
+@inject ISnackbar Snackbar
+
+<AuthorizeView Roles="Administrator, Secretary">
+    <Authorized Context="admin">
+
+        <div class="d-block pa-2 mr-5 ml-5">
+            <MudPaper Class="d-flex align-center flex-grow-1 gap-x-8" Elevation="20">
+                <div Class="d-flex flex-1">
+                    <MudTooltip Text="Go Back">
+                        <MudIconButton OnClick="GoBack" Icon="@Icons.Material.Filled.ArrowBack" Color="Color.Success" />
+                    </MudTooltip>
+                </div>
+                <div Class="d-flex flex-1">
+                    <MudTooltip Text="Save">
+                        <MudButton OnClick="SaveSelection" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Success" Size="Size.Large">Save</MudButton>
+                    </MudTooltip>
+                </div>
+            </MudPaper>
+        </div>
+
+        <div class="d-block pa-2 mr-5 ml-5">
+            <div class="container-fluid" hidden="@IsShow">
+                <MudText Typo="Typo.subtitle2" Color="Color.Inherit">
+                    <b>@progressbarInfo @Math.Round(i)%</b>
+                </MudText>
+                <MudProgressLinear Color="Color.Info" Size="Size.Large" Value="@Convert.ToDouble(i)" Rounded="true" Striped="true">
+                </MudProgressLinear>
+            </div>
+        </div>
+
+        <div class="d-block pa-2  mr-5 ml-5">
+            <MudGrid>
+                <MudItem xs="12" sm="12" md="3">
+                    <MudSelect T="string" Label="Please select a Department" Strict="true" Dense="true" @bind-Value="selectedDepartment"
+                               SelectedValuesChanged="OnSelectedDeptChanged">
+                        @foreach (var item in deptlist)
+                        {
+                            <MudSelectItem T="string" Value="@item.EmployeeGroup">@item.EmployeeGroup</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem>
+            </MudGrid>
+        </div>
+
+
+        <div class="d-block pa-2  mr-5 ml-5">
+            <MudTable Elevation="20" Items="@staffs" Dense="true" Hover="true" Striped="true" @bind-SelectedItem="selectedItem" CommitEditTooltip="Update"
+                      OnCommitEditClick="@(() => UpdateEntry())" Filter="new Func<ADMEmployee,bool>(FilterFunc)" Breakpoint="Breakpoint.Sm">
+                <ToolBarContent>
+                    <MudTextField @bind-Value="searchString" Placeholder="Search For Staff" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search"
+                                  IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                    <MudSpacer />
+                </ToolBarContent>
+                <HeaderContent>
+                    @*<MudTh>S/N</MudTh>*@
+                    <MudTh>Staff No.</MudTh>
+                    <MudTh>Surname</MudTh>
+                    <MudTh>First Name</MudTh>
+                    <MudTh>Other Name(s)</MudTh>
+                    <MudTh>Phone Number</MudTh>
+                    <MudTh>Staff Email</MudTh>
+                    <MudTh>Term</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    @*<MudTd DataLabel="S/N">@context.SN</MudTd>*@
+                    <MudTd DataLabel="Staff No.">@context.EmployeeID</MudTd>
+                    <MudTd DataLabel="Surname">@context.Surname</MudTd>
+                    <MudTd DataLabel="First Name">@context.FirstName</MudTd>
+                    <MudTd DataLabel="Other Name(s)">@context.MiddleName</MudTd>
+                    <MudTd DataLabel="Phone Number">@context.PhoneNos</MudTd>
+                    <MudTd DataLabel="Student Email">@context.Email</MudTd>
+                    <MudTd DataLabel="Student Email">@context.AcademicSession</MudTd>
+                </RowTemplate>
+                <RowEditingTemplate>
+                    @*<MudTd DataLabel="S/N">
+                    <MudTextField @bind-Value="@context.SN" ReadOnly DisableUnderLine="true" />
+                    </MudTd>*@
+                    <MudTd DataLabel="Staff No.">
+                        <MudTextField @bind-Value="@context.EmployeeID" Required DisableUnderLine="true" />
+                    </MudTd>
+                    <MudTd DataLabel="Surname">
+                        <MudTextField @bind-Value="@context.Surname" Required DisableUnderLine="true" />
+                    </MudTd>
+                    <MudTd DataLabel="First Name">
+                        <MudTextField @bind-Value="@context.FirstName" Required DisableUnderLine="true" />
+                    </MudTd>
+                    <MudTd DataLabel="Other Name(s)">
+                        <MudTextField @bind-Value="@context.MiddleName" DisableUnderLine="true" />
+                    </MudTd>
+                    <MudTd DataLabel="Phone Number">
+                        <MudTextField @bind-Value="@context.PhoneNos" Required DisableUnderLine="true" />
+                    </MudTd>
+                    <MudTd DataLabel="Student Email">
+                        <MudTextField @bind-Value="@context.Email" Required DisableUnderLine="true" />
+                    </MudTd>
+                    <MudTd DataLabel="Term">
+                        <MudSelect T="string" @bind-Value="@context.AcademicSession" DisableUnderLine="true">
+                            @foreach (var item in academicTerms)
+                            {
+                                <MudSelectItem T="string" Value="@item.AcademicSession">@item.AcademicSession</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudTd>
+                </RowEditingTemplate>
+            </MudTable>
+        </div>
+
+    </Authorized>
+    <NotAuthorized>
+        <div class="ma-10">
+            <p style="font-size:20px;">You Do Not Have Permission To Access This Page</p>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+

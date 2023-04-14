@@ -1,0 +1,71 @@
+﻿@page "/subjectscombination"
+@inject ISnackbar Snackbar
+
+<AuthorizeView Roles="Administrator">
+    <Authorized Context="admin">
+
+        <div class="d-block pa-2 mr-5 ml-5">
+            <MudPaper Class="d-flex align-center flex-grow-1 gap-x-8" Elevation="20">
+                <div Class="d-flex flex-1">
+                    <MudTooltip Text="Go Back">
+                        <MudIconButton OnClick="GoBack" Icon="@Icons.Material.Filled.ArrowBack" Color="Color.Success" />
+                    </MudTooltip>
+                </div>
+            </MudPaper>
+        </div>
+
+        <div class="d-block pa-2  mr-5 ml-5">
+            <MudGrid>
+                <MudItem xs="12" sm="6" md="3">
+                    <MudSelect T="string" Label="School" Dense="true" OffsetY="true" @bind-Value="@selectedSchool"
+                               SelectedValuesChanged="OnSelectedSchoolChanged">
+                        @foreach (var item in schools)
+                        {
+                            <MudSelectItem T="string" Value="@item.School">@item.School</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem>
+            </MudGrid>
+            <MudGrid>
+                <MudItem xs="12" sm="6" md="8">
+                    <MudTable Items="@_combinedSubjects" T="CombinesSubjects" MultiSelection="true" @bind-SelectedItems="selectedItems" Hover="@hover"
+                              OnRowClick="@(args => SelectedSubjectRow(args))">
+                        <HeaderContent>
+                            <MudTh>Subjects</MudTh>
+                            @*<MudTh>Combined ID</MudTh>*@
+                            <MudTh>Combined Name</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="Subjects">@context.Subject</MudTd>
+                            @*<MudTd DataLabel="Combined ID">@context.SbjMergeID</MudTd>*@
+                            <MudTd DataLabel="Combined Name">@context.SbjMergeName</MudTd>
+                        </RowTemplate>
+                        <RowEditingTemplate>
+                            @*<MudTd DataLabel="Combined ID">
+                            <MudNumericField @bind-Value="@context.SbjMergeID" Required Min="1" />
+                            </MudTd>*@
+                            <MudTd DataLabel="Subjects">
+                                <MudTextField @bind-Value="@context.Subject" ReadOnly />
+                            </MudTd>
+                            <MudTd DataLabel="Combined Name">
+                                <MudTextField @bind-Value="@context.SbjMergeName" />
+                            </MudTd>
+                        </RowEditingTemplate>
+                        <PagerContent>
+                            <MudTablePager />
+                        </PagerContent>
+                    </MudTable>
+                </MudItem>
+            </MudGrid>
+        </div>
+
+    </Authorized>
+    <NotAuthorized>
+        <div class="ma-10">
+            <p style="font-size:20px;">You Do Not Have Permission To Access This Page</p>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+

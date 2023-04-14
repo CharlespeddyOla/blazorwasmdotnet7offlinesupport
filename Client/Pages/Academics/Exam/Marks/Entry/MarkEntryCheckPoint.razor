@@ -1,0 +1,122 @@
+﻿@page "/markentrycheckpoint"
+@implements IDisposable
+
+<div class="d-block pa-2 mr-5 ml-5">
+    <MudPaper Class="d-flex align-center flex-grow-1 gap-x-8" Elevation="20">
+        <div Class="d-flex flex-1">
+            <MudTooltip Text="Refresh">
+                <MudIconButton OnClick="RefreshCogvitive" Icon="@Icons.Material.Filled.Refresh" Color="Color.Success" />
+            </MudTooltip>
+        </div>
+        <div Class="d-flex flex-1">
+            <MudTooltip Text="Save">
+                <MudButton OnClick="SaveIGSCE" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Success" Size="Size.Large">Save</MudButton>
+            </MudTooltip>
+        </div>
+    </MudPaper>
+</div>
+
+<div class="d-block pa-2 mr-5 ml-5">
+    <div class="container-fluid" hidden="@IsShow">
+        <MudText Typo="Typo.subtitle2" Color="Color.Inherit">
+            <b>@progressbarInfo @Math.Round(i)%</b>
+        </MudText>
+        <MudProgressLinear Color="Color.Info" Size="Size.Large" Value="@Convert.ToDouble(i)" Rounded="true" Striped="true">
+        </MudProgressLinear>
+    </div>
+</div>
+
+@*@if (IsOnline)
+{
+    <div class="d-block pa-2 mr-5 ml-5">
+        <MudAlert OnClick="GenerateMarkTemplates" Severity="Severity.Info" Variant="Variant.Filled" Square="true" Class="my-2">
+            Please, Click here when you are done generating Mark Entry Template(s) for Offline Mark Entry.
+        </MudAlert>
+    </div>
+}*@
+
+@if (_processing)
+{
+    <div class="d-block pa-2 mr-5 ml-5">
+        <MudAlert Severity="Severity.Normal" Variant="Variant.Filled">
+            @offlineprohressbarinfo @stopwatchvalue
+        </MudAlert>
+    </div>
+}
+
+<div class="d-block pa-2 mr-5 ml-5">
+    <MudGrid>
+        <MudItem xs="12" sm="12" md="2">
+            <MudSelect T="string" Label="School" Strict="true" Dense="true" @bind-Value="selectedSchool"
+                       SelectedValuesChanged="OnSelectedSchoolChanged">
+                @foreach (var item in schools)
+                {
+                    <MudSelectItem T="string" Value="@item.School">@item.School</MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12" sm="12" md="2">
+            <MudSelect T="string" Label="Class" Strict="true" Dense="true" @bind-Value="selectedClass"
+                       SelectedValuesChanged="OnSelectedClassChanged">
+                @foreach (var item in classList)
+                {
+                    <MudSelectItem T="string" Value="@item.ClassName">@item.ClassName</MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12" sm="12" md="5">
+            <MudSelect T="string" Label="Subject" Strict="true" Dense="true" @bind-Value="selectedSubject"
+                       SelectedValuesChanged="OnSelectedSubjectChanged">
+                @foreach (var item in SelectedTeachersSubjects)
+                {
+                    <MudSelectItem T="string" Value="@item.Subject">@item.Subject</MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem>
+    </MudGrid>
+</div>
+
+<div class="d-block pa-2 mr-5 ml-5">
+    <MudCard Elevation="20">
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudText Typo="Typo.h6">@SelectedEntryType()</MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudCardContent>
+            <MudTable Items="@cognitiveMarks" Dense="true" Hover="true" Striped="true" Breakpoint="Breakpoint.Sm"
+                      @bind-SelectedItem="selectedItemCognitiveMark" CommitEditTooltip="Update" OnCommitEditClick="@(() => UpdateIGSCE())">
+                <HeaderContent>
+                    <MudTh>S/N</MudTh>
+                    <MudTh>Admission No.</MudTh>
+                    <MudTh>Student Name</MudTh>
+                    <MudTh>@columnTitle</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="S/N">@context.SN</MudTd>
+                    <MudTd DataLabel="Admission No.">@context.AdmissionNo</MudTd>
+                    <MudTd DataLabel="Student Name">@context.StudentName</MudTd>
+                    <MudTd DataLabel="@columnTitle">@context.Mark_ICGC.ToString("#0.00")</MudTd>
+                </RowTemplate>
+                <RowEditingTemplate>
+                    <MudTd DataLabel="S/N">
+                        <MudTextField @bind-Value="@context.SN" ReadOnly />
+                    </MudTd>
+                    <MudTd DataLabel="Admission No.">
+                        <MudTextField @bind-Value="@context.AdmissionNo" ReadOnly />
+                    </MudTd>
+                    <MudTd DataLabel="Student Name">
+                        <MudTextField @bind-Value="@context.StudentName" ReadOnly />
+                    </MudTd>
+                    <MudTd DataLabel="@columnTitle">
+                        <MudTextField @bind-Value="@context.Mark_ICGC" Required />
+                    </MudTd>
+                </RowEditingTemplate>
+            </MudTable>
+        </MudCardContent>
+    </MudCard>
+</div>
+
+
+
+

@@ -1,0 +1,557 @@
+﻿@page "/cbtexams"
+
+
+<div class="d-block pa-2 mr-5 ml-5">
+    <MudPaper Elevation="20">
+        <MudTooltip Text="CBT Exam List">
+            <MudIconButton OnClick="CBTExamList" Icon="@Icons.Material.Filled.FormatLineSpacing" Color="Color.Success" />
+        </MudTooltip>
+
+        <MudTooltip Text="Create New CBT Exam">
+            <MudIconButton OnClick="CBTExamDetails" Icon="@Icons.Material.Filled.LibraryAdd" Color="Color.Success" />
+        </MudTooltip>
+
+         <MudTooltip Text="Set Default Exams">
+            <MudIconButton OnClick="DefaultExamsToBeTaken" Icon="@Icons.Material.Filled.AppSettingsAlt" Color="Color.Success" />
+        </MudTooltip>
+
+         <MudTooltip Text="Lock Exams Taken">
+            <MudIconButton OnClick="ReleaseExams" Icon="@Icons.Material.Filled.NewReleases" Color="Color.Success" />
+        </MudTooltip>
+
+        <MudTooltip Text="CBT Exam Monitor">
+            <MudIconButton OnClick="CBTMonitor" Icon="@Icons.Material.Filled.Monitor" Color="Color.Success" />
+        </MudTooltip>
+
+        @*<MudTooltip Text="Student CBT Scores">
+                <MudIconButton Icon="@Icons.Material.Filled.Article" Color="Color.Success" />
+            </MudTooltip>*@
+
+    </MudPaper>
+</div>
+
+@if (toolBarMenuId == 1)
+{
+    <div class="d-block pa-2 mr-5 ml-5">
+        <MudGrid>
+            <MudItem xs="12" sm="12" md="3">
+                <MudSelect T="string" Label="School" Strict="true" Dense="true" @bind-Value="selectedSchool" HelperText="@schoolCountDisplay"
+                           SelectedValuesChanged="OnSchoolChanged">
+                    @foreach (var item in schools)
+                    {
+                        <MudSelectItem T="string" Value="@item.School">@item.School</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="3">
+                <MudSelect T="string" Label="Class" Strict="true" Dense="true" @bind-Value="selectedClass" HelperText="@classCountDisplay"
+                           SelectedValuesChanged="OnClassChanged">
+                    @foreach (var item in classGroups)
+                    {
+                        <MudSelectItem T="string" Value="@item.ClassName">@item.ClassName</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="3">
+                <MudSelect T="string" Label="Exam Type" Strict="true" Dense="true" @bind-Value="selectedExamType" HelperText="@examTypeCountDisplay"
+                           SelectedValuesChanged="OnExamTypeChanged">
+                    @foreach (var item in examType)
+                    {
+                        <MudSelectItem T="string" Value="@item.ExamType">@item.ExamType</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="3">
+                <MudSelect T="string" Label="CBT Exam For" Strict="true" Dense="true" @bind-Value="selectedReportType" HelperText="@reportTypeCountDisplay"
+                           SelectedValuesChanged="OnReportTypeChanged">
+                    @foreach (var item in reportType)
+                    {
+                        <MudSelectItem T="string" Value="@item.ReportType">@item.ReportType</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+        </MudGrid>
+    </div>
+
+    <div class="d-block pa-2 mr-5 ml-5">
+        <SpinLoader IsLoading="isLoading">
+            <LoadingTemplate>
+                <Wave Center="true" Color="#3498db" Size="150px"></Wave>
+                <div Class="d-flex justify-center">
+                    <p style="font-size:16px;">@loadingmessage</p>
+                </div>
+            </LoadingTemplate>
+            <ContentTemplate>
+                @if (exams != null)
+                {
+                    <MudCard Elevation="20">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">CBT Exam List</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudTable Items="@exams" Dense="true" Hover="true" Breakpoint="Breakpoint.Sm"
+                                      Filter="new Func<CBTExams,bool>(FilterFunc)">
+                                <ToolBarContent>
+                                    <MudTextField @bind-Value="searchString" Placeholder="Search For Exam Name" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search"
+                                                  IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                                    <MudSpacer />
+                                    <MudTooltip Text="Export CBT Result To Excel">
+                                        <MudIconButton OnClick="ExportExamList" Icon="@Icons.Material.Filled.ImportExport" Color="Color.Success" />
+                                    </MudTooltip>
+                                </ToolBarContent>
+                                <HeaderContent>
+                                    <MudTh>Exam Date</MudTh>
+                                    <MudTh>Report Type</MudTh>
+                                    <MudTh>Exam Type</MudTh>
+                                    <MudTh>Exam Code</MudTh>
+                                    <MudTh>Exam Name</MudTh>
+                                    <MudTh>Subject Teacher</MudTh>
+                                    <MudTh Style="text-align:center; width:20px;">Passing Percentage (%)</MudTh>
+                                    <MudTh Style="text-align:center; width:20px;">Exam Time (Mins)</MudTh>
+                                    <MudTh Style="text-align:center; width:20px;">Default</MudTh>
+                                    <MudTh Style="text-align:center; width:5px;">Edit</MudTh>
+                                    <MudTh Style="text-align:center; width:5px;">Questions</MudTh>
+                                </HeaderContent>
+                                <RowTemplate>
+                                    <MudTd DataLabel="Exam Date">@context.ExamDate?.ToString("dd-MMM-yyyy")</MudTd>
+                                    <MudTd DataLabel="Report Type">@context.ReportType</MudTd>
+                                    <MudTd DataLabel="Exam Type">@context.ExamType</MudTd>
+                                    <MudTd DataLabel="Exam Code">@context.ExamCode</MudTd>
+                                    <MudTd DataLabel="Exam Name">@context.ExamName</MudTd>
+                                    <MudTd DataLabel="Subject Teacher">@context.SubjectTeacher</MudTd>
+                                    <MudTd DataLabel="Passing Percentage (%)" Style="text-align:center; width:20px;">@context.PassingPercentage.ToString("#0.00")</MudTd>
+                                    <MudTd DataLabel="Exam Time (Mins)" Style="text-align:center; width:20px;">@context.ExamTime</MudTd>
+                                    <MudTd DataLabel="Default" Style="text-align:center; width:20px;">
+                                        <MudCheckBox @bind-Checked="@context.ExamDefault" ReadOnly="true"></MudCheckBox>
+                                    </MudTd>
+                                    <MudTd DataLabel="Edit">
+                                        <MudFab @onclick="@(()=>EditCBTExamDetails(@context.ExamID))" Color="Color.Primary" Icon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small" />
+                                    </MudTd>
+                                    <MudTd DataLabel="Questions">
+                                        <MudFab @onclick="@(()=>ExamQuestion(@context.ExamID, @context.ExamName))" Color="Color.Tertiary" Icon="@Icons.Material.Filled.QuestionAnswer" Size="Size.Small" IconSize="Size.Small" />
+                                    </MudTd>
+                                </RowTemplate>
+                                <PagerContent>
+                                    <MudTablePager />
+                                </PagerContent>
+                            </MudTable>
+                        </MudCardContent>
+                    </MudCard>
+                }
+                else
+                {
+                    <span>No Data</span>
+                }
+            </ContentTemplate>
+        </SpinLoader>
+    </div>
+}
+else if (toolBarMenuId == 2)
+{
+    <div class="d-block pa-2 mr-5 ml-5">
+        <EditForm Model="@exam" OnValidSubmit="@SubmitValidForm" OnInvalidSubmit="@InvalidEntries">
+            <FluentValidationValidator />
+            <MudCard Elevation="20">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">@pagetitle</MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudTooltip Text="Save" Color="Color.Tertiary" Placement="Placement.Bottom" Arrow="true">
+                            <MudIconButton Icon="@Icons.Material.Filled.Save" Color="Color.Success" ButtonType="ButtonType.Submit" />
+                        </MudTooltip>
+                        <MudTooltip Text="Cancel" Color="Color.Tertiary" Placement="Placement.Bottom" Arrow="true">
+                            <MudIconButton Icon="@Icons.Material.Filled.Cancel" Color="Color.Success" OnClick="Cancel" />
+                        </MudTooltip>
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudGrid>
+                        <MudItem xs="12" sm="6" md="4">
+                            <MudDatePicker Label="Exam Date" PickerVariant="PickerVariant.Dialog" DateFormat="dd-MMM-yyyy" @bind-Date="@exam.ExamDate"
+                                           For="() => exam.ExamDate" />
+                        </MudItem>
+                        @if (examid == 0)
+                        {
+                            <MudItem xs="12" sm="6" md="4">
+                                <MudSelect T="string" Label="Exam Type" Dense="true" OffsetY="true" @bind-Value="@exam.ExamType"
+                                           SelectedValuesChanged="OnSelectedExamTypeChanged" For="() => exam.ExamType">
+                                    @foreach (var item in examType)
+                                    {
+                                        <MudSelectItem T="string" Value="@item.ExamType">@item.ExamType</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12" sm="6" md="4">
+                                <MudSelect T="string" Label="CBT Exam For" Dense="true" OffsetY="true" @bind-Value="@exam.ReportType"
+                                           SelectedValuesChanged="OnSelectedReportTypeChanged" For="() => exam.ReportType">
+                                    @foreach (var item in reportType)
+                                    {
+                                        <MudSelectItem T="string" Value="@item.ReportType">@item.ReportType</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudItem>
+                        }
+                        else
+                        {
+                            <MudItem xs="12" sm="6" md="4">
+                                <MudTextField Label="Exam Type" @bind-Value="@exam.ExamType" For="() => exam.ExamType" ReadOnly="true" />
+                            </MudItem>
+                            <MudItem xs="12" sm="6" md="4">
+                                <MudTextField Label="CBT Exam For" @bind-Value="@exam.ReportType" For="() => exam.ReportType" ReadOnly="true" />
+                            </MudItem>
+                        }
+                    </MudGrid>
+                    <MudGrid>
+                        <MudItem xs="12" sm="6" md="4">
+                            <MudSelect T="string" Label="School" Dense="true" OffsetY="true" @bind-Value="@exam.School"
+                                       SelectedValuesChanged="OnSelectedSchoolChanged" For="() => exam.School">
+                                @foreach (var item in schools)
+                                {
+                                    <MudSelectItem T="string" Value="@item.School">@item.School</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </MudItem>
+                        <MudItem xs="12" sm="6" md="4">
+                            <MudSelect T="string" Label="Class" Dense="true" OffsetY="true" @bind-Value="@exam.ClassName"
+                                       SelectedValuesChanged="OnSelectedClassChanged" For="() => exam.ClassName">
+                                @foreach (var item in classGroups)
+                                {
+                                    <MudSelectItem T="string" Value="@item.ClassName">@item.ClassName</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </MudItem>
+                        @if (examid == 0)
+                        {
+                            @*<MudItem xs="12" sm="6" md="4">
+                                    <MudSelect T="string" Label="School" Dense="true" OffsetY="true" @bind-Value="@exam.School"
+                                               SelectedValuesChanged="OnSelectedSchoolChanged" For="() => exam.School">
+                                        @foreach (var item in schools)
+                                        {
+                                            <MudSelectItem T="string" Value="@item.School">@item.School</MudSelectItem>
+                                        }
+                                    </MudSelect>
+                                </MudItem>
+                                <MudItem xs="12" sm="6" md="4">
+                                    <MudSelect T="string" Label="Class" Dense="true" OffsetY="true" @bind-Value="@exam.ClassName"
+                                               SelectedValuesChanged="OnSelectedClassChanged" For="() => exam.ClassName">
+                                        @foreach (var item in classGroups)
+                                        {
+                                            <MudSelectItem T="string" Value="@item.ClassName">@item.ClassName</MudSelectItem>
+                                        }
+                                    </MudSelect>
+                                </MudItem>*@
+                            <MudItem xs="12" sm="6" md="4">
+                                <MudSelect T="string" Label="Subject" Dense="true" OffsetY="true" @bind-Value="@exam.Subject"
+                                           SelectedValuesChanged="OnSelectedSubjectChanged" For="() => exam.Subject">
+                                    @foreach (var item in subjects)
+                                    {
+                                        <MudSelectItem T="string" Value="@item.Subject">@item.Subject</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudItem>
+                        }
+                        else
+                        {
+                            @*<MudItem xs="12" sm="6" md="4">
+                                    <MudTextField Label="School" @bind-Value="@exam.School" For="() => exam.School" ReadOnly="true" />
+                                </MudItem>
+                                <MudItem xs="12" sm="6" md="4">
+                                    <MudTextField Label="Class" @bind-Value="@exam.ClassName" For="() => exam.ClassName" ReadOnly="true" />
+                                </MudItem>*@
+                            <MudItem xs="12" sm="6" md="4">
+                                <MudTextField Label="Subject" @bind-Value="@exam.Subject" For="() => exam.Subject" ReadOnly="true" />
+                            </MudItem>
+                        }
+                    </MudGrid>
+                    <MudGrid>
+                        <MudItem xs="12" sm="6" md="3">
+                            <MudTextField Label="Exam Code" @bind-Value="@exam.ExamCode" For="() => exam.ExamCode" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6" md="3">
+                            <MudTextField Label="Exam Name" @bind-Value="@exam.ExamName" For="() => exam.ExamName"
+                                          HelperText="Enter name of the Exam / Test / Certification" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6" md="3">
+                            <MudTextField Label="Pass Mark (%)" @bind-Value="@exam.PassingPercentage" Format="F1" For="() => exam.PassingPercentage" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6" md="3">
+                            <MudTextField Label="Exam Time (Mins)" @bind-Value="@exam.ExamTime" For="() => exam.ExamTime" />
+                        </MudItem>
+                    </MudGrid>
+                    <MudGrid>
+                        <MudItem xs="12" sm="6" md="12">
+                            <MudTextField Label="Exam Instruction" @bind-Value="@exam.ExamInstruction"
+                                          For="() => exam.ExamInstruction"
+                                          HelperText="Enter custom message or instructions to be displayed at the start of the examination" />
+                        </MudItem>
+                    </MudGrid>
+                    <MudGrid>
+                        <MudItem xs="12" sm="6" md="12">
+                            <MudCheckBox T="bool" Checked="@defaultExam" Color="Color.Tertiary"
+                                         CheckedChanged="@((bool value) => DefaultExamCheckBoxChanged(value))">
+                                Set As Default Exam
+                            </MudCheckBox>
+                        </MudItem>
+                    </MudGrid>
+                </MudCardContent>
+            </MudCard>
+        </EditForm>
+    </div>
+}
+else if (toolBarMenuId == 3)
+{
+    <div class="d-block pa-2 mr-5 ml-5">
+        <MudGrid>
+            <MudItem xs="12" sm="12" md="3">
+                <MudSelect T="string" Label="School" Strict="true" Dense="true" @bind-Value="selectedSchoolMonitor"
+                           SelectedValuesChanged="OnSelectedSchoolMonitorChanged">
+                    @foreach (var item in schoolsMonitor)
+                    {
+                        <MudSelectItem T="string" Value="@item.School">@item.School</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="3">
+                <MudSelect T="string" Label="Class" Strict="true" Dense="true" @bind-Value="selectedClassGroupMonitor"
+                           SelectedValuesChanged="OnSelectedClassGroupMonitorChanged">
+                    @foreach (var item in classGroupsMonitor)
+                    {
+                        <MudSelectItem T="string" Value="@item.ClassName">@item.ClassName</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="3">
+                <MudSelect T="string" Label="Class" Strict="true" Dense="true" @bind-Value="selectedClassMonitor"
+                           SelectedValuesChanged="OnSelectedClassMonitorChanged">
+                    @foreach (var item in classListMonitor)
+                    {
+                        <MudSelectItem T="string" Value="@item.ClassName">@item.ClassName</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="3">
+                <MudSelect T="string" Label="Subjects" Strict="true" Dense="true" @bind-Value="selectedSubjectMonitor"
+                           SelectedValuesChanged="OnSelectedSubjectViewChanged">
+                    @foreach (var item in examSubjectsMonitor)
+                    {
+                        <MudSelectItem T="string" Value="@item.Subject">@item.Subject</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+        </MudGrid>
+    </div>
+
+    <div class="d-block pa-2 mr-5 ml-5">
+        <MudTable Items="@studentCBTScoresMonitor" Elevation="20" Dense="true" Hover="true" Striped="true"
+                  Bordered="true" Breakpoint="Breakpoint.Sm">
+            <ToolBarContent>
+                <MudFab OnClick="StopWatch" Style="background-color: #00C853;" StartIcon="@Icons.Filled.Start" Label="Start Monitor" />
+                <MudSpacer />
+                <MudTooltip Text="Export CBT Result To Excel">
+                    <MudIconButton OnClick="ExportCBTResults" Icon="@Icons.Material.Filled.ImportExport" Color="Color.Success" />
+                </MudTooltip>
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh>S/N</MudTh>
+                <MudTh>Class</MudTh>
+                <MudTh>Admission No.</MudTh>
+                <MudTh>Student Name</MudTh>
+                <MudTh>Total Questions</MudTh>
+                <MudTh>Questions Answered</MudTh>
+                <MudTh>Correct Answers</MudTh>
+                <MudTh>Time Aloocated</MudTh>
+                <MudTh>Time Used</MudTh>
+                <MudTh>Score</MudTh>
+                <MudTh>View</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="S/N">@context.SN</MudTd>
+                <MudTd DataLabel="Class">@context.ClassName</MudTd>
+                <MudTd DataLabel="Admission No.">@context.AdmissionNo</MudTd>
+                <MudTd DataLabel="Student Name">@context.StudentName</MudTd>
+                <MudTd DataLabel="Total Questions">@context.NQuestions</MudTd>
+                <MudTd DataLabel="Questions Answered">@(context.NQuestions - context.NUnAnsQuestions)</MudTd>
+                <MudTd DataLabel="Correct Answers">@context.NCorrectAns</MudTd>
+                <MudTd DataLabel="Time Aloocated">@context.TimeAllocated</MudTd>
+                <MudTd DataLabel="Time Used">@context.TimeUsed</MudTd>
+                <MudTd DataLabel="Score">@context.ScorePercentage.ToString("#0.00")</MudTd>
+                <MudTd DataLabel="">
+                    <MudFab @onclick="@(()=>ViewSelectedStudentScore(@context.ExamID, context.STDID))" Color="Color.Primary" Icon="@Icons.Material.Filled.ViewModule" Size="Size.Small" IconSize="Size.Small" />
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    </div>
+
+    <div class="d-block pa-2 mr-5 ml-5">
+        <MudGrid>
+            <MudItem xs="12" sm="6" md="12">
+                <div Class="d-flex justify-center" style="visibility: @(_timerVisible ? "visible" : "hidden"); font-size: 20px;">
+                    @stopwatchvalue
+                </div>
+            </MudItem>
+        </MudGrid>
+    </div>
+}
+else if (toolBarMenuId == 4)
+{
+      <div class="d-block pa-2 mr-5 ml-5">
+            <MudGrid>
+            <MudItem xs="12" sm="12" md="3">
+                <MudSelect T="string" Label="School" Strict="true" Dense="true" @bind-Value="selectedSchool" HelperText="@schoolCountDisplay"
+                       SelectedValuesChanged="OnSchoolChanged">
+                    @foreach (var item in schools)
+                    {
+                        <MudSelectItem T="string" Value="@item.School">@item.School</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="3">
+                <MudSelect T="string" Label="Class" Strict="true" Dense="true" @bind-Value="selectedClass" HelperText="@classCountDisplay"
+                       SelectedValuesChanged="OnClassChanged">
+                    @foreach (var item in classGroups)
+                    {
+                        <MudSelectItem T="string" Value="@item.ClassName">@item.ClassName</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+            </MudGrid>
+      </div>
+
+       <div class="d-block pa-2 mr-5 ml-5">
+           <MudTable Items="@exams" Dense="true" Hover="true" Breakpoint="Breakpoint.Sm"
+                                  @bind-SelectedItem="selectedExam" CommitEditTooltip="Update"
+                                  OnCommitEditClick="@(() => SetDefaultExam())">
+            <HeaderContent>
+               @* <MudTh>Exam Date</MudTh>*@
+                <MudTh>Exam Code</MudTh>
+                <MudTh>Exam Name</MudTh>
+                <MudTh>Subject Teacher</MudTh>
+                <MudTh Style="text-align:center; width:20px;">Passing Percentage (%)</MudTh>
+                <MudTh Style="text-align:center; width:20px;">Exam Time (Mins)</MudTh>
+                <MudTh Style="text-align:center; width:20px;">Default</MudTh>
+                <MudTh></MudTh>
+            </HeaderContent>
+            <RowTemplate>
+               @* <MudTd DataLabel="Exam Date">@context.ExamDate?.ToString("dd-MMM-yyyy")</MudTd>*@
+                <MudTd DataLabel="Exam Code">@context.ExamCode</MudTd>
+                <MudTd DataLabel="Exam Name">@context.ExamName</MudTd>
+                <MudTd DataLabel="Subject Teacher">@context.SubjectTeacher</MudTd>
+                <MudTd DataLabel="Passing Percentage (%)" Style="text-align:center; width:20px;">@context.PassingPercentage.ToString("#0.00")</MudTd>
+                <MudTd DataLabel="Exam Time (Mins)" Style="text-align:center; width:20px;">@context.ExamTime</MudTd>
+                <MudTd DataLabel="Default" Style="text-align:center; width:20px;">
+                     @if (@context.ExamDefault)
+                     {
+                         <MudTd DataLabel="Default" Style="text-align:center; width:20px;">Yes</MudTd>
+                     }
+                     else
+                     {
+                         <MudTd DataLabel="Default" Style="text-align:center; width:20px;">No</MudTd>
+                     }
+                </MudTd>
+                <MudTh></MudTh>
+            </RowTemplate>
+            <RowEditingTemplate>
+                <MudTd DataLabel="Exam Code">
+                    <MudTextField @bind-Value="@context.ExamCode" />
+                </MudTd>
+                 <MudTd DataLabel="Exam Name">
+                    <MudTextField @bind-Value="@context.ExamName"/>
+                </MudTd>
+                <MudTd DataLabel="Subject Teacher">
+                    <MudTextField @bind-Value="@context.SubjectTeacher" ReadOnly/>
+                </MudTd>
+                <MudTd DataLabel="Passing Percentage (%)">
+                    <MudTextField @bind-Value="@context.PassingPercentage" />
+                </MudTd>
+                <MudTd DataLabel="Exam Time (Mins)">
+                    <MudTextField @bind-Value="@context.ExamTime" />
+                </MudTd>
+                 <MudTd DataLabel="Default">
+                    <MudCheckBox @bind-Checked="@context.ExamDefault"></MudCheckBox>
+                </MudTd>
+            </RowEditingTemplate>            
+            </MudTable>
+      </div>
+}
+else if (toolBarMenuId == 5)
+{
+     <div class="d-block pa-2 mr-5 ml-5">
+        <MudGrid>
+            <MudItem xs="12" sm="12" md="3">
+                <MudSelect T="string" Label="School" Strict="true" Dense="true" @bind-Value="selectSchoolExamTaken"
+                       SelectedValuesChanged="OnSchoolChangedExamTaken">
+                    @foreach (var item in schools)
+                    {
+                        <MudSelectItem T="string" Value="@item.School">@item.School</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="3">
+                <MudSelect T="string" Label="Class" Strict="true" Dense="true" @bind-Value="selectedClassExamTaken" 
+                       SelectedValuesChanged="OnClassChangedExamTaken">
+                    @foreach (var item in classList)
+                    {
+                        <MudSelectItem T="string" Value="@item.ClassName">@item.ClassName</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="6">
+                <MudSelect T="string" Label="Class" Strict="true" Dense="true" @bind-Value="slectedStudentExamTaken" 
+                        SelectedValuesChanged="OnStudentChangedExamTaken">
+                   @foreach (var item in students)
+                    {
+                        <MudSelectItem T="string" Value="@item.StudentNameWithNo">@item.StudentNameWithNo</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+        </MudGrid>
+      </div>
+
+       <div class="d-block pa-2 mr-5 ml-5">
+           <MudTable Items="@examTakenList" Dense="true" Hover="true" Breakpoint="Breakpoint.Sm"
+                                  @bind-SelectedItem="selectedSubject" CommitEditTooltip="Update"
+                                  OnCommitEditClick="@(() => ReleaseSelectedSubject())">
+            <HeaderContent>
+                <MudTh>Admission No.</MudTh>
+                <MudTh>Student Name</MudTh>
+                <MudTh>Subject</MudTh>
+                <MudTh Style="text-align:center; width:20px;">Lock</MudTh>
+                <MudTh></MudTh>
+            </HeaderContent>
+            <RowTemplate>
+               <MudTd DataLabel="Admission No.">@context.AdmissionNo</MudTd>
+                <MudTd DataLabel="Student Name">@context.StudentName</MudTd>
+                <MudTd DataLabel="Subject">@context.Subject</MudTd>
+                <MudTd DataLabel="Lock" Style="text-align:center; width:20px;">
+                     @if (@context.Flag)
+                     {
+                         <MudTd DataLabel="Default" Style="text-align:center; width:20px;">Yes</MudTd>
+                     }
+                     else
+                     {
+                         <MudTd DataLabel="Default" Style="text-align:center; width:20px;">No</MudTd>
+                     }
+                </MudTd>
+                <MudTh></MudTh>
+            </RowTemplate>
+            <RowEditingTemplate>
+                <MudTd DataLabel="Admission No.">
+                    <MudTextField @bind-Value="@context.AdmissionNo" ReadOnly/>
+                </MudTd>
+                 <MudTd DataLabel="Student Name">
+                    <MudTextField @bind-Value="@context.StudentName"/>
+                </MudTd>
+                <MudTd DataLabel="Subject">
+                    <MudTextField @bind-Value="@context.Subject" ReadOnly/>
+                </MudTd>
+                 <MudTd DataLabel="Lock">
+                    <MudCheckBox @bind-Checked="@context.Flag"></MudCheckBox>
+                </MudTd>
+            </RowEditingTemplate>            
+            </MudTable>
+      </div>
+
+}

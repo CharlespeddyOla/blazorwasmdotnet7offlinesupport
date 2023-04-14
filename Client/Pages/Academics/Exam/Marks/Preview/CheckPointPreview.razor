@@ -1,0 +1,101 @@
+﻿@page "/checkpointpreview"
+@using Newtonsoft.Json
+
+<div class="d-block pa-2 mr-5 ml-5">
+    <MudPaper Class="d-flex align-center flex-grow-1 gap-x-8" Elevation="20">
+        <MudTooltip Text="Refresh">
+            <MudIconButton OnClick="Refresh" Icon="@Icons.Material.Outlined.Refresh" Color="Color.Tertiary" />
+        </MudTooltip>
+    </MudPaper>
+</div>
+
+<div class="d-block pa-2 mr-5 ml-5">
+    <div class="container-fluid" hidden="@IsShow">
+        <MudText Typo="Typo.subtitle2" Color="Color.Inherit">
+            <b>@progressbarInfo @Math.Round(i)%</b>
+        </MudText>
+        <MudProgressLinear Color="Color.Info" Size="Size.Large" Value="@Convert.ToDouble(i)" Rounded="true" Striped="true">
+        </MudProgressLinear>
+    </div>
+</div>
+
+<div class="d-block pa-2 mr-5 ml-5">
+    <MudGrid>
+        <MudItem xs="12" sm="12" md="2">
+            <MudSelect T="string" Label="School" Strict="true" Dense="true" @bind-Value="selectedSchool"
+                       SelectedValuesChanged="OnSchoolChanged">
+                @foreach (var item in schools)
+                {
+                    <MudSelectItem T="string" Value="@item.School">@item.School</MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12" sm="12" md="2">
+            <MudSelect T="string" Label="Class" Strict="true" Dense="true" @bind-Value="selectedClass"
+                       SelectedValuesChanged="OnClassChanged">
+                @foreach (var item in classList)
+                {
+                    <MudSelectItem T="string" Value="@item.ClassName">@item.ClassName</MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem>
+    </MudGrid>
+</div>
+
+<div class="d-block pa-2 mr-5 ml-5">
+    <SpinLoader IsLoading="isLoading">
+        <LoadingTemplate>
+            <Wave Center="true" Color="#3498db" Size="150px"></Wave>
+            <div Class="d-flex justify-center">
+                <p style="font-size:16px;">@loadingmessage</p>
+            </div>
+        </LoadingTemplate>
+        <ContentTemplate>
+            @if (cognitiveMarks != null)
+            {
+                <MudCard Elevation="20">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">@SelectedPreviewType()</MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudSimpleTable Elevation="0" Hover="true" Dense="true" Striped="true" FixedHeader="@fixedheader" Style="@(fixedheader?"height:400px;":"")">
+                            <thead>
+                                <tr>
+                                    @foreach (var h in fieldnames)
+                                    {
+                                        if (h != "STDID")
+                                        {
+                                            <th>@h</th>
+                                        }
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in broadsheetMarkList)
+                                {
+                                    dynamic row = JsonConvert.DeserializeObject<dynamic>(item.ToString());
+                                    <tr>
+                                        @foreach (var col in fieldnames)
+                                        {
+                                            if (col != "STDID")
+                                            {
+                                                <td>@row[col]</td>
+                                            }
+                                        }
+                                    </tr>
+                                }
+                            </tbody>
+                        </MudSimpleTable>
+                    </MudCardContent>
+                </MudCard>
+
+            }
+            else
+            {
+                <span>No Data</span>
+            }
+        </ContentTemplate>
+    </SpinLoader>
+</div>

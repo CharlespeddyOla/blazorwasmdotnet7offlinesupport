@@ -1,0 +1,50 @@
+﻿@page "/studentresults"
+
+
+<div class="d-block pa-2 mr-5 ml-5">
+    <MudPaper Class="d-flex justify-start flex-grow-1 gap-4" Elevation="20">
+        <div>
+            <MudTooltip Text="Go Back To Result Checker Login Page">
+                <MudButton OnClick="GoBack" StartIcon="@Icons.Material.Outlined.Logout" Color="Color.Success" Size="Size.Large">Log Out</MudButton>
+            </MudTooltip>
+        </div>
+        <div>
+            @if (resulttermid > 0)
+            {
+                <MudText Typo="Typo.subtitle1" Class="ml-5">
+                    @_studentName [@_admissionNo]: @_academicTerm Result(s)
+                </MudText>
+            }
+            else
+            {
+                <MudText Typo="Typo.subtitle1" Class="ml-5">
+                    @_studentName [@_admissionNo]
+                </MudText>
+            }
+        </div>
+    </MudPaper>
+</div>
+
+<div class="d-block pa-2 mr-5 ml-5">
+    <MudGrid>
+        <MudItem xs="12" sm="12" md="4">
+            <MudSelect T="string" Label="Please Select A Result To Preview" Strict="true" Dense="true" @bind-Value="selectedResult"
+                       SelectedValuesChanged="OnResultsChanged">
+                @foreach (var item in _resultModel.OrderBy(r => r.ResultTypeId))
+                {
+                    <MudSelectItem T="string" Value="@item.ResultType">@item.ResultType</MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem>
+    </MudGrid>
+</div>
+
+<div class="d-block pa-2 mr-5 ml-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="card h-300">
+                <div id="iframeId"></div>
+            </div>
+        </div>
+    </div>
+</div>

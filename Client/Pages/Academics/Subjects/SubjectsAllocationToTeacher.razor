@@ -1,0 +1,272 @@
+﻿@page "/subjectsallocationtoteacher"
+@inject ISnackbar Snackbar
+
+<AuthorizeView Roles="Administrator">
+    <Authorized Context="admin">
+
+<div class="d-block pa-2 mr-5 ml-5">
+    <MudPaper Class="d-flex align-center flex-grow-1 gap-x-8" Elevation="20">
+         <MudGrid>
+            <MudItem xs="12" sm="12" md="3">
+                <MudTooltip Text="Allocate Subjects To Teachers">
+                    <MudIconButton OnClick="AllocateSubjectsToTeachers" Icon="@Icons.Material.Outlined.LibraryAdd" Color="Color.Success" />
+                </MudTooltip>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="3">
+                <MudTooltip Text="Subject Allocation List For Teachers">
+                    <MudIconButton OnClick="TeachersAllocationEvent" Icon="@Icons.Material.Filled.FormatLineSpacing" Color="Color.Success" />
+                </MudTooltip>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="3">
+                <MudTooltip Text="Save">
+                <MudButton OnClick="Save" Disabled="@disableSaveButton" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Success" Size="Size.Large">Save</MudButton>
+            </MudTooltip>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="3">
+                        @if (calendarid > 1)
+                        {
+                         <MudTooltip Text="Import Subject Allocations from Previous Term">
+                                <MudIconButton OnClick="StartImport" Icon="@Icons.Material.Outlined.ImportContacts" Color="Color.Success" />
+                            </MudTooltip>
+                        }
+            </MudItem>               
+        </MudGrid>
+    </MudPaper>
+</div>
+
+<div class="d-block pa-2 mr-5 ml-5">
+    <div class="container-fluid" hidden="@IsShow">
+        <MudText Typo="Typo.subtitle2" Color="Color.Inherit">
+            <b>@progressbarInfo @Math.Round(i)%</b>
+        </MudText>
+        <MudProgressLinear Color="Color.Info" Size="Size.Large" Value="@Convert.ToDouble(i)" Rounded="true" Striped="true">
+        </MudProgressLinear>
+    </div>
+</div>
+
+        @if (toolBarMenuId == 1)
+        {
+         <div class="d-block pa-2 mr-5 ml-5">
+            <MudAlert OnClick="StartProcess" Severity="Severity.Info" Variant="Variant.Filled" Square="true" Class="my-2">
+                Please, Click here to load allocated subjects to students.
+            </MudAlert>
+        </div>
+
+        <div class="d-block pa-2 mr-5 ml-5">
+                @if (_processing)
+                {
+                    <MudAlert Severity="Severity.Normal" Variant="Variant.Filled">
+                        @timerDisplay @stopwatchvalue
+                    </MudAlert>
+                }
+        </div>
+
+        <div class="d-block pa-2 mr-5 ml-5">
+            <MudGrid>
+                <MudItem xs="12" sm="12" md="2">
+                    <MudSelect T="string" Label="School" Strict="true" Dense="true" @bind-Value="selectedSchool" HelperText="@schoolCountDisplay"
+                           SelectedValuesChanged="OnSelectedSchoolChanged">
+                            @foreach (var item in schools)
+                            {
+                                <MudSelectItem T="string" Value="@item.School">@item.School</MudSelectItem>
+                            }
+                    </MudSelect>
+                </MudItem>
+                <MudItem xs="12" sm="12" md="2">
+                    <MudSelect T="string" Label="Class Group" Strict="true" Dense="true" @bind-Value="selectedclassGroup" HelperText="@classGroupCountDisplay"
+                           SelectedValuesChanged="OnSelectedClassGroupChanged">
+                            @foreach (var item in classGroups)
+                            {
+                                <MudSelectItem T="string" Value="@item.SchClass">@item.SchClass</MudSelectItem>
+                            }
+                    </MudSelect>
+                </MudItem>
+                <MudItem xs="12" sm="12" md="2">
+                    <MudSelect T="string" Label="Class" Strict="true" Dense="true" @bind-Value="selectedClass" HelperText="@classCountDisplay"
+                           SelectedValuesChanged="OnSelectedClassChanged">
+                            @foreach (var item in classList)
+                            {
+                                <MudSelectItem T="string" Value="@item.ClassName">@item.ClassName</MudSelectItem>
+                            }
+                    </MudSelect>
+                </MudItem>
+                <MudItem xs="12" sm="12" md="4">
+                        @*<MudAutocomplete T="string" Label="US States" @bind-Value="value1" SearchFunc="@TeachersAutoCompleteAllocations"
+                    ResetValueOnEmptyText="false" CoerceText="false" CoerceValue="false" />*@
+                    <MudSelect T="string" Label="Teachers" Dense="true" @bind-Value="selectedTeacher" HelperText="@teacherCountDisplay"
+                           SelectedValuesChanged="OnSelectedTeacherChanged">
+                            @foreach (var item in staffs)
+                            {
+                                <MudSelectItem T="string" Value="@item.StaffNameWithNo">@item.StaffNameWithNo</MudSelectItem>
+                            }
+                    </MudSelect>
+                </MudItem>
+                <MudItem xs="12" sm="12" md="2">
+                    <MudSelect T="string" Label="Allocation" Dense="true" @bind-Value="selectedStatusType" HelperText="@statusTypeCountDisplay"
+                           SelectedValuesChanged="OnSelectedStatusTypeChanged">
+                            @foreach (var item in statusType)
+                            {
+                                <MudSelectItem T="string" Value="@item.StatusType">@item.StatusType</MudSelectItem>
+                            }
+                    </MudSelect>
+                </MudItem>
+            </MudGrid>
+        </div>
+
+        <div class="d-block pa-2 mr-5 ml-5">
+            <MudTable Items="@subjectAllocations" Elevation="20" Dense="true" Hover="true" Striped="true"
+                  @bind-SelectedItem="selectedItem" CommitEditTooltip="Update" OnCommitEditClick="@(() => UpdateEntry())"
+                  Filter="new Func<ACDSbjAllocationTeachers,bool>(FilterFunc)" Breakpoint="Breakpoint.Sm">
+                <ToolBarContent>
+                    <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                    <MudSpacer />
+                </ToolBarContent>
+                <HeaderContent>
+                    <MudTh>S/N</MudTh>
+                    <MudTh>Code</MudTh>
+                    <MudTh>Subject</MudTh>
+                    <MudTh>Teacher</MudTh>
+                    <MudTh>School</MudTh>
+                    <MudTh>Class Group</MudTh>
+                    <MudTh>Class</MudTh>
+                    <MudTh Style="text-align:center; width:20px;">Allocated</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTh DataLabel="S/N"> @context.SN</MudTh>
+                    <MudTh DataLabel="Code"> @context.SubjectCode</MudTh>
+                    <MudTh DataLabel="Subject"> @context.Subject</MudTh>
+                    <MudTd DataLabel="Teacher">@context.SubjectTeacher</MudTd>
+                    <MudTh DataLabel="School"> @context.School</MudTh>
+                    <MudTh DataLabel="Class Group"> @context.ClassGroupName</MudTh>
+                    <MudTh DataLabel="Class"> @context.ClassName</MudTh>
+                        @if (@context.SbjSelection)
+                        {
+                            <MudTd DataLabel="Allocated" Style="text-align:center; width:20px;">Yes</MudTd>
+                        }
+                        else
+                        {
+                            <MudTd DataLabel="Allocated" Style="text-align:center; width:20px;">No</MudTd>
+                        }
+                </RowTemplate>
+                <RowEditingTemplate>
+                    <MudTh DataLabel="S/N"> @context.SN</MudTh>
+                    <MudTh DataLabel="Code"> @context.SubjectCode</MudTh>
+                    <MudTh DataLabel="Subject"> @context.Subject</MudTh>
+                    <MudTd DataLabel="">
+                        <MudSelect T="string" Margin="Margin.Dense" Dense="true" @bind-Value="@context.SubjectTeacher" DisableUnderLine="true">
+                                @foreach (var item in staffs)
+                                {
+                                    <MudSelectItem T="string" Value="@item.StaffInitialsWithNo">@item.StaffInitialsWithNo</MudSelectItem>
+                                }
+                        </MudSelect>
+                    </MudTd>
+                    <MudTh DataLabel="School"> @context.School</MudTh>
+                    <MudTh DataLabel="Class Group"> @context.ClassGroupName</MudTh>
+                    <MudTh DataLabel="Class"> @context.ClassName</MudTh>
+                    <MudTd DataLabel="Allocated" Style="text-align:center; width:20px;">
+                        <MudCheckBox @bind-Checked="@context.SbjSelection"></MudCheckBox>
+                    </MudTd>
+                </RowEditingTemplate>
+                <PagerContent>
+                    <MudTablePager RowsPerPageString="No. of Rows" />
+                </PagerContent>
+            </MudTable>
+        </div>
+        }
+        else if (toolBarMenuId == 2)
+        {
+        <div class="d-block pa-2 mr-5 ml-5">
+            <MudCard Elevation="20">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Teachers Subjects Allocation</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudGrid>
+                        <MudItem xs="12" sm="12" md="4">
+                            <MudSelect T="string" Label="School" Strict="true" Dense="true" @bind-Value="selectedSchoolAllocation"
+                                   SelectedValuesChanged="OnSchoolChanged">
+                                    @foreach (var item in _schools)
+                                    {
+                                        <MudSelectItem T="string" Value="@item.School">@item.School</MudSelectItem>
+                                    }
+                            </MudSelect>
+                        </MudItem>
+                        <MudItem xs="12" sm="12" md="4">
+                            <MudSelect T="string" Label="Subject Classification" Dense="true" @bind-Value="selectedSubjectClassification"
+                                   SelectedValuesChanged="OnSubjectClassChanged">
+                                    @foreach (var item in _subjectsClassifications)
+                                    {
+                                        <MudSelectItem T="string" Value="@item.SbjClassification">@item.SbjClassification</MudSelectItem>
+                                    }
+                            </MudSelect>
+                        </MudItem>
+                        <MudItem xs="12" sm="12" md="4">
+                                @if (sbjclassid == 1)
+                                {
+                                    <MudSelect T="string" Label="Teachers" Dense="true" @bind-Value="selectedStaffAllocation">
+                                        @foreach (var item in _staffs)
+                                        {
+                                                <MudSelectItem T="string" Value="@item.StaffNameWithNo">@item.StaffNameWithNo</MudSelectItem>
+                                        }
+                                    </MudSelect>
+                                }
+                                else
+                                {
+                                    <MudTextField Label="Selected Class Teacher" @bind-Value="@selectedClassTeacher" ReadOnly="true" />
+                                }
+                        </MudItem>
+                    </MudGrid>
+
+                    <MudGrid>
+                        <MudItem xs="12" sm="12" md="12">
+                                @if (sbjclassid == 1)
+                                {
+                                    <MudSelect T="string" Label="Class" Dense="true" MultiSelection="true" SelectAll="true" @bind-Value="selectedClassAllocation"
+                                       @bind-SelectedValues="_selectedClasses">
+                                        @foreach (var item in _classList)
+                                        {
+                                                <MudSelectItem T="string" Value="@item.ClassName">@item.ClassName</MudSelectItem>
+                                        }
+                                    </MudSelect>
+                                }
+                                else if (sbjclassid > 1)
+                                {
+                                    <MudSelect T="string" Label="Class" Strict="true" Dense="true" @bind-Value="selectedClassTeacherAllocation"
+                                       SelectedValuesChanged="OnClassChanged">
+                                        @foreach (var item in _classList)
+                                        {
+                                                <MudSelectItem T="string" Value="@item.ClassName">@item.ClassName</MudSelectItem>
+                                        }
+                                    </MudSelect>
+                                }
+                        </MudItem>
+                    </MudGrid>
+
+                    <MudGrid>
+                        <MudItem xs="12" sm="12" md="12">
+                                @if (sbjclassid != 0)
+                                {
+                                    <MudSelect T="string" Label="Subject" Dense="true" MultiSelection="true" SelectAll="true" @bind-Value="selectedSubject"
+                                       @bind-SelectedValues="_selectedSubjects">
+                                        @foreach (var item in _subjects)
+                                        {
+                                                <MudSelectItem T="string" Value="@item.Subject">@item.Subject</MudSelectItem>
+                                        }
+                                    </MudSelect>
+                                }
+                        </MudItem>                   
+                    </MudGrid>
+                </MudCardContent>
+            </MudCard>
+        </div>
+        }
+    </Authorized>
+    <NotAuthorized>
+        <div class="ma-10">
+            <p style="font-size:20px;">You Do Not Have Permission To Access This Page</p>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>

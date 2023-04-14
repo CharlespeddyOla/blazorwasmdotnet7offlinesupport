@@ -1,0 +1,43 @@
+﻿using Microsoft.AspNetCore.Components;
+using MudBlazor;
+
+namespace WebAppAcademics.Client.Shared
+{
+    public partial class AppBarResultChecker
+    {
+        #region [App Bar Declaration]
+        private bool _isLightMode = false;
+        private MudTheme _currentTheme = new();
+
+        [Parameter] public EventCallback<MudTheme> OnThemeToggled { get; set; }
+
+        private async Task ToggleTheme()
+        {
+            _isLightMode = !_isLightMode;
+
+            _currentTheme = !_isLightMode ? GenerateDarkTheme() : new MudTheme();
+
+            await OnThemeToggled.InvokeAsync(_currentTheme);
+        }
+
+        private MudTheme GenerateDarkTheme() =>
+            new()
+            {
+                Palette = new Palette()
+                {
+                    Black = "#27272f",
+                    Background = "#32333d",
+                    BackgroundGrey = "#27272f",
+                    Surface = "#373740",
+                    TextPrimary = "#ffffffb3",
+                    TextSecondary = "rgba(255,255,255, 0.50)",
+                    AppbarBackground = "#27272f",
+                    AppbarText = "#ffffffb3",
+                    DrawerBackground = "#27272f",
+                    DrawerText = "#ffffffb3",
+                    DrawerIcon = "#ffffffb3"
+                }
+            };
+        #endregion
+    }
+}

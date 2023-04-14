@@ -1,0 +1,487 @@
+﻿@page "/staffs"
+
+<AuthorizeView Roles="Administrator, Secretary">
+    <Authorized Context="admin">
+        <div class="d-block pa-2 mr-5 ml-5">
+            <MudPaper Class="d-flex align-center flex-grow-1 gap-x-8" Elevation="20">
+                <MudGrid>
+            <MudItem xs="12" sm="12" md="3">
+                 <MudTooltip Text="Staff List">
+                        <MudIconButton OnClick="StaffListEvent" Icon="@Icons.Material.Outlined.FormatLineSpacing" Color="Color.Success" />
+                    </MudTooltip>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="3">
+                 <MudTooltip Text="Add A New Staff">
+                        <MudIconButton OnClick="AddNewStaff" Icon="@Icons.Material.Outlined.LibraryAdd" Color="Color.Success" />
+                    </MudTooltip>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="3">
+                 <MudTooltip Text="Save">
+                        <button type="submit" form="@editFormId">
+                            <MudButton Disabled="@disableSaveButton" StartIcon="@Icons.Material.Outlined.Save"
+                                       Color="Color.Success" Size="Size.Large">@buttontitle</MudButton>
+                                </button>
+                            </MudTooltip>
+            </MudItem>
+           @* <MudItem xs="12" sm="12" md="3">
+                 <MudTooltip Text="Export To Exel">
+                                <MudButton StartIcon="@Icons.Material.Outlined.ImportExport" Color="Color.Success" Size="Size.Large">Export</MudButton>
+                            </MudTooltip>
+            </MudItem>   *@            
+        </MudGrid>                 
+        </MudPaper>
+    </div>    
+    </Authorized>
+    <NotAuthorized>
+        <div class="ma-10">
+            <p style="font-size:20px;">You Do Not Have Permission To Access This Page</p>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@if (toolBarMenuId == 1)
+{
+    <div class="d-block pa-2  mr-5 ml-5">
+        <MudGrid>
+            <MudItem xs="12" sm="12" md="3">
+                <MudSelect T="string" Label="Department" Strict="true" Dense="true" @bind-Value="selectedDepartment" HelperText="@deptCountDisplay"
+                       SelectedValuesChanged="OnSelectedDeptChanged">
+                    @foreach (var item in deptlist)
+                    {
+                        <MudSelectItem T="string" Value="@item.EmployeeGroup">@item.EmployeeGroup</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="3">
+                <MudSelect T="string" Label="Job Type" Strict="true" Dense="true" @bind-Value="selectedJobType" HelperText="@jobTypeCountDisplay"
+                       SelectedValuesChanged="OnSelectedJobTypeChanged">
+                    @foreach (var item in jobtypelist)
+                    {
+                        <MudSelectItem T="string" Value="@item.JobType">@item.JobType</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="3">
+                <MudSelect T="string" Label="Status Type" Dense="true" @bind-Value="selectedStatusType" HelperText="@statusTypeCountDisplay"
+                       SelectedValuesChanged="OnSelectedStatusTypeChanged">
+                    @foreach (var item in statusTypeList)
+                    {
+                        <MudSelectItem T="string" Value="@item.StatusType">@item.StatusType</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="3">
+                <MudCheckBox T="bool" Checked="@birthdayreminder" Color="Color.Tertiary" CheckedChanged="@((bool value) => CheckBoxChanged(value))">
+                    @checkboxtitle
+                </MudCheckBox>
+            </MudItem>
+        </MudGrid>
+    </div>
+
+    <div class="d-block pa-2  mr-5 ml-5">
+        <MudTable Elevation="20" Items="@stafflist" Dense="true" Hover="true" Filter="new Func<ADMEmployee,bool>(FilterFunc)" Breakpoint="Breakpoint.Sm" SortLabel="Sort By">
+            <ToolBarContent>
+                <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search"
+                          IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                <MudSpacer />
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh><MudTableSortLabel SortBy="new Func<ADMEmployee, object>(x=>x.StaffNo)">Staff No.</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<ADMEmployee, object>(x=>x.StaffName)">Staff Name</MudTableSortLabel></MudTh>
+                <MudTh>Phone No.</MudTh>
+                <MudTh>DOB</MudTh>
+                <MudTh>DOE</MudTh>
+                <MudTh>YOS</MudTh>
+                <MudTh>Department</MudTh>
+                <MudTh>Photo</MudTh>
+                <MudTh>Edit</MudTh>
+                <MudTh>Delete</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Staff No.">@context.StaffNo</MudTd>
+                <MudTd DataLabel="Staff Name">@context.StaffName</MudTd>
+                <MudTd DataLabel="Phone No.">@context.PhoneNos</MudTd>
+                <MudTd DataLabel="DOB">@context.BirthDate?.ToString("dd-MMM-yyyy")</MudTd>
+                <MudTd DataLabel="DOE">@context.HireDate?.ToString("dd-MMM-yyyy")</MudTd>
+                <MudTd DataLabel="YOS">
+                    @{
+                        var date = (context as ADMEmployee)?.HireDate;
+
+                        if (date != null)
+                        {
+                            @(DateTime.Now.Year - date.Value.Year)
+                        }
+                    }
+                </MudTd>
+                <MudTd DataLabel="Department">@context.EmployeeGroup</MudTd>
+                <MudTd DataLabel="">
+                    @{
+                        var photo = (context as ADMEmployee);
+                        if (photo.employeePicture == null)
+                        {
+                            <MudAvatar Image="images/defaultphoto.png" Style="height:96px; width:96px;" Class="ma-2" />
+                        }
+                        else
+                        {
+                            string imgSrc = String.Format("data:image/png;base64,{0}", Convert.ToBase64String(photo.employeePicture, 0, photo.employeePicture.Length));
+                            <MudAvatar Image="@imgSrc" Style="height:96px; width:96px;" Class="ma-2" />
+                        }
+                    }
+                </MudTd>
+                <AuthorizeView Roles="Administrator, Secretary">
+                    <Authorized Context="admin">
+                        <MudTd DataLabel="Edit">
+                            <MudFab @onclick="@(()=>UpdateStaffDetails(@context.StaffID))" Color="Color.Primary" Icon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small" />
+                        </MudTd>
+                        <MudTd DataLabel="Delete">
+                            <MudFab @onclick="@(()=>DeleteStaff(@context.StaffID))" Color="Color.Primary" Icon="@Icons.Material.Filled.Delete" Size="Size.Small" IconSize="Size.Small" />
+                        </MudTd>
+                    </Authorized>
+                </AuthorizeView>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+        @* <SpinLoader IsLoading="isLoading">
+    <LoadingTemplate>
+    <Wave Center="true" Color="#3498db" Size="150px"></Wave>
+    <div Class="d-flex justify-center">
+    <p style="font-size:16px;">Please wait, while loading...</p>
+    </div>
+    </LoadingTemplate>
+    <ContentTemplate>
+    @if (stafflist != null)
+    {
+
+    }
+    else
+    {
+    <span>No Data</span>
+    }
+    </ContentTemplate>
+    </SpinLoader>*@
+    </div>
+}
+else @if (toolBarMenuId == 2)
+{
+    <div class="d-block pa-2 mr-5 ml-5">
+        <EditForm id="@editFormId" Model="@staffdetails" OnValidSubmit="@SubmitValidForm" OnInvalidSubmit="@InvalidEntries">
+            <FluentValidationValidator />
+            <MudCard Elevation="20">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">@pagetitle</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudGrid>
+                        <MudItem xs="12" sm="6" md="12">
+                            <div class="py-4 px-6 mx-4 rounded-tl-xl" style="border:1px solid;">
+                                <MudGrid>
+                                    <MudItem xs="12" sm="6" md="2">
+                                        <MudNumericField Label="Staff No." @bind-Value="@staffdetails.EmployeeID" Variant="Variant.Text"
+                                                     Margin="Margin.Dense" For="() => staffdetails.EmployeeID" />
+                                    </MudItem>
+                                    <MudItem xs="12" sm="6" md="3">
+                                        <MudSelect T="string" Label="Department" Dense="true" OffsetY="true" @bind-Value="@staffdetails.EmployeeGroup"
+                                               SelectedValuesChanged="OnDepartmentChange" For="() => staffdetails.EmployeeGroup">
+                                            @foreach (var item in deptlist)
+                                            {
+                                                <MudSelectItem T="string" Value="@item.EmployeeGroup">@item.EmployeeGroup</MudSelectItem>
+                                            }
+                                        </MudSelect>
+                                    </MudItem>
+                                    <MudItem xs="12" sm="6" md="3">
+                                        <MudSelect T="string" Label="Job Type" Dense="true" OffsetY="true" @bind-Value="@staffdetails.JobType"
+                                               SelectedValuesChanged="OnJobTypeChange" For="() => staffdetails.JobType">
+                                            @foreach (var item in jobtypelist)
+                                            {
+                                                <MudSelectItem T="string" Value="@item.JobType">@item.JobType</MudSelectItem>
+                                            }
+                                        </MudSelect>
+                                    </MudItem>
+                                    <MudItem xs="12" sm="6" md="3">
+                                        <MudElement>
+                                            Staff Status
+                                            <MudCheckBox T="bool" Checked="@staffStatus" Color="Color.Tertiary" Disabled="@disableControl"
+                                                     CheckedChanged="@((bool value) => CheckBoxChangedDetails(value))">
+                                                @_checkboxtitle
+                                            </MudCheckBox>
+                                        </MudElement>
+                                    </MudItem>
+                                </MudGrid>
+                            </div>
+                        </MudItem>
+                    </MudGrid>
+
+                    <MudGrid>
+                        <MudItem xs="12" sm="6" md="12">
+                            <div class="py-4 px-6 mx-4 rounded-tl-xl" style="border:1px solid;">
+                                <MudGrid Spacing="1" Justify="Justify.Center">
+                                    <MudItem xs="12" sm="6" md="2">
+                                        <div class="d-block pa-0 justify-center">
+                                            @if (staffid != 0)
+                                            {
+                                                <img src="@imgSrc" id="image" width="150" height="150" style="border:1px solid #000000;margin-top:10px " />
+                                            }
+                                            else
+                                            {
+                                                if (file != null)
+                                                {
+                                                    <img src="@imgSrc" id="image" width="150" height="150" style="border:1px solid #000000;margin-top:10px " />
+                                                }
+                                                else
+                                                {
+                                                    <img src="assets/defaultphoto.png" id="image" width="150" height="150" style="border:1px solid #000000;margin-top:10px " />
+                                                }
+                                            }
+                                        </div>
+                                        <div class="d-block pa-0 justify-center">
+                                            <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Filled.Image" for="fileInput"
+                                                   OnClick="StaffPhotoSelected" Style="width:150px">Photo</MudButton>
+                                        </div>
+                                        <div class="d-block pa-0 justify-center mt-1">
+                                            <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Info" StartIcon="@Icons.Filled.Image" for="fileInput"
+                                                   OnClick="SignatureImageSelected" Style="width:150px">Signature</MudButton>
+                                        </div>
+                                        <div class="d-block pa-0 justify-center mt-1">
+                                            <MudChip Color="Color.Info" Size="Size.Small" OnClick="OpenDialog">View Signature</MudChip>
+                                        </div>
+                                    </MudItem>
+                                    <MudItem xs="12" sm="6" md="10">
+
+                                        <MudGrid>
+                                            <MudItem xs="12" sm="6" md="4">
+                                                <MudTextField Label="Surname" @bind-Value="@staffdetails.Surname" For="() => staffdetails.Surname" />
+                                            </MudItem>
+                                            <MudItem xs="12" sm="6" md="4">
+                                                <MudTextField Label="First Name" @bind-Value="@staffdetails.FirstName" For="() => staffdetails.FirstName" />
+                                            </MudItem>
+                                            <MudItem xs="12" sm="6" md="4">
+                                                <MudTextField Label="Other Name" @bind-Value="@staffdetails.MiddleName" />
+                                            </MudItem>
+                                        </MudGrid>
+
+                                        <MudGrid>
+                                            <MudItem xs="12" sm="6" md="4">
+                                                <MudTextField Label="Phone No." @bind-Value="@staffdetails.PhoneNos" For="() => staffdetails.PhoneNos" />
+                                            </MudItem>
+                                            <MudItem xs="12" sm="6" md="4">
+                                                <MudTextField Label="Alternate Phone No." @bind-Value="@staffdetails.PhoneNosAlternate" />
+                                            </MudItem>
+                                            <MudItem xs="12" sm="6" md="4">
+                                                <MudTextField Label="Email" @bind-Value="@staffdetails.Email" For="() => staffdetails.Email" />
+                                            </MudItem>
+                                        </MudGrid>
+
+                                        <MudGrid>
+                                            <MudItem xs="12" sm="6" md="4">
+                                                <MudSelect T="string" Label="Gender" Dense="true" OffsetY="true" @bind-Value="@staffdetails.Gender"
+                                                       SelectedValuesChanged="OnGenderChange" For="() => staffdetails.Gender">
+                                                    @foreach (var item in gender)
+                                                    {
+                                                        <MudSelectItem T="string" Value="@item.Gender">@item.Gender</MudSelectItem>
+                                                    }
+                                                </MudSelect>
+                                            </MudItem>
+                                            <MudItem xs="12" sm="6" md="4">
+                                                <MudDatePicker Label="Date of Birth" PickerVariant="PickerVariant.Dialog" DateFormat="dd-MMM-yyyy" @bind-Date="@staffdetails.BirthDate"
+                                                           For="() => staffdetails.BirthDate" />
+                                            </MudItem>
+                                            <MudItem xs="12" sm="6" md="4">
+                                                <MudDatePicker Label="Date of Empolyment" PickerVariant="PickerVariant.Dialog" DateFormat="dd-MMM-yyyy" @bind-Date="@staffdetails.HireDate"
+                                                           For="() => staffdetails.HireDate" />
+                                            </MudItem>
+                                        </MudGrid>
+
+                                        <MudGrid>
+                                            <MudItem xs="12" sm="6" md="12">
+                                                <MudTextField Label="Address" @bind-Value="@staffdetails.EmployeeAddr" For="() => staffdetails.EmployeeAddr" />
+                                            </MudItem>
+                                        </MudGrid>
+
+                                    </MudItem>
+                                </MudGrid>
+                            </div>
+                        </MudItem>
+                    </MudGrid>
+
+                    <MudGrid>
+                        <MudItem xs="12" sm="6" md="12">
+                            <div class="py-4 px-6 mx-4 rounded-tl-xl" style="border:1px solid;">
+                                <MudGrid>
+                                    <MudItem xs="12" sm="6" md="3">
+                                        <MudTextField Label="Job Title" @bind-Value="@staffdetails.JobTitle" For="() => staffdetails.JobTitle" />
+                                    </MudItem>
+                                    <MudItem xs="12" sm="6" md="9">
+                                        <MudTextField Label="Qualification" @bind-Value="@staffdetails.Qualification" For="() => staffdetails.Qualification" />
+                                    </MudItem>
+                                </MudGrid>
+
+                                <MudGrid>
+                                    <MudItem xs="12" sm="6" md="4">
+                                        <MudSelect T="string" Label="Title" Dense="true" OffsetY="true" @bind-Value="@staffdetails.Title"
+                                               SelectedValuesChanged="OnTitleChange" For="() => staffdetails.Title">
+                                            @foreach (var item in titles)
+                                            {
+                                                <MudSelectItem T="string" Value="@item.Title">@item.Title</MudSelectItem>
+                                            }
+                                        </MudSelect>
+                                    </MudItem>
+                                    <MudItem xs="12" sm="6" md="4">
+                                        <MudSelect T="string" Label="Marital Status" Dense="true" OffsetY="true" @bind-Value="@staffdetails.MStatus"
+                                               SelectedValuesChanged="OnMaritalStatusChange" For="() => staffdetails.MStatus">
+                                            @foreach (var item in maritalstatus)
+                                            {
+                                                <MudSelectItem T="string" Value="@item.MStatus">@item.MStatus</MudSelectItem>
+                                            }
+                                        </MudSelect>
+                                    </MudItem>
+                                    <MudItem xs="12" sm="6" md="4">
+                                        <MudSelect T="string" Label="Religion" Dense="true" OffsetY="true" @bind-Value="@staffdetails.Religion"
+                                               SelectedValuesChanged="OnReligionChanged" For="() => staffdetails.Religion">
+                                            @foreach (var item in religion)
+                                            {
+                                                <MudSelectItem T="string" Value="@item.Religion">@item.Religion</MudSelectItem>
+                                            }
+                                        </MudSelect>
+                                    </MudItem>
+                                </MudGrid>
+
+                                <MudGrid>
+                                    <MudItem xs="12" sm="6" md="4">
+                                        <MudTextField Label="National Identificaction Number (NIN)" @bind-Value="@staffdetails.NationalID" />
+                                    </MudItem>
+                                    <MudItem xs="12" sm="6" md="4">
+                                        <MudTextField Label="Pension Number" @bind-Value="@staffdetails.PensionID" />
+                                    </MudItem>
+                                    <MudItem xs="12" sm="6" md="4">
+                                        <MudTextField Label="Health Insurance Number" @bind-Value="@staffdetails.HealthInsureNo" />
+                                    </MudItem>
+                                </MudGrid>
+
+                                <MudGrid>
+                                    <MudItem xs="12" sm="6" md="4">
+                                        <MudSelect T="string" Label="Country" Dense="true" OffsetY="true" @bind-Value="@staffdetails.Country"
+                                               SelectedValuesChanged="OnCountryChanged" For="() => staffdetails.Country">
+                                            @foreach (var item in country)
+                                            {
+                                                <MudSelectItem T="string" Value="@item.Country">@item.Country</MudSelectItem>
+                                            }
+                                        </MudSelect>
+                                    </MudItem>
+                                    <MudItem xs="12" sm="6" md="4">
+                                        <MudSelect T="string" Label="State" Dense="true" OffsetY="true" @bind-Value="@staffdetails.State"
+                                               SelectedValuesChanged="OnStateChanged" For="() => staffdetails.State">
+                                            @foreach (var item in states)
+                                            {
+                                                <MudSelectItem T="string" Value="@item.State">@item.State</MudSelectItem>
+                                            }
+                                        </MudSelect>
+                                    </MudItem>
+                                    <MudItem xs="12" sm="6" md="4">
+                                        <MudSelect T="string" Label="Local Govertment Area" Dense="true" OffsetY="true" @bind-Value="@staffdetails.LGA"
+                                               SelectedValuesChanged="OnLGAChanged" For="() => staffdetails.LGA">
+                                            @foreach (var item in lgas)
+                                            {
+                                                <MudSelectItem T="string" Value="@item.LGA">@item.LGA</MudSelectItem>
+                                            }
+                                        </MudSelect>
+                                    </MudItem>
+                                </MudGrid>
+
+                                <MudGrid>
+                                    <MudItem xs="12" sm="6" md="12">
+                                        <MudItem xs="12" sm="6" md="12">
+                                            <MudTextField Label="Memo" @bind-Value="@staffdetails.Memo" Variant="Variant.Outlined" Lines="6" />
+                                        </MudItem>
+                                    </MudItem>
+                                </MudGrid>
+                            </div>
+                        </MudItem>
+                    </MudGrid>
+
+                    <MudGrid>
+                        <MudItem xs="12" sm="6" md="12">
+                            <div class="py-4 px-6 mx-4 rounded-tl-xl" style="border:1px solid;">
+                                <MudGrid>
+                                    <MudItem xs="12" sm="6" md="12">
+                                        <MudText Typo="Typo.h5">Next of Kin</MudText>
+                                    </MudItem>
+                                </MudGrid>
+
+                                <MudGrid>
+                                    <MudItem xs="12" sm="6" md="4">
+                                        <MudTextField Label="Name of Next of Kin" @bind-Value="@staffdetails.NextOfKin" For="() => staffdetails.NextOfKin" />
+                                    </MudItem>
+                                    <MudItem xs="12" sm="6" md="4">
+                                        <MudTextField Label="Phone No. of Next of Kin" @bind-Value="@staffdetails.NextOfKinPhone" For="() => staffdetails.NextOfKinPhone" />
+                                    </MudItem>
+                                    <MudItem xs="12" sm="6" md="4">
+                                        <MudTextField Label="Relationship" @bind-Value="@staffdetails.NextOfKinRelationship" For="() => staffdetails.NextOfKinRelationship" />
+                                    </MudItem>
+                                </MudGrid>
+
+                                <MudItem xs="12" sm="6" md="12">
+                                    <MudTextField Label="Address of Next of Kin" @bind-Value="@staffdetails.NextOfKinAddress" Variant="Variant.Outlined" Lines="2"
+                                              For="() => staffdetails.NextOfKinAddress" />
+                                </MudItem>
+                            </div>
+                        </MudItem>
+                    </MudGrid>
+
+                    <MudGrid>
+                        <MudItem xs="12" sm="6" md="12">
+                            <div class="py-4 px-6 mx-4 rounded-tl-xl" style="border:1px solid;">
+                                <MudGrid>
+                                    <MudItem xs="12" sm="6" md="12">
+                                        <MudText Typo="Typo.h5">Bank Account Information</MudText>
+                                    </MudItem>
+                                </MudGrid>
+
+                                <MudGrid>
+                                    <MudItem xs="12" sm="6" md="4">
+                                        <MudSelect T="string" Label="Bank List" Dense="true" OffsetY="true" @bind-Value="@staffdetails.BankAcctName"
+                                               SelectedValuesChanged="OnBankChanged" For="() => staffdetails.BankAcctName">
+                                            @foreach (var item in bankList)
+                                            {
+                                                <MudSelectItem T="string" Value="@item.BankAcctName">@item.BankAcctName</MudSelectItem>
+                                            }
+                                        </MudSelect>
+                                    </MudItem>
+                                    <MudItem xs="12" sm="6" md="4">
+                                        <MudTextField Label="Account Name" @bind-Value="@staffdetails.AcctName" For="() => staffdetails.AcctName" />
+                                    </MudItem>
+                                    <MudItem xs="12" sm="6" md="4">
+                                        <MudTextField Label="Account Number" @bind-Value="@staffdetails.AcctNumber" For="() => staffdetails.AcctNumber" />
+                                    </MudItem>
+                                </MudGrid>
+                            </div>
+                        </MudItem>
+                    </MudGrid>
+                </MudCardContent>
+            </MudCard>
+        </EditForm>
+    </div>
+}
+
+<InputFile id="fileInput" OnChange="UploadFiles" hidden multiple />
+
+
+<MudDialog @bind-IsVisible="visible" Options="dialogOptions" Style="width:250px">
+    <TitleContent>
+        <MudText Typo="Typo.body1">
+            <MudIcon Icon="@Icons.Material.Filled.DomainVerification" Class="mr-3" />Selected Signature
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <div class="d-flex flex-column">
+            <img src="@signSrc" id="image" width="200" height="200" style="border:1px solid #000000;margin-top:10px " />
+        </div>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Submit" Class="px-10" Style="margin:0px 15px 0px 0px">Close</MudButton>
+    </DialogActions>
+</MudDialog>

@@ -1,0 +1,39 @@
+﻿@page "/registration"
+
+
+
+<EditForm Model="@registrationRequest" OnValidSubmit="@Register">
+    <FluentValidationValidator />
+    <MudText Typo="Typo.h5">Staff Registration</MudText>
+    <br />
+    <MudGrid>
+        <MudItem xs="12" sm="6" md="12">
+            <MudTextField Label="Registration PIN" @bind-Value="@registrationRequest.StaffPIN" For="() => registrationRequest.StaffPIN"></MudTextField>
+        </MudItem>
+    </MudGrid>
+    <MudGrid>
+        <MudItem xs="12" sm="6" md="12">
+            <MudTextField Label="Email" @bind-Value="@registrationRequest.Email" For="() => registrationRequest.Email"></MudTextField>
+        </MudItem>
+    </MudGrid>
+    <MudGrid>
+        <MudItem xs="12" sm="6" md="12">
+            <MudTextField @bind-Value="@registrationRequest.Password" Label="Password" Variant="Variant.Text" InputType="@PasswordInput"
+                          Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ShowHidePassword"
+                          AdornmentAriaLabel="Show Password" For="@(() => registrationRequest.Password)" />
+        </MudItem>
+    </MudGrid>
+    <MudGrid>
+        <MudItem xs="12" sm="6" md="12">
+            <MudTextField @bind-Value="@registrationRequest.ConfirmPassword" Label="Password" Variant="Variant.Text" InputType="@PasswordInput"
+                          Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ShowHidePassword"
+                          AdornmentAriaLabel="Show Password" For="@(() => registrationRequest.ConfirmPassword)" />
+        </MudItem>
+    </MudGrid>
+    <MudGrid>
+        <MudItem xs="12" sm="6" md="12" Class="d-flex justify-center py-2 px-1 mt-2">
+            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.AppRegistration" Class="align-self-center mr-3" Color="Color.Primary">Register</MudButton>
+            <a href="/" style="font-size:medium;">Already a user?</a>
+        </MudItem>
+    </MudGrid>   
+</EditForm>

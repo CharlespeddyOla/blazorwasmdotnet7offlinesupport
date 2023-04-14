@@ -1,0 +1,89 @@
+﻿<MudDrawer @bind-Open="SideBarOpen" Elevation="1">
+    <MudDrawerHeader>
+        <MudAvatar Color="Color.Transparent" Size="Size.Large" Image="assets/Logo_Stage_1.png" />
+        <MudText Typo="Typo.h5" Color="Color.Primary" Style="margin-top:10px; margin-left:15px;">Academics</MudText>
+    </MudDrawerHeader>
+    <MudNavMenu>
+        <MudNavLink Href="/homepage" Match="NavLinkMatch.All" Icon="@Icons.Filled.Home">Home</MudNavLink>
+
+        <MudNavGroup Title="Administration" Icon="@Icons.Filled.AdminPanelSettings" Expanded="true">
+            <MudNavGroup Title="Academic Sessions" Icon="@Icons.Filled.Webhook" Expanded="false">
+                <MudNavLink Class="nav-link" Href="/setacademicsessions">Academic Year List</MudNavLink>
+                <MudNavLink Class="nav-link" Href="/setschoolcalendar">School Calendar</MudNavLink>
+            </MudNavGroup>
+
+            <MudNavGroup Title="Class List" Icon="@Icons.Filled.WorkspacePremium" Expanded="false">
+                <MudNavLink Class="nav-link" Href="/classlist">Class List</MudNavLink>
+                <MudNavLink Class="nav-link" Href="/schoollist">School List</MudNavLink>
+                <MudNavLink Class="nav-link" Href="/classgroups">Class Group</MudNavLink>
+                <MudNavLink Class="nav-link" Href="/classcategories">Class Names</MudNavLink>
+                <MudNavLink Class="nav-link" Href="/classdisciplines">Class Descipline</MudNavLink>
+                <MudNavLink Class="nav-link" Href="/teacherclassallocation">Class Allocation To Teachers</MudNavLink>
+            </MudNavGroup>
+
+            <MudNavGroup Title="Student List" Icon="@Icons.Filled.Wc" Expanded="false">
+                <MudNavLink Class="nav-link" Href="/students">Student List</MudNavLink>
+                <MudNavLink Class="nav-link" Href="/studentsclassallocation">Allocate Class To Students</MudNavLink>
+                <MudNavLink Class="nav-link" Href="/studentsinfobatchupdate">Students Info Update</MudNavLink>
+                <MudNavLink Class="nav-link" Href="/parents">Parent List</MudNavLink>
+            </MudNavGroup>
+
+            <MudNavGroup Title="Staff List" Icon="@Icons.Filled.Wc" Expanded="false">
+                <MudNavLink Class="nav-link" Href="/staffs">Staff List</MudNavLink>
+                <MudNavLink Class="nav-link" Href="/departments">Departments</MudNavLink>
+                <MudNavLink Class="nav-link" Href="/jobtypes">Job Type</MudNavLink>
+                <MudNavLink Class="nav-link" Href="/countrylist">Country List</MudNavLink>
+                <MudNavLink Class="nav-link" Href="/updatestaffinfo">Staff Info Update</MudNavLink>
+            </MudNavGroup>
+
+            <MudNavLink Class="nav-link" Href="/scgooldetails" Icon="@Icons.Filled.HomeWork">School Info</MudNavLink>
+        </MudNavGroup>
+
+        <MudNavGroup Title="Academics" Icon="@Icons.Filled.School" Expanded="true">
+            <MudNavGroup Title="Subjects" Icon="@Icons.Filled.LibraryBooks" Expanded="false">
+                <MudNavLink Class="nav-link" Href="/subjectlist">Subject List</MudNavLink>
+                <MudNavLink Class="nav-link" Href="/subjectdepts">Subjects Department</MudNavLink>
+                <MudNavLink Class="nav-link" Href="/subjectclasslist">Subjects Classification</MudNavLink>
+                <MudNavLink Class="nav-link" Href="/subjectsallocationtoteacher">Allocate Subjects To Teachers</MudNavLink>
+                <MudNavLink Class="nav-link" Href="/subjectsallocationtostudent">Allocate Subjects To Students</MudNavLink>
+                <MudNavLink Class="nav-link" Href="/subjectscombination">Subjects Combination</MudNavLink>
+            </MudNavGroup>
+
+            <MudNavGroup Title="Mark Entry" Icon="@Icons.Filled.NoteAdd" Expanded="false">
+                <MudNavLink Class="nav-link" Href="/markentrycognitive">Cognitive Mark Entry</MudNavLink>
+                <MudNavLink Class="nav-link" Href="/markEntrypsychomotor">PsychoMotor Mark Entry</MudNavLink>
+                <MudNavLink Class="nav-link" Href="/markentrycheckpoint">CheckPoint And IGCSE Mark Entry</MudNavLink>
+                <MudNavLink Class="nav-link" Href="/markentrystudent">Mark Entry Per Student</MudNavLink>
+            </MudNavGroup>
+
+            <MudNavGroup Title="Comments Entry" Icon="@Icons.Filled.BorderColor" Expanded="false">
+                <MudNavLink Class="nav-link" Href="/midtermcomments">Mid-Term Comments</MudNavLink>
+                <MudNavLink Class="nav-link" Href="/termendcomments">End of Term Comments</MudNavLink>
+                <MudNavLink Class="nav-link" Href="/checkpointcomments">CheckPoint And IGCSE Comments</MudNavLink>
+            </MudNavGroup>
+
+            <MudNavGroup Title="Score Preview" Icon="@Icons.Filled.Score" Expanded="false">
+                <MudNavLink Class="nav-link" Href="/midtermpreview">Mid-Term Preview</MudNavLink>
+                <MudNavLink Class="nav-link" Href="/termendpreview">End of Term Preview</MudNavLink>
+                <MudNavLink Class="nav-link" Href="/checkpointpreview">Check Point / IGCSE Preview</MudNavLink>
+            </MudNavGroup>
+
+            <MudNavLink Class="nav-link" Href="/resultsgenerator" Icon="@Icons.Filled.AddCard">Academic Results</MudNavLink>
+            <MudNavLink Class="nav-link" Href="/markssettings" Icon="@Icons.Filled.SettingsApplications">Mark Settings</MudNavLink>
+            <MudNavLink Class="nav-link" Href="/cbtexams" Icon="@Icons.Filled.Quiz">CBT Exams</MudNavLink>
+        </MudNavGroup>
+
+        <MudNavGroup Title="Settings" Icon="@Icons.Filled.Settings" Expanded="true">
+            <MudNavGroup Title="Manage Users" Icon="@Icons.Filled.ManageAccounts" Expanded="false">
+                <MudNavLink Class="nav-link" Href="/userstaff">Staff</MudNavLink>
+                <MudNavLink Class="nav-link" Href="/userstudent">Student</MudNavLink>
+            </MudNavGroup>
+
+           @* <MudNavGroup Title="Transactions" Icon="@Icons.Filled.Transform" Expanded="false">
+                <MudNavLink Class="nav-link" Href="/academicstrans">Academic Transactions</MudNavLink>
+            </MudNavGroup>*@
+        </MudNavGroup>
+    </MudNavMenu>
+</MudDrawer>
+
+

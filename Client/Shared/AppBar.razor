@@ -1,0 +1,307 @@
+﻿@using WebAppAcademics.Client.Authentication
+@using System.Security.Claims
+@inject AuthenticationStateProvider authStateProvider
+@inject NavigationManager navManager
+
+
+<AuthorizeView>
+    <Authorized>
+        <MudAppBar Elevation="3">
+            <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start"
+                           OnClick="async () => await OnSidebarToggled.InvokeAsync()" Class="mr-5" />
+
+            <MudMenu Color="Color.Inherit" Variant="Variant.Text" Class="mx-1 px-3" PopoverClass="docs-layout-menu-shadow"
+                     ListClass="d-flex px-4 pb-2 docs-appbar-special-menu" MaxHeight="300" Direction="Direction.Bottom"
+                     Label="Administration" StartIcon="@Icons.Filled.AdminPanelSettings" EndIcon="@Icons.Filled.KeyboardArrowDown"
+                     LockScroll="true"
+                     AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopLeft">
+                <MudList Clickable="true">
+                    <MudListItem Icon="@Icons.Filled.Webhook" Text="Academic Sessions">
+                        <NestedList>
+                            <MudListItem Href="/setacademicsessions">
+                                <MudText Typo="Typo.body2">Academic Year List</MudText>
+                            </MudListItem>
+                            <MudListItem Href="/setschoolcalendar">
+                                <MudText Typo="Typo.body2">School Calendar</MudText>
+                            </MudListItem>
+                        </NestedList>
+                    </MudListItem>
+
+                    <MudListItem Icon="@Icons.Filled.WorkspacePremium" Text="Class List">
+                        <NestedList>
+                            <MudListItem Class="nav-link" Href="/classlist">
+                                <MudText Typo="Typo.body2">Class List</MudText>
+                            </MudListItem>
+                            <MudListItem Href="/schoollist">
+                                <MudText Typo="Typo.body2">School List</MudText>
+                            </MudListItem>
+                            <MudListItem Href="/classgroups">
+                                <MudText Typo="Typo.body2">Class Group</MudText>
+                            </MudListItem>
+                            <MudListItem Href="/classcategories">
+                                <MudText Typo="Typo.body2">Class Names</MudText>
+                            </MudListItem>
+                            <MudListItem Href="/classdisciplines">
+                                <MudText Typo="Typo.body2">Class Descipline</MudText>
+                            </MudListItem>
+                            <MudListItem Href="/teacherclassallocation">
+                                <MudText Typo="Typo.body2">Class Allocation To Teachers</MudText>
+                            </MudListItem>
+                        </NestedList>
+                    </MudListItem>
+
+                    <MudListItem Icon="@Icons.Filled.Wc" Text="Student List">
+                        <NestedList>
+                            <MudListItem Href="/students">
+                                <MudText Typo="Typo.body2">Student List</MudText>
+                            </MudListItem>
+                            <MudListItem Href="/studentsclassallocation">
+                                <MudText Typo="Typo.body2">Allocate Class To Students</MudText>                                
+                            </MudListItem>
+                            <MudListItem Href="/studentsinfobatchupdate">
+                                <MudText Typo="Typo.body2">Students Info Update</MudText>                                
+                            </MudListItem>
+                            <MudListItem Href="/parents">
+                                <MudText Typo="Typo.body2">Parent List</MudText>
+                            </MudListItem>
+                        </NestedList>
+                    </MudListItem>
+
+                    <MudListItem Icon="@Icons.Filled.SupervisorAccount" Text="Staff List">
+                        <NestedList>
+                            <MudListItem Href="/staffs">
+                                <MudText Typo="Typo.body2">Staff List</MudText>
+                            </MudListItem>
+                            <MudListItem Href="/departments">
+                                <MudText Typo="Typo.body2">Departments</MudText>
+                            </MudListItem>
+                            <MudListItem Href="/jobtypes">
+                                <MudText Typo="Typo.body2">Job Type</MudText>                               
+                            </MudListItem>
+                            <MudListItem Href="/countrylist">
+                                <MudText Typo="Typo.body2">Country List</MudText>                               
+                            </MudListItem>
+                            <MudListItem Href="/updatestaffinfo">
+                                <MudText Typo="Typo.body2">Staff Info Update</MudText>
+                            </MudListItem>
+                        </NestedList>
+                    </MudListItem>
+
+                    <MudListItem Icon="@Icons.Filled.HomeWork" Href="/scgooldetails">
+                        <MudText Typo="Typo.body2">School Info</MudText>
+                    </MudListItem>
+                </MudList>
+            </MudMenu>
+
+            <MudMenu Color="Color.Inherit" Variant="Variant.Text" Class="mx-1 px-3" PopoverClass="docs-layout-menu-shadow"
+                     ListClass="d-flex px-4 pb-2 docs-appbar-special-menu" MaxHeight="300" Direction="Direction.Bottom"
+                     Label="Academics" StartIcon="@Icons.Filled.School" EndIcon="@Icons.Filled.KeyboardArrowDown"
+                     LockScroll="true"
+                     AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopLeft">
+                <MudList Clickable="true">
+                    <MudListItem Icon="@Icons.Filled.LibraryBooks" Text="Subjects">
+                        <NestedList>
+                            <MudListItem Href="/subjectlist">
+                                <MudText Typo="Typo.body2">Subject List</MudText>
+                            </MudListItem>
+                            <MudListItem Href="/subjectdepts">
+                                <MudText Typo="Typo.body2">Subjects Department</MudText>
+                            </MudListItem>
+                            <MudListItem Href="/subjectclasslist">
+                                <MudText Typo="Typo.body2">Subjects Classification</MudText>
+                            </MudListItem>
+                            <MudListItem Href="/subjectsallocationtoteacher">
+                                <MudText Typo="Typo.body2">Allocate Subjects To Teachers</MudText>
+                            </MudListItem>
+                            <MudListItem Href="/subjectsallocationtostudent">
+                                <MudText Typo="Typo.body2">Allocate Subjects To Students</MudText>
+                            </MudListItem>
+                            <MudListItem Href="/subjectscombination">
+                                <MudText Typo="Typo.body2">Subjects Combination</MudText>
+                            </MudListItem>
+                        </NestedList>
+                    </MudListItem>
+
+                    <MudListItem Icon="@Icons.Filled.NoteAdd" Text="Mark Entry">
+                        <NestedList>
+                            <MudListItem Href="/markentrycognitive">
+                                <MudText Typo="Typo.body2">Cognitive Mark Entry</MudText>
+                            </MudListItem>
+                            <MudListItem Href="/markEntrypsychomotor">
+                                <MudText Typo="Typo.body2">PsychoMotor Mark Entry</MudText>
+                            </MudListItem>
+                            <MudListItem Href="/markentrycheckpoint">
+                                <MudText Typo="Typo.body2">CheckPoint And IGCSE Mark Entry</MudText>
+                            </MudListItem>
+                            <MudListItem Href="/markentrystudent">
+                                <MudText Typo="Typo.body2">Mark Entry Per Student</MudText>
+                            </MudListItem>
+                        </NestedList>
+                    </MudListItem>
+
+                    <MudListItem Icon="@Icons.Filled.BorderColor" Text="Comments Entry">
+                        <NestedList>
+                            <MudListItem Href="/midtermcomments">
+                                <MudText Typo="Typo.body2">Mid-Term Comments</MudText>
+                            </MudListItem>
+                            <MudListItem Href="/termendcomments">
+                                <MudText Typo="Typo.body2">End of Term Comments</MudText>
+                            </MudListItem>
+                            <MudListItem Href="/checkpointcomments">
+                                <MudText Typo="Typo.body2">CheckPoint And IGCSE Comments</MudText>
+                            </MudListItem>
+                        </NestedList>
+                    </MudListItem>
+
+                    <MudListItem Icon="@Icons.Filled.Score" Text="Score Preview">
+                        <NestedList>
+                            <MudListItem Href="/midtermpreview">
+                                <MudText Typo="Typo.body2">Mid-Term Preview</MudText>
+                            </MudListItem>
+                            <MudListItem Href="/termendpreview">
+                                <MudText Typo="Typo.body2">End of Term Preview</MudText>
+                            </MudListItem>
+                            <MudListItem Href="/checkpointpreview">
+                                <MudText Typo="Typo.body2">Check Point / IGCSE Preview</MudText>
+                            </MudListItem>
+                        </NestedList>
+                    </MudListItem>
+
+                    <MudListItem Href="/resultsgenerator" Icon="@Icons.Filled.AddCard">
+                        <MudText Typo="Typo.body2">Academic Results</MudText>
+                    </MudListItem>
+
+                    <MudListItem Href="/markssettings" Icon="@Icons.Filled.Quiz">
+                        <MudText Typo="Typo.body2">Mark Settings</MudText>
+                    </MudListItem>
+
+                    <MudListItem Href="/cbtexams" Icon="@Icons.Filled.SettingsApplications">
+                        <MudText Typo="Typo.body2">CBT Exams</MudText>
+                    </MudListItem>
+                </MudList>
+            </MudMenu>
+
+             <div class="d-none d-md-flex align-center">
+                <MudMenu Color="Color.Inherit" Variant="Variant.Text" Class="mx-1 px-3" PopoverClass="docs-layout-menu-shadow"
+                         ListClass="d-flex px-4 pb-2 docs-appbar-special-menu" MaxHeight="300" Direction="Direction.Bottom"
+                         Label="Settings" StartIcon="@Icons.Filled.Settings" EndIcon="@Icons.Filled.KeyboardArrowDown"
+                         LockScroll="true"
+                         AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopLeft">
+                    <MudList Clickable="true">
+                        <MudListItem Icon="@Icons.Filled.ManageAccounts" Text="Manage Users">
+                            <NestedList>
+                                <MudListItem Href="/userstaff">
+                                    <MudText Typo="Typo.body2">Staff</MudText>
+                                </MudListItem>
+                                <MudListItem Href="/userstudent">
+                                    <MudText Typo="Typo.body2">Student</MudText>
+                                </MudListItem>
+                            </NestedList>
+                        </MudListItem>
+
+                       @* <MudListItem Icon="@Icons.Filled.Transform" Text="Transactions">
+                            <NestedList>
+                                <MudListItem Href="/academicstrans">
+                                    <MudText Typo="Typo.body2">Academic Transactions</MudText>
+                                </MudListItem>
+                            </NestedList>
+                        </MudListItem>*@
+                    </MudList>
+                </MudMenu>
+
+                <MudMenu EndIcon="@Icons.Filled.KeyboardArrowDown" Label="Help" Color="Color.Inherit" Dense="true" Direction="Direction.Right" OffsetY="true">
+                    <MudMenuItem>
+                        <MudText Typo="Typo.body2" Class="px-4 py-2"><b>View Help</b></MudText>
+                    </MudMenuItem>
+                    <MudMenuItem>
+                        <MudText Typo="Typo.body2" Class="px-4 py-2"><b>Register Product</b></MudText>
+                    </MudMenuItem>
+                    <MudMenuItem>
+                        <MudText Typo="Typo.body2" Class="px-4 py-2"><b>About School Manager</b></MudText>
+                    </MudMenuItem>
+                </MudMenu>
+                <MudDivider Vertical="true" FlexItem="true" DividerType="DividerType.Middle" Class="mx-4 my-3" />
+                <MudMenu FullWidth="false" Direction="Direction.Right" OffsetY="true">
+                    <ActivatorContent>
+                        <MudChip Icon="@Icons.Material.Filled.Person" Color="Color.Primary">Account</MudChip>
+                    </ActivatorContent>
+                    <ChildContent>
+                        <MudMenuItem>
+                            <MudText Typo="Typo.body2" Class="px-4 py-2">@context.User.FindFirst(ClaimTypes.Name).Value</MudText>
+                        </MudMenuItem>
+                        <MudMenuItem OnClick="@Logout">
+                            <MudText Typo="Typo.body2" Class="px-4 py-2">Log Out</MudText>
+                        </MudMenuItem>
+                    </ChildContent>
+                </MudMenu>
+            </div>
+
+            <MudMenu Icon="@Icons.Filled.Settings" Color="Color.Inherit" Dense="true" Direction="Direction.Right" OffsetY="true" Class="d-md-none">
+                <MudMenuItem Href="/userstaff">
+                      <MudText Typo="Typo.body2" Class="px-4 py-2"><b>Manager Users - Staff</b></MudText>
+                 </MudMenuItem>
+                <MudMenuItem Href="/userstudent">
+                    <MudText Typo="Typo.body2" Class="px-4 py-2"><b>Manager Users - Student</b></MudText>
+                 </MudMenuItem>      
+                <MudText Typo="Typo.body2" Class="px-4 py-2"><b>View Help</b></MudText>
+                <MudText Typo="Typo.body2" Class="px-4 py-2"><b>Register Product</b></MudText>
+                <MudText Typo="Typo.body2" Class="px-4 py-2"><b>About School Manager</b></MudText>
+                <MudMenu FullWidth="false">
+                    <ActivatorContent>
+                        <MudChip Icon="@Icons.Material.Filled.Person" Color="Color.Primary">Account</MudChip>
+                    </ActivatorContent>
+                    <ChildContent>
+                        <MudMenuItem>
+                            <MudText Typo="Typo.body2" Class="px-4 py-2"> @context.User.FindFirst(ClaimTypes.Name).Value</MudText>
+                        </MudMenuItem>
+                        <MudMenuItem OnClick="@Logout">
+                            <MudText Typo="Typo.body2" Class="px-4 py-2">Log Out</MudText>
+                        </MudMenuItem>
+                    </ChildContent>
+                </MudMenu>
+            </MudMenu>
+            <MudSpacer />
+                   
+             <ConnectivityIndicator>
+                <ShowOnline>
+                    <MudIconButton Icon="@Icons.Material.Filled.Wifi" Color="Color.Inherit" />
+                </ShowOnline>
+                <ShowOffline>
+                    <MudIconButton Icon="@Icons.Material.Filled.WifiOff" Color="Color.Inherit" />
+                </ShowOffline>
+            </ConnectivityIndicator>
+
+            <MudTooltip Duration="1000" Text="@(_isLightMode ? "Switch to Dark Theme" : "Switch to Light Theme")">
+                @if (_isLightMode)
+                {
+                        <MudIconButton Icon="@Icons.Material.Filled.DarkMode" Color="Color.Inherit" OnClick="ToggleTheme" />
+                }
+                else
+                {
+                        <MudIconButton Icon="@Icons.Material.Filled.LightMode" Color="Color.Inherit" OnClick="ToggleTheme" />
+                }
+            </MudTooltip>            
+        </MudAppBar>
+    </Authorized>
+    <NotAuthorized>
+        <a href="Registration">Register</a>
+        <a href="/">Log in</a>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+
+    private async Task Logout()
+    {
+        var customAuthStateProvider = (CustomAuthStateProvider)authStateProvider;
+        await customAuthStateProvider.UpdateAuthenticationState(null);
+        navManager.NavigateTo("/", true);
+    }
+
+    
+    
+
+    
+}
+

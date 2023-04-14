@@ -1,0 +1,39 @@
+﻿
+
+<MudAppBar Elevation="3">
+    <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start"
+                   OnClick="async () => await OnSidebarToggled.InvokeAsync()" />
+    <MudGrid>
+        <MudItem xs="12" sm="6" md="10">
+            <MudGrid>
+                <MudItem xs="12" sm="6" md="12">
+                    <div Class="d-flex justify-center">
+                        @academicSession
+                    </div>
+                </MudItem>
+            </MudGrid>
+            <MudGrid>
+                <MudItem xs="5" sm="3" md="2">
+                    <div class="d-flex justify-end" Style="font-weight:bold;">
+                        <MudText>Admission No.:</MudText>
+                    </div>
+                </MudItem>
+                <MudItem xs="5" sm="3" md="2">
+                    <div class="d-flex justify-start">
+                        <MudText>@admissionNo</MudText>
+                    </div>
+                </MudItem>
+                <MudItem xs="5" sm="3" md="3">
+                    <div class="d-flex justify-end" Style="font-weight:bold;">
+                        <MudText>Student Name:</MudText>
+                    </div>
+                </MudItem>
+                <MudItem xs="5" sm="3" md="5">
+                    <div class="d-flex justify-start">
+                        <MudText>@studentName</MudText>
+                    </div>
+                </MudItem>
+            </MudGrid>
+        </MudItem>
+    </MudGrid>
+</MudAppBar>

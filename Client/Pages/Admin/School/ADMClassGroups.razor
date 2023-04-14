@@ -1,0 +1,117 @@
+﻿@page "/classgroups"
+
+
+
+<AuthorizeView Roles="Administrator">
+    <Authorized Context="admin">
+        <div class="d-block pa-2 mr-5 ml-5">
+            <MudPaper Class="d-flex align-center flex-grow-1 gap-x-8" Elevation="20">
+                <MudGrid>
+                    <MudItem xs="12" sm="12" md="3">
+                        <MudTooltip Text="Go Back">
+                            <MudIconButton OnClick="GoBack" Icon="@Icons.Material.Outlined.ArrowBack" Color="Color.Success" />
+                        </MudTooltip>
+                    </MudItem>
+                    <MudItem xs="12" sm="12" md="3">
+                        <MudTooltip Text="Group List">
+                            <MudIconButton OnClick="ClassGroupEvent" Icon="@Icons.Material.Outlined.FormatLineSpacing" Color="Color.Success" />
+                        </MudTooltip>
+                    </MudItem>
+                    <MudItem xs="12" sm="12" md="3">
+                        <MudTooltip Text="Create A New Class Group">
+                            <MudIconButton OnClick="CreateNewGroup" Icon="@Icons.Material.Outlined.LibraryAdd" Color="Color.Success" />
+                        </MudTooltip>
+                    </MudItem>
+                    <MudItem xs="12" sm="12" md="3">
+                        <MudTooltip Text="Save">
+                            <button type="submit" form="@editFormId">
+                                <MudButton Disabled="@disableSaveButton" StartIcon="@Icons.Material.Outlined.Save"
+                                           Color="Color.Success" Size="Size.Large">@buttontitle</MudButton>
+                            </button>
+                        </MudTooltip>
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+        </div>
+
+        @if (toolBarMenuId == 1)
+        {
+            <div class="d-block pa-2  mr-5 ml-5">
+                <MudTable Elevation="20" Items="@groups" Dense="true" Hover="true" Striped="true" Breakpoint="Breakpoint.Sm">
+                    <ToolBarContent>
+                        <MudGrid>
+                            <MudItem xs="12" sm="12" md="6">
+                                <MudCheckBox T="bool" Checked="@useconvension" Color="Color.Tertiary"
+                                         CheckedChanged="@((bool value) => CheckBoxChanged(value))">
+                                    Tick Here To Use Convensional Name
+                                </MudCheckBox>
+                            </MudItem>
+                        </MudGrid>
+                    </ToolBarContent>
+                    <HeaderContent>
+                        <MudTh>School</MudTh>
+                        <MudTh>Class</MudTh>
+                        <MudTh>Convensional Name</MudTh>
+                        <MudTh>Student Count</MudTh>
+                        <MudTh Style="text-align:center; width:20px;">Use Convensional Name</MudTh>
+                        <MudTh>Edit</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="School">@context.School</MudTd>
+                        <MudTd DataLabel="Class">@context.SchClass</MudTd>
+                        <MudTd DataLabel="Convensional Name">@context.ConvensionalName</MudTd>
+                        <MudTd DataLabel="Student Count">@context.ClassGroupCount</MudTd>
+                        <MudTd DataLabel="Use Convensional Name" Style="text-align:center; width:20px;">
+                            <MudCheckBox @bind-Checked="@context.UseConvension" ReadOnly="true"></MudCheckBox>
+                        </MudTd>
+                        <MudTd DataLabel="Edit">
+                            <MudFab @onclick="@(()=>UpdateClassGroup(@context.ClassListID))" Color="Color.Primary" Icon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small" />
+                        </MudTd>
+                    </RowTemplate>
+                </MudTable>
+            </div>
+        }
+        else if (toolBarMenuId == 2)
+        {
+
+            <div class="d-block pa-2 mr-5 ml-5">
+                <EditForm id="@editFormId" Model="@groupname" OnValidSubmit="@SubmitValidForm" OnInvalidSubmit="@InvalidEntries">
+                    <FluentValidationValidator />
+                    <MudCard Elevation="20">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">@pagetitle</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudGrid>
+                                <MudItem xs="12" sm="6" md="4">
+                                    <MudSelect T="string" Label="School" Dense="true" OffsetY="true"
+                                           @bind-Value="@groupname.School"
+                                           SelectedValuesChanged="OnSelectedSchoolChanged" For="() => groupname.School">
+                                        @foreach (var item in schools)
+                                        {
+                                            <MudSelectItem T="string" Value="@item.School">@item.School</MudSelectItem>
+                                        }
+                                    </MudSelect>
+                                </MudItem>
+                                <MudItem xs="12" sm="6" md="4">
+                                    <MudTextField Label="Group Name" @bind-Value="@groupname.SchClass" For="() => groupname.SchClass" />
+                                </MudItem>
+                                <MudItem xs="12" sm="6" md="4">
+                                    <MudTextField Label="Convensional Name" @bind-Value="@groupname.ConvensionalName" For="() => groupname.ConvensionalName" />
+                                </MudItem>
+                            </MudGrid>
+                        </MudCardContent>
+                    </MudCard>
+                </EditForm>
+            </div>
+        }
+    </Authorized>
+    <NotAuthorized>
+        <div class="ma-10">
+            <p style="font-size:20px;">You Do Not Have Permission To Access This Page</p>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+

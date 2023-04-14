@@ -1,0 +1,79 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+	  <!--<Nullable>enable</Nullable>-->
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="SQLFiles\generatebroadsheetca.sql" />
+    <None Remove="SQLFiles\generatebroadsheetca1.sql" />
+    <None Remove="SQLFiles\generatebroadsheetca2.sql" />
+    <None Remove="SQLFiles\generatebroadsheetca3.sql" />
+    <None Remove="SQLFiles\generatebroadsheetcbt.sql" />
+    <None Remove="SQLFiles\generatebroadsheetexam.sql" />
+    <None Remove="SQLFiles\generatebroadsheettotal.sql" />
+    <None Remove="StaticFiles\Images\ChcekPointIGCSELogo.png" />
+    <None Remove="StaticFiles\Images\CheckedBox.png" />
+    <None Remove="StaticFiles\Images\UnCheckedBox.png" />
+    <None Remove="StaticFiles\Images\Vertical-Line-PNG.png" />
+    <None Remove="StaticFiles\Results\Sample.pdf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="SQLFiles\generatebroadsheetca.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SQLFiles\generatebroadsheetca1.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SQLFiles\generatebroadsheetca2.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SQLFiles\generatebroadsheetca3.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SQLFiles\generatebroadsheetcbt.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SQLFiles\generatebroadsheetexam.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SQLFiles\generatebroadsheettotal.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="StaticFiles\Images\ChcekPointIGCSELogo.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="StaticFiles\Images\CheckedBox.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="StaticFiles\Images\UnCheckedBox.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="StaticFiles\Images\Vertical-Line-PNG.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="StaticFiles\Results\Sample.pdf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AppSoftware.LicenceEngine.KeyVerification" Version="1.3.0" />
+    <PackageReference Include="Dapper" Version="2.0.123" />
+    <PackageReference Include="iTextSharp.LGPLv2.Core" Version="1.9.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="7.0.0" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.25.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Client\WebAppAcademics.Client.csproj" />
+    <ProjectReference Include="..\Shared\WebAppAcademics.Shared.csproj" />
+  </ItemGroup>
+
+
+</Project>

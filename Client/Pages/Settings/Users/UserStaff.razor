@@ -1,0 +1,115 @@
+﻿@page "/userstaff"
+@inject ISnackbar Snackbar
+
+
+<AuthorizeView Roles="Administrator">
+    <Authorized Context="admin">
+<div class="d-block pa-2 mr-5 ml-5">
+    <MudPaper Class="d-flex align-center flex-grow-1 gap-x-8" Elevation="20">
+        <div Class="d-flex flex-1">
+            <MudMenu StartIcon="@Icons.Filled.ManageAccounts" EndIcon="@Icons.Filled.KeyboardArrowDown" Label="User Management - Staff" Color="Color.Primary" Variant="Variant.Filled">
+                <MudMenuItem OnClick="Refresh">Refresh</MudMenuItem>
+                <MudMenuItem OnClick="GenerateStaffPINs">Generate Staff PINs</MudMenuItem>
+                <MudMenuItem OnClick="ExportStaffList">Export To Excel</MudMenuItem>
+            </MudMenu>
+        </div>
+        <div Class="d-flex flex-1">
+            <MudTooltip Text="Refresh">
+                <MudIconButton OnClick="Refresh" Icon="@Icons.Material.Filled.Refresh" Color="Color.Success" />
+            </MudTooltip>
+        </div>
+    </MudPaper>        
+</div>
+
+<div class="d-block pa-2  mr-5 ml-5">
+    <div class="container-fluid" hidden="@IsShowProgress">
+        <MudText Typo="Typo.subtitle2" Color="Color.Inherit">
+            <b>@progressbarInfo @Math.Round(x)%</b>
+        </MudText>
+        <MudProgressLinear Color="Color.Info" Size="Size.Large" Value="@Convert.ToDouble(x)" Rounded="true" Striped="true">
+        </MudProgressLinear>
+    </div>
+</div>
+
+<div class="d-block pa-2  mr-5 ml-5">
+    <MudGrid>
+        <MudItem xs="12" sm="12" md="4">
+            <MudSelect T="string" Label="Department" Strict="true" Dense="true" @bind-Value="selectedDeptment"
+                       SelectedValuesChanged="OnSelectedDepartmentChanged">
+                        @foreach (var item in departments)
+                        {
+                        <MudSelectItem T="string" Value="@item.EmployeeGroup">@item.EmployeeGroup</MudSelectItem>
+                        }
+            </MudSelect>
+        </MudItem>
+    </MudGrid>
+</div>
+
+<div class="d-block pa-2  mr-5 ml-5">
+    <MudTable Items="@staffs" Elevation="20" Dense="true" Hover="true" Striped="true" @bind-SelectedItem="selectedItem"
+              CommitEditTooltip="Update" OnCommitEditClick="@(() => UpdateEntry())"
+              Filter="new Func<ADMEmployee,bool>(FilterFunc)" Breakpoint="Breakpoint.Sm" SortLabel="Sort By">
+        <ToolBarContent>
+            <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start"
+                          AdornmentIcon="@Icons.Material.Filled.Search"
+                          IconSize="Size.Medium" Class="mt-0"></MudTextField>
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh>Staff No.</MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<ADMEmployee, object>(x=>x.StaffName)">Staff Name</MudTableSortLabel></MudTh>
+            <MudTh>Role</MudTh>
+            <MudTh>Email</MudTh>
+            <MudTh>PIN</MudTh>
+            <MudTh Style="text-align:center; width:20px;">Reset Password</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Staff No.">@context.StaffNo</MudTd>
+            <MudTd DataLabel="Staff Name">@context.StaffName</MudTd>
+            <MudTd DataLabel="Role">@context.RoleDesc</MudTd>
+            <MudTd DataLabel="Email">@context.Email</MudTd>
+            <MudTd DataLabel="PIN">@context.StaffPIN</MudTd>
+                    @if (@context.ResetPassword)
+                    {
+                    <MudTd DataLabel="Reset Password" Style="text-align:center; width:20px;">Yes</MudTd>
+                    }
+                    else
+                    {
+                    <MudTd DataLabel="Reset Password" Style="text-align:center; width:20px;">No</MudTd>
+                    }
+        </RowTemplate>
+        <RowEditingTemplate>
+            <MudTd DataLabel="Staff No">
+                <MudTextField @bind-Value="@context.StaffNo" ReadOnly="true" />
+            </MudTd>
+            <MudTd DataLabel="Staff Name">
+                <MudTextField @bind-Value="@context.StaffName" ReadOnly="true" />
+            </MudTd>
+            <MudTd DataLabel="Role">
+                <MudSelect T="string" @bind-Value="@context.RoleDesc">
+                            @foreach (var item in roles)
+                            {
+                            <MudSelectItem T="string" Value="@item.RoleDesc">@item.RoleDesc</MudSelectItem>
+                            }
+                </MudSelect>
+            </MudTd>
+            <MudTd DataLabel="Email">
+                <MudTextField @bind-Value="@context.Email" Required />
+            </MudTd>
+            <MudTd DataLabel="PIN">
+                <MudTextField @bind-Value="@context.StaffPIN" />
+            </MudTd>
+            <MudTd DataLabel="Reset Password">
+                <MudCheckBox @bind-Checked="@context.ResetPassword"></MudCheckBox>
+            </MudTd>
+        </RowEditingTemplate>
+    </MudTable>
+</div>
+    </Authorized>
+    <NotAuthorized>
+        <div class="ma-10">
+            <p style="font-size:20px;">You Do Not Have Permission To Access This Section</p>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+
+

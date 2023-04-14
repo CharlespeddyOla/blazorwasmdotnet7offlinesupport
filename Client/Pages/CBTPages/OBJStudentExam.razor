@@ -1,0 +1,158 @@
+﻿@page "/objstudentexam/{examid:int}/{stdid:int}"
+
+<PageTitle>Computer Based Test</PageTitle>
+
+
+<AuthorizeView>
+    <Authorized>
+
+        <MudGrid>
+            <MudItem xs="12" sm="12">
+                <MudPaper Class="pa-4 my-2" Style="border: solid 2px #336EFF; position: relative;">
+                    <div style="background: ghostwhite;padding: 10px; border: 1px solid lightgray; margin: 10px;">
+                        <MudGrid>
+                            <MudItem xs="12" sm="6" md="12">
+                                <MudGrid>
+                                    <MudItem xs="12" sm="6" md="12">
+                                        <div Class="d-flex justify-center" style="visibility: @(_timerVisible ? "visible" : "hidden"); font-size: 20px;">
+                                            Duration (mins): @examTime - @stopwatchvalue
+                                        </div>
+                                    </MudItem>
+                                </MudGrid>
+                            </MudItem>
+                        </MudGrid>
+                    </div>
+
+                    <div style="height: 400px; padding: 10px; border: 1px solid lightgray; margin: 10px; overflow: scroll; overflow-x: scroll; overflow-y: scroll; ">
+                        <MudGrid>
+                            <MudItem xs="12" sm="12" md="12">
+                                @if (!Questions.Any())
+                                {
+                                    <div>
+                                        <MudProgressCircular Color="Color.Secondary" Indeterminate="true" />
+                                    </div>
+                                }
+                                else
+                                {
+                                    @if (TotalPages() > 0)
+                                    {
+                                        @foreach (CBTQuestions item in CurrentDisplay)
+                                        {
+                                            if (!String.IsNullOrWhiteSpace(item.Section))
+                                            {
+                                                <div class="d-block pa-2 mr-5 ml-5" style="font-size: 18px;">
+                                                    <p>
+                                                        @((MarkupString)item.Section)
+                                                    </p>
+                                                    @if (item.SImage != null)
+                                                    {
+                                                        imgSrc = string.Format("data:image/png;base64,{0}", Convert.ToBase64String((item.SImage)));
+                                                        <img src="@imgSrc" Elevation="25" Class="align-self-center rounded-lg ml-5" @onclick="@((e) => EnlargeImage(fullScreen, item.SImage))" />
+                                                    }
+                                                </div>
+                                            }
+                                            <div class="d-block pa-2 mr-5 ml-5" style="font-size: 18px;">
+                                                <p>
+                                                    @((MarkupString)item.CurrentQuestion) &ensp;  <Equation TeXDisplay="false" Value="@item.Equation"></Equation>
+                                                </p>
+                                                @if (item.QImage != null)
+                                                {
+                                                    imgSrc = string.Format("data:image/png;base64,{0}", Convert.ToBase64String((item.QImage)));
+                                                    <img src="@imgSrc" Elevation="25" Class="align-self-center rounded-lg ml-5" @onclick="@((e) => EnlargeImage(fullScreen, item.QImage))" />
+                                                }
+                                            </div>
+
+                                            <div class="d-block pa-2 mr-5 ml-2" style="font-size: 18px;">
+                                                @foreach (var choice in Answers.Where(q => q.QID == item.QID))
+                                                {
+                                                    bool selectedOptionStatus = selectedAnswers.Where(q => q.QID == item.QID).Any();
+
+                                                    if (selectedOptionStatus)
+                                                    {
+                                                        _SelectedAnswerID = selectedAnswers.FirstOrDefault(q => q.QID == item.QID).AnsID;
+                                                    }
+
+                                                    <MudRadioGroup SelectedOption="@_SelectedAnswerID" SelectedOptionChanged="@((int val) => OnSelectedOptionChanged(val))" @key="@(item.QID + choice.AnsID)">
+                                                        <div class="d-inline">
+                                                            <MudRadio Option="@choice.AnsID" Color="Color.Primary" Size="Size.Small">
+                                                                <div class="d-inline pa-2">@choice.AnsLetter &ensp; @((MarkupString)choice.Answers) &ensp;  <Equation Value="@choice.Equation" TeXDisplay="false"></Equation> </div>
+                                                            </MudRadio>
+                                                        </div>
+                                                        <div class="d-inline">
+                                                            @if (choice.AnsImage != null)
+                                                            {
+                                                                imgSrc = string.Format("data:image/png;base64,{0}", Convert.ToBase64String((choice.AnsImage)));
+                                                                <img src="@imgSrc" Elevation="25" Class="align-self-center rounded-lg ml-5" />
+                                                            }
+                                                        </div>
+                                                    </MudRadioGroup>
+                                                }
+                                            </div>
+                                        }
+                                    }
+                                }
+                            </MudItem>
+                        </MudGrid>
+                    </div>
+                    <div style="display:flex; flex-direction: row; justify-content: center; align-items: center">
+                        @if (CurrentPage != 1)
+                        {
+                            <MudButton Size="Size.Small" StartIcon="@Icons.Material.Filled.FirstPage" @onclick="@MoveFirst" Variant="Variant.Filled" Color="Color.Primary" Class="ml-2">First</MudButton>
+                            <MudButton Size="Size.Small" StartIcon="@Icons.Material.Filled.SkipPrevious" @onclick="@MoveBack" Variant="Variant.Filled" Color="Color.Primary" Class="ml-2">Previous</MudButton>
+                        }
+
+                        @if (!AtLastPage())
+                        {
+                            <MudButton Size="Size.Small" StartIcon="@Icons.Material.Filled.SkipNext" @onclick="@MoveNext" Variant="Variant.Filled" Color="Color.Primary" Class="ml-2">Next</MudButton>
+                            <MudButton Size="Size.Small" EndIcon="@Icons.Material.Filled.LastPage" Variant="Variant.Filled" @onclick="@MoveLast" Color="Color.Primary" Class="ml-2">Last</MudButton>
+                        }
+
+                        @if (AtLastPage())
+                        {
+                            <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Info" Class="ml-2" OnClick="ShowExamReviewPage">Review</MudButton>
+                            <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Success" Class="ml-2" @onclick="@(()=>SubmitExam())">Submit</MudButton>
+                        }
+                        <span>
+                            <MudText Color="Color.Primary" Class="ml-2" Style="font-weight:bold">Question @CurrentPage of @TotalPages()</MudText>
+                        </span>
+                    </div>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </Authorized>
+    <NotAuthorized>
+        <a href="/cbt">Log in</a>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@*
+<MudGrid>
+    <MudItem xs="12" sm="12">
+        <MudButton @onclick="ShowExamReviewPage" Variant="Variant.Filled" Color="Color.Primary">
+            Open Simple Dialog
+        </MudButton>
+    </MudItem>
+</MudGrid>
+
+*@

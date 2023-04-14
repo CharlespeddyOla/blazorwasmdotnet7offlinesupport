@@ -1,0 +1,13 @@
+﻿@inherits LayoutComponentBase
+
+<MudThemeProvider />
+<MudDialogProvider />
+
+<MudLayout>
+    <MudMainContent Class="pt-16 px-5">
+        @Body
+    </MudMainContent>
+</MudLayout>
+
+<MudSnackbarProvider />
+<MudDialogProvider Position="DialogPosition.Center" CloseButton="true" DisableBackdropClick="true" />

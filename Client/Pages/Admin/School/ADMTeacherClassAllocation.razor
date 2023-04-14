@@ -1,0 +1,87 @@
+﻿@page "/teacherclassallocation"
+@inject ISnackbar Snackbar
+
+
+<AuthorizeView Roles="Administrator">
+    <Authorized Context="admin">
+        <div class="d-block pa-2 mr-5 ml-5">
+            <MudPaper Class="d-flex align-center flex-grow-1 gap-x-8" Elevation="20">
+                <div Class="d-flex flex-1">
+                    <MudTooltip Text="Go Back">
+                        <MudIconButton OnClick="GoBack" Icon="@Icons.Material.Outlined.ArrowBack" Color="Color.Success" />
+                    </MudTooltip>
+                </div>
+                <div Class="d-flex flex-1">
+                    <MudTooltip Text="Save">
+                        <MudButton OnClick="SaveSelection" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Success" Size="Size.Large">Save</MudButton>
+                    </MudTooltip>
+                </div>
+            </MudPaper>
+        </div>
+
+        <div class="d-block pa-2  mr-5 ml-5">
+            <MudGrid>
+                <MudItem xs="12" sm="6" md="3">
+                    <MudSelect T="string" Label="School" Strict="true" Dense="true" @bind-Value="selectedSchool" SelectedValuesChanged="OnSelectedSchoolChanged">
+                        @foreach (var item in schools)
+                        {
+                            <MudSelectItem T="string" Value="@item.School">@item.School</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem>
+                <MudItem xs="12" sm="6" md="4">
+                    <MudToggleIconButton Toggled="@ToggleList" ToggledChanged="OnToggledChanged"
+                                         Icon="@Icons.Material.Filled.List" Color="@Color.Success"
+                                         ToggledIcon="@Icons.Material.Filled.List" ToggledColor="@Color.Error" />
+                    <span> Click To @(ToggleList ? "Return To Filter List" : "List All Class")</span>
+                </MudItem>
+            </MudGrid>
+        </div>
+
+        <div class="d-block pa-2  mr-5 ml-5">
+            <MudTable Elevation="20" Items="@schoolClassList" Dense="true" Hover="true" Striped="true" @bind-SelectedItem="selectedItem"
+                      CommitEditTooltip="Update" OnCommitEditClick="@(() => UpdateEntry())" Breakpoint="Breakpoint.Sm">
+                <HeaderContent>
+                    <MudTh>S/N</MudTh>
+                    <MudTh>School</MudTh>
+                    <MudTh>Class</MudTh>
+                    <MudTh>Class Tearcher</MudTh>
+                    <MudTh>Class Discipline</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="S/N">@context.SN</MudTd>
+                    <MudTd DataLabel="School">@context.School</MudTd>
+                    <MudTd DataLabel="Class">@context.ClassName</MudTd>
+                    <MudTd DataLabel="Class Tearcher">@context.ClassTeacherWithNo</MudTd>
+                    <MudTd DataLabel="Class Discipline">@context.Discipline</MudTd>
+                </RowTemplate>
+                <RowEditingTemplate>
+                    <MudTd DataLabel="S/N">@context.SN</MudTd>
+                    <MudTd DataLabel="School">@context.School</MudTd>
+                    <MudTd DataLabel="Class">@context.ClassName</MudTd>
+                    <MudTd DataLabel="">
+                        <MudSelect T="string" Margin="Margin.Dense" Dense="true" @bind-Value="@context.ClassTeacherWithNo" DisableUnderLine="true">
+                            @foreach (var item in staffs)
+                            {
+                                <MudSelectItem T="string" Value="@item.StaffNameWithNo">@item.StaffNameWithNo</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudTd>
+                    <MudTd DataLabel="">
+                        <MudSelect T="string" Margin="Margin.Dense" Dense="true" @bind-Value="@context.Discipline" DisableUnderLine="true">
+                            @foreach (var item in desciplines)
+                            {
+                                <MudSelectItem T="string" Value="@item.Discipline">@item.Discipline</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudTd>
+                </RowEditingTemplate>
+            </MudTable>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <div class="ma-10">
+            <p style="font-size:20px;">You Do Not Have Permission To Access This Page</p>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>

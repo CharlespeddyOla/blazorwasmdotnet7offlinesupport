@@ -1,0 +1,184 @@
+﻿@page "/scgooldetails"
+
+
+<div class="d-block pa-2 mr-5 ml-5">
+    <MudPaper Class="d-flex align-center flex-grow-1 gap-x-8" Elevation="20">
+        <div Class="d-flex flex-1">
+            <MudTooltip Text="Display School Details">
+                <MudIconButton OnClick="SchoolInfo" Icon="@Icons.Material.Outlined.FormatLineSpacing" Color="Color.Success" />
+            </MudTooltip>
+        </div>
+        <div Class="d-flex flex-1">
+            <MudTooltip Text="Update School Details">
+                 <MudButton OnClick="UpdateSchoolInfo" Disabled="@saveStatus" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Success" Size="Size.Large">Update</MudButton>
+            </MudTooltip>
+        </div>
+    </MudPaper>
+</div>
+
+
+@if (toolBarMenuId == 1)
+{
+    <div class="d-block pa-2  mr-5 ml-5">
+        <MudTable Elevation="20" Items="@schoolInfoList" Dense="true" Hover="true" Breakpoint="Breakpoint.Sm">
+            <HeaderContent>
+                <MudTh>School Name</MudTh>
+                <MudTh>School Code</MudTh>
+                <MudTh>School Slogan</MudTh>
+                <MudTh>Edit</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="School Name">@context.SchName</MudTd>
+                <MudTd DataLabel="School Code">@context.SchCode</MudTd>
+                <MudTd DataLabel="School Slogan">@context.SchSlogan</MudTd>
+                <MudTd DataLabel="Edit">
+                    <MudFab @onclick="@(()=>EditSchoolInfo(@context.SchInfoID))" Color="Color.Primary" Icon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small" />
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    </div>
+}
+else
+{
+    <div class="d-block pa-2  mr-5 ml-5">
+        <EditForm Model="@schInfo" OnValidSubmit="@UpdateSchoolInfo">
+            <FluentValidationValidator />
+            <MudCard Elevation="20">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Edit School Information</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudGrid Spacing="1" Justify="Justify.Center">
+                        <MudItem xs="12" sm="6" md="2">
+                            <div class="d-block pa-2 justify-center">
+                                @if (schinfoid != 0)
+                                {
+                                    <img src="@imgSrc" id="image" width="150" height="150" style="border:1px solid #000000;margin-top:10px " />
+                                }
+                                else
+                                {
+                                    @if (file != null)
+                                    {
+                                        <img src="@imgSrc" id="image" width="150" height="150" style="border:1px solid #000000;margin-top:10px " />
+                                    }
+                                    else
+                                    {
+                                        <img src="assets/defaultphoto.png" id="image" width="150" height="150" style="border:1px solid #000000;margin-top:10px " />
+                                    }
+                                }
+
+                            </div>
+                            <div class="d-block pa-2 justify-center">
+                                <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Filled.Image" for="fileInput">
+                                    Load Picture
+                                </MudButton>
+                            </div>
+                        </MudItem>
+                        <MudItem xs="12" sm="6" md="10">
+                            <MudGrid>
+                                <MudItem xs="12" sm="6" md="4">
+                                    <MudTextField Label="School Name" @bind-Value="@schInfo.SchName" Variant="Variant.Text"
+                                                  Margin="Margin.Dense" For="() => schInfo.SchName" />
+                                </MudItem>
+                                <MudItem xs="12" sm="6" md="4">
+                                    <MudTextField Label="School Code" @bind-Value="@schInfo.SchCode" For="() => schInfo.SchCode" />
+                                </MudItem>
+                                <MudItem xs="12" sm="6" md="4">
+                                    <MudTextField Label="School Type" @bind-Value="@schInfo.SchType" />
+                                </MudItem>
+                            </MudGrid>
+                            <MudGrid>
+                                <MudItem xs="12" sm="6" md="12">
+                                    <MudTextField Label="School Slogan" @bind-Value="@schInfo.SchSlogan" Variant="Variant.Text"
+                                                  Margin="Margin.Dense" For="() => schInfo.SchSlogan" />
+                                </MudItem>
+                            </MudGrid>
+                            <MudGrid>
+                                <MudItem xs="12" sm="6" md="12">
+                                    <MudTextField Label="School Address Line 1" @bind-Value="@schInfo.SchAddress" Variant="Variant.Text"
+                                                  Margin="Margin.Dense" For="() => schInfo.SchAddress" />
+                                </MudItem>
+                            </MudGrid>
+                            <MudGrid>
+                                <MudItem xs="12" sm="6" md="12">
+                                    <MudTextField Label="School Address Line 2" @bind-Value="@schInfo.SchAddressLine2" Variant="Variant.Text"
+                                                  Margin="Margin.Dense" />
+                                </MudItem>
+                            </MudGrid>
+                        </MudItem>
+                    </MudGrid>
+                    <MudGrid>
+                        <MudItem xs="12" sm="6" md="3">
+                            <MudTextField Label="Phone Number" @bind-Value="@schInfo.SchPhones" For="() => schInfo.SchPhones" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6" md="3">
+                            <MudTextField Label="Alternate Phone Number" @bind-Value="@schInfo.SchPhones2" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6" md="3">
+                            <MudTextField Label="School Email" @bind-Value="@schInfo.SchEmails" For="() => schInfo.SchEmails" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6" md="3">
+                            <MudTextField Label="School Website" @bind-Value="@schInfo.SchWebsites" />
+                        </MudItem>
+                    </MudGrid>
+                    <MudGrid>
+                        <MudItem xs="12" sm="12" md="3">
+                            <MudSelect T="string" Label="Country" Dense="true" OffsetY="true" @bind-Value="@schInfo.Country"
+                                       SelectedValuesChanged="OnCountryChanged" For="() => schInfo.Country">
+                                @foreach (var item in countrylist)
+                                {
+                                    <MudSelectItem T="string" Value="@item.Country">@item.Country</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </MudItem>
+                        <MudItem xs="12" sm="12" md="3">
+                            <MudSelect T="string" Label="State" Dense="true" OffsetY="true" @bind-Value="@schInfo.State"
+                                       SelectedValuesChanged="OnStateChanged" For="() => schInfo.State">
+                                @foreach (var item in statelist)
+                                {
+                                    <MudSelectItem T="string" Value="@item.State">@item.State</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </MudItem>
+                        <MudItem xs="12" sm="12" md="3">
+                            <MudSelect T="string" Label="Local Govertment Area" Dense="true" OffsetY="true" @bind-Value="@schInfo.LGA"
+                                       SelectedValuesChanged="OnLGAChanged" For="() => schInfo.LGA">
+                                @foreach (var item in lgalist)
+                                {
+                                    <MudSelectItem T="string" Value="@item.LGA">@item.LGA</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </MudItem>
+                    </MudGrid>
+                    <MudGrid>
+                        <MudItem xs="12" sm="6" md="3">
+                            <MudTextField @bind-Value="@schInfo.Password" Label="School Email Password" Variant="Variant.Text" InputType="@PasswordInput"
+                                          Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ShowHidePassword"
+                                          AdornmentAriaLabel="Show Password" For="@(() => schInfo.Password)" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6" md="3">
+                            <MudTextField @bind-Value="@schInfo.ConfirmPassword" Label="Confirm Password" Variant="Variant.Text" InputType="@PasswordInput"
+                                          Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ShowHidePassword"
+                                          AdornmentAriaLabel="Show Password" For="@(() => schInfo.ConfirmPassword)" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6" md="2">
+                            <MudTextField Label="Email SMTP Server" @bind-Value="@schInfo.EmailSettings" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6" md="2">
+                            <MudTextField Label="SMTP Port" @bind-Value="@schInfo.EmailPortSMTP" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6" md="2">
+                            <MudTextField Label="SMTP SSL/TLS Port" @bind-Value="@schInfo.EmailPortSSLTLS" />
+                        </MudItem>
+                    </MudGrid>
+                </MudCardContent>
+            </MudCard>
+        </EditForm>
+    </div>
+
+}
+
+
+<InputFile id="fileInput" OnChange="UploadFiles" hidden multiple />

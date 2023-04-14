@@ -1,0 +1,32 @@
+﻿
+<MudDialog Style="height: 500px; overflow-y: scroll">
+    <DialogContent>
+        <MudGrid>
+            <MudItem xs="12" md="8" Class="d-flex justify-center align-center" Style="height: 500px; ">
+                @if (_QImage != null)
+                {
+                    imgSrc = string.Format("data:image/png;base64,{0}", Convert.ToBase64String((_QImage)));
+                    <img src="@imgSrc" Elevation="25" Class="align-self-center rounded-lg ml-5" Height="@(SetHeight ? ImageHeight : null)" Width="@(SetWidth ? ImageWidth : null)" />
+                }
+            </MudItem>
+            <MudItem xs="12" md="4">
+                <MudPaper Class="pa-4 mt-6 mt-lg-16" Elevation="0">
+                    <MudText Typo="Typo.h6">Zoom</MudText>
+                    <div class="d-flex justify-space-between align-center mt-4">
+                        <MudText>Width: @(SetWidth ? $"{ImageWidth}px" : "Auto")</MudText>
+                        <MudSwitch @bind-Checked="@SetWidth" Color="Color.Primary" Class="mr-0" />
+                    </div>
+                    <MudSlider @bind-Value="@ImageWidth" Disabled="@(!SetWidth)" Max="600" Color="Color.Primary" />
+                    <div class="d-flex justify-space-between align-center mt-4">
+                        <MudText>Height: @(SetHeight ? $"{ImageHeight}px" : "Auto")</MudText>
+                        <MudSwitch @bind-Checked="@SetHeight" Color="Color.Secondary" Class="mr-0" />
+                    </div>
+                    <MudSlider @bind-Value="@ImageHeight" Disabled="@(!SetHeight)" Max="350" Color="Color.Secondary" />
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Close">Close</MudButton>
+    </DialogActions>
+</MudDialog>

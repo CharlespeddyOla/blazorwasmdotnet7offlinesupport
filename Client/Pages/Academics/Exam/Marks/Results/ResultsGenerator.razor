@@ -1,0 +1,287 @@
+﻿@page "/resultsgenerator"
+@using Newtonsoft.Json
+
+
+<AuthorizeView Roles="Administrator">
+    <Authorized Context="admin">
+
+        <div class="d-block pa-2 mr-5 ml-5">
+            <div class="container-fluid" hidden="@IsShow">
+                <MudText Typo="Typo.subtitle2" Color="Color.Inherit">
+                    <b>@progressbarInfo @Math.Round(i)%</b>
+                </MudText>
+                <MudProgressLinear Color="Color.Info" Size="Size.Large" Value="@Convert.ToDouble(i)" Rounded="true" Striped="true">
+                </MudProgressLinear>
+            </div>
+        </div>
+
+        @if (menuId == 1)
+        {
+            <div class="d-block pa-2 mr-5 ml-5">
+                <MudPaper Class="d-flex align-center flex-grow-1 gap-x-8" Elevation="20">
+                    <MudGrid>
+                        <MudItem xs="12" sm="12" md="3">
+                            <MudTooltip Text="Results Page">
+                                <MudButton OnClick="ResultPage" StartIcon="@Icons.Material.Outlined.AutoAwesomeMotion" Color="Color.Success" Size="Size.Large">Go To Result Page</MudButton>
+                            </MudTooltip>
+                        </MudItem>
+                        <MudItem xs="12" sm="12" md="2">
+                            <MudTooltip Text="Broadsheet">
+                                <MudButton OnClick="BroadsheetPage" StartIcon="@Icons.Material.Outlined.Forum" Color="Color.Success" Size="Size.Large">Broadsheet</MudButton>
+                            </MudTooltip>
+                        </MudItem>
+                    </MudGrid>
+                </MudPaper>
+            </div>
+
+            <div class="d-block pa-2 mr-5 ml-5">
+                <MudCard Elevation="20">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">Student Results </MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudGrid>
+                            <div Class="d-flex justify-start flex-grow-1 gap-4">
+                                <div class="d-inline pa-2">
+                                    <MudItem xs="12" sm="12" md="4">
+                                        <MudRadioGroup T="int" @bind-SelectedOption="@SelectedOption" @onclick="OptSelectionClick">
+                                            <MudRadio Option="1" Color="Color.Tertiary">Mid-Term Results</MudRadio>
+                                            <MudRadio Option="2" Color="Color.Tertiary">End of Term Results</MudRadio>
+                                            <MudRadio Option="3" Color="Color.Tertiary">Check Point Results</MudRadio>
+                                            <MudRadio Option="4" Color="Color.Tertiary">IGCSE Results</MudRadio>
+                                        </MudRadioGroup>
+                                    </MudItem>
+                                </div>
+                                <div class="d-inline pa-2">
+                                    <MudItem xs="12" sm="12" md="8">
+                                        @if (ShowPreview)
+                                        {
+                                            <SpinLoader IsLoading="isLoading">
+                                                <LoadingTemplate>
+                                                    <Chase Center="true" Color="#3498db" Size="75px"></Chase>
+                                                    <div Class="d-flex justify-center">
+                                                        <p style="font-size:16px;">@loadingmessage</p>
+                                                    </div>
+                                                </LoadingTemplate>
+                                            </SpinLoader>
+                                        }
+                                    </MudItem>
+                                </div>
+                            </div>
+                        </MudGrid>
+                        <MudGrid>
+                            <MudItem xs="12" sm="12" md="3">
+                                <MudSelect T="string" Label="School" Strict="true" Dense="true" @bind-Value="selectedSchool"
+                                       SelectedValuesChanged="OnSchoolChanged">
+                                    @foreach (var item in schools)
+                                    {
+                                        <MudSelectItem T="string" Value="@item.School">@item.School</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12" sm="12" md="3">
+                                <MudSelect T="string" Label="Class" Strict="true" Dense="true" @bind-Value="selectedClass"
+                                       SelectedValuesChanged="OnClassChanged">
+                                    @foreach (var item in classList)
+                                    {
+                                        <MudSelectItem T="string" Value="@item.ClassName">@item.ClassName</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudItem>
+                        </MudGrid>
+                        <br />
+                        <MudGrid>
+                            <MudItem xs="12" sm="12" md="3">
+                                <MudButton OnClick="ResultsComputation" Variant="Variant.Outlined" Color="Color.Default">Generate Results</MudButton>
+                            </MudItem>
+                            <MudItem xs="12" sm="12" md="3">
+                                <MudButton OnClick="Refresh" Variant="Variant.Outlined" Color="Color.Default">Refresh</MudButton>
+                            </MudItem>
+                        </MudGrid>
+                    </MudCardContent>
+                </MudCard>
+            </div>
+
+        }
+        else if (menuId == 2)
+        {
+            <div class="d-block pa-2 mr-5 ml-5">
+                <MudPaper Class="d-flex align-center flex-grow-1" Elevation="20">
+                    <MudGrid>
+                        <MudItem xs="12" sm="12" md="2">
+                            <MudTooltip Text="Go Back To Previous Page">
+                                <MudButton OnClick="GoBack" StartIcon="@Icons.Material.Outlined.ArrowBack" Color="Color.Success" Size="Size.Large">Go Back</MudButton>
+                            </MudTooltip>
+                        </MudItem>
+                        <MudItem xs="12" sm="12" md="4">
+                            <div Class="d-flex align-center flex-grow-1 gap-x-4">
+                                <div Class="d-flex flex-1">
+                                    <div>Processing Time: @stopwatchvalue</div>
+                                </div>
+                                <div Class="d-flex flex-1 ml-3">
+                                    <MudButton Disabled="@_processing" OnClick="ProcessAllResults" Variant="Variant.Filled" Color="Color.Success">
+                                        @if (_processing)
+                                        {
+                                            <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                                            <MudText Class="ms-2">Processing</MudText>
+                                        }
+                                        else
+                                        {
+                                            <MudText>Batch Preview</MudText>
+                                        }
+                                    </MudButton>
+                                </div>
+                            </div>
+                        </MudItem>
+                        @*<MudItem xs="12" sm="12" md="2">
+                    <MudTooltip Text="Go Back To Previous Page">
+                    <MudButton OnClick="DownloadResults" StartIcon="@Icons.Material.Outlined.DownloadForOffline" Color="Color.Success" Size="Size.Large">Dowbload Result</MudButton>
+                    </MudTooltip>
+                    </MudItem>*@
+                        <MudItem xs="12" sm="12" md="4">
+                            <MudTooltip Text="Export Results For Parents">
+                                <MudButton OnClick="ExportAllStudentsResults" StartIcon="@Icons.Material.Outlined.ImportExport" Color="Color.Success" Size="Size.Large">Export Results For Parents</MudButton>
+                            </MudTooltip>
+                        </MudItem>
+                    </MudGrid>
+                </MudPaper>
+            </div>
+
+            <div class="d-block pa-2 mr-5 ml-5">
+                <MudGrid>
+                    <MudItem xs="12" sm="12" md="6">
+                        <MudSelect T="string" Label="Students" Strict="true" Dense="true" @bind-Value="SelectedStudent"
+                               SelectedValuesChanged="OnStudentChanged">
+                            @foreach (var item in Students)
+                            {
+                                <MudSelectItem T="string" Value="@item.StudentName">@item.StudentName</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudItem>
+                </MudGrid>
+            </div>
+
+        }
+        else if (menuId == 3)
+        {
+            <div class="d-block pa-2 mr-5 ml-5">
+                <MudPaper Class="d-flex align-center flex-grow-1 gap-x-8" Elevation="20">
+                    <MudGrid>
+                        <MudItem xs="12" sm="12" md="3">
+                            <MudTooltip Text="Go Back To Previous Page">
+                                <MudButton OnClick="GoBack" StartIcon="@Icons.Material.Outlined.ArrowBack" Color="Color.Success" Size="Size.Large">Go Back</MudButton>
+                            </MudTooltip>
+                        </MudItem>
+                        <MudItem xs="12" sm="12" md="3">
+                            <MudTooltip Text="Display Broadsheet In A Grid">
+                                <MudButton OnClick=@(()=>DisplayBroadsheet(1)) StartIcon="@Icons.Material.Outlined.TableView" Color="Color.Success" Size="Size.Large">Display Broadsheet</MudButton>
+                            </MudTooltip>
+                        </MudItem>
+                        <MudItem xs="12" sm="12" md="3">
+                            <MudTooltip Text="Generate Broadsheet Summary">
+                                <MudButton OnClick="GetBroadsheetSummary" StartIcon="@Icons.Material.Outlined.Summarize" Color="Color.Success" Size="Size.Large">Broadsheet Summary</MudButton>
+                            </MudTooltip>
+                        </MudItem>
+                        <MudItem xs="12" sm="12" md="3">
+                            <MudTooltip Text="Export Broadsheet To Excel">
+                                <MudButton OnClick="ExportBroadsheetToExcel" StartIcon="@Icons.Material.Outlined.ImportExport" Color="Color.Success" Size="Size.Large">Export To Excel</MudButton>
+                            </MudTooltip>
+                        </MudItem>
+                        @*<MudItem xs="12" sm="12" md="4">
+
+                    </MudItem>*@
+                    </MudGrid>
+                </MudPaper>
+            </div>
+
+            @if (broadsheetMenudId == 1)
+            {
+                <div class="d-block pa-2 mr-5 ml-5">
+                    <MudCard Elevation="20">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">@ResultTypeDisplayBroadsheet()</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudSimpleTable Hover="true" Dense="true" Striped="true" Breakpoint="Breakpoint.Sm"
+                                    FixedHeader="@fixedheader" Style="@(fixedheader?"height:400px;":"")">
+                                <thead>
+                                    <tr>
+                                        @foreach (var h in fieldnames)
+                                        {
+                                            if (h != "STDID")
+                                            {
+                                                <th>@h</th>
+                                            }
+                                        }
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in broadsheetMarkList)
+                                    {
+                                        dynamic row = JsonConvert.DeserializeObject<dynamic>(item.ToString());
+                                        <tr>
+                                            @foreach (var col in fieldnames)
+                                            {
+                                                if (col != "STDID")
+                                                {
+                                                    <td>@row[col]</td>
+                                                }
+                                            }
+                                        </tr>
+                                    }
+                                </tbody>
+                            </MudSimpleTable>
+                        </MudCardContent>
+                    </MudCard>
+                </div>
+
+            }
+
+            <div class="d-block pa-2  mr-5 ml-5">
+                <MudItem xs="12" sm="12" md="8">
+                    @if (ShowPreview)
+                    {
+                        <SpinLoader IsLoading="isLoading">
+                            <LoadingTemplate>
+                                <Chase Center="true" Color="#3498db" Size="75px"></Chase>
+                                <div Class="d-flex justify-center">
+                                    <p style="font-size:16px;">@loadingmessage</p>
+                                </div>
+                            </LoadingTemplate>
+                        </SpinLoader>
+                    }
+                </MudItem>
+            </div>
+        }
+
+        @if (menuId > 1)
+        {
+            <div class="d-block pa-2 mr-5 ml-5">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card h-300">
+                            <div id="iframeId"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+    </Authorized>
+    <NotAuthorized>
+        <div class="ma-10">
+            <p style="font-size:20px;">You Do Not Have Permission To Access This Page</p>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+
+
+
+
+

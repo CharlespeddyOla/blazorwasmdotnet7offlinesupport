@@ -1,0 +1,24 @@
+﻿<MudDrawer @bind-Open="SideBarOpen" Elevation="1">
+    <MudDrawerHeader>
+        @if (studentPhoto != null)
+        {
+            <img src="@imgSrcphoto" id="image" width="150" height="150" style="border:1px solid #000000;margin-top:10px " />
+        }
+        else
+        {
+            <img src="images/defaultphoto.png" id="image" width="150" height="150" style="border:1px solid #000000;margin-top:10px " />
+        }
+    </MudDrawerHeader>
+    <MudNavMenu>
+        <MudNavGroup Title="Exam Date:" Expanded="true">
+            <MudNavLink Class="nav-link">@examDate</MudNavLink>
+        </MudNavGroup>
+        <MudNavGroup Title="Exam Code:" Expanded="true">
+            <MudNavLink Class="nav-link">@examCode</MudNavLink>
+        </MudNavGroup>
+        <MudNavGroup Title="Subject:" Expanded="true">
+            <MudNavLink Class="nav-link">@subject</MudNavLink>
+        </MudNavGroup>
+        @*<MudNavLink Href="/">Close</MudNavLink>*@
+    </MudNavMenu>
+</MudDrawer>

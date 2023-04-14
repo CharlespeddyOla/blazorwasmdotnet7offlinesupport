@@ -1,0 +1,124 @@
+﻿@page "/subjectclasslist"
+@inject ISnackbar Snackbar
+
+<AuthorizeView Roles="Administrator">
+     <Authorized Context="admin">
+
+        <div class="d-block pa-2 mr-5 ml-5">
+            <MudPaper Class="d-flex align-center flex-grow-1 gap-x-8" Elevation="20">
+                <MudGrid>
+                    <MudItem xs="12" sm="12" md="3">
+                        <MudTooltip Text="Go Back">
+                            <MudIconButton OnClick="GoBack" Icon="@Icons.Material.Filled.ArrowBack" Color="Color.Success" />
+                        </MudTooltip>
+                    </MudItem>
+                    <MudItem xs="12" sm="12" md="3">
+                        <MudTooltip Text="Subject Classification List">
+                            <MudIconButton OnClick="SubjectClassificationsEvent" Icon="@Icons.Material.Filled.FormatLineSpacing" Color="Color.Success" />
+                        </MudTooltip>
+                    </MudItem>
+                    <MudItem xs="12" sm="12" md="3">
+                        <MudTooltip Text="Create A New Subject Classification">
+                            <MudIconButton OnClick="CreateNewSubjectClassification" Icon="@Icons.Material.Outlined.LibraryAdd" Color="Color.Success" />
+                        </MudTooltip>
+                    </MudItem>
+                    <MudItem xs="12" sm="12" md="3">
+                        <MudTooltip Text="Save">
+                            <button type="submit" form="@editFormId">
+                                <MudButton Disabled="@disableSaveButton" StartIcon="@Icons.Material.Outlined.Save"
+                                           Color="Color.Success" Size="Size.Large">Save</MudButton>
+                            </button>
+                        </MudTooltip>
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+        </div>
+
+        @if (toolBarMenuId == 1)
+        {
+            <div class="d-block pa-2  mr-5 ml-5">
+                <MudTable Items="@sbjclasslist" Elevation="20" Dense="true" Hover="true" Striped="true" @bind-SelectedItem="selectedItem"
+                      CommitEditTooltip="Update" OnCommitEditClick="@(() => UpdateEntry())" Breakpoint="Breakpoint.Sm">
+                    <HeaderContent>
+                        <MudTh>Subject Classification</MudTh>
+                        <MudTh>Subject Count</MudTh>
+                        <MudTh Style="text-align:center; width:20px;">Use Rating</MudTh>
+                        <MudTh Style="text-align:center; width:20px;">Active</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Subject Classification">@context.SbjClassification</MudTd>
+                        <MudTd DataLabel="Subject Count">@context.SubjectCount</MudTd>
+                        @*<MudTd DataLabel="Use Rating" Style="text-align:center; width:20px;">
+                    <MudCheckBox @bind-Checked="@context.Remark"></MudCheckBox>
+                    </MudTd>*@
+                        @if (@context.Remark)
+                        {
+                            <MudTd DataLabel="Use Rating" Style="text-align:center; width:20px;">Yes</MudTd>
+                        }
+                        else
+                        {
+                            <MudTd DataLabel="Use Rating" Style="text-align:center; width:20px;">No</MudTd>
+                        }
+
+                        @if (@context.Status)
+                        {
+                            <MudTd DataLabel="Active" Style="text-align:center; width:20px;">Yes</MudTd>
+                        }
+                        else
+                        {
+                            <MudTd DataLabel="Active" Style="text-align:center; width:20px;">No</MudTd>
+                        }
+                        @*<MudTd DataLabel="Active" Style="text-align:center; width:20px;">
+                    <MudCheckBox @bind-Checked="@context.Status"></MudCheckBox>
+                    </MudTd>*@
+                    </RowTemplate>
+                    <RowEditingTemplate>
+                        <MudTd DataLabel="Subject Classification">
+                            <MudTextField @bind-Value="@context.SbjClassification" Required />
+                        </MudTd>
+                        <MudTd DataLabel="Subject Count">
+                            <MudTextField @bind-Value="@context.SubjectCount" ReadOnly />
+                        </MudTd>
+                        <MudTd DataLabel="Use Rating" Style="text-align:center; width:20px;">
+                            <MudCheckBox @bind-Checked="@context.Remark"></MudCheckBox>
+                        </MudTd>
+                        <MudTd DataLabel="Active" Style="text-align:center; width:20px;">
+                            <MudCheckBox @bind-Checked="@context.Status"></MudCheckBox>
+                        </MudTd>
+                    </RowEditingTemplate>
+                    <PagerContent>
+                        <MudTablePager />
+                    </PagerContent>
+                </MudTable>
+            </div>
+        }
+        else if (toolBarMenuId == 2)
+        {
+            <div class="d-block pa-2 mr-5 ml-5">
+                <EditForm id="@editFormId" Model="@details" OnValidSubmit="@SubmitValidForm" OnInvalidSubmit="@InvalidEntries">
+                    <FluentValidationValidator />
+                    <MudCard Elevation="20">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">Create A New Subject Classification</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudGrid>
+                                <MudItem xs="12" sm="6" md="4">
+                                    <MudTextField Label="Subject Classification" @bind-Value="@details.SbjClassification"
+                                              For="() => details.SbjClassification" />
+                                </MudItem>
+                            </MudGrid>
+                        </MudCardContent>
+                    </MudCard>
+                </EditForm>
+            </div>
+        }
+     </Authorized>
+    <NotAuthorized>
+        <div class="ma-10">
+            <p style="font-size:20px;">You Do Not Have Permission To Access This Page</p>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>

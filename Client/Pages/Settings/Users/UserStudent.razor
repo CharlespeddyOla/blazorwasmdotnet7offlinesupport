@@ -1,0 +1,188 @@
+﻿@page "/userstudent"
+@inject ISnackbar Snackbar
+
+
+<AuthorizeView Roles="Administrator">
+    <Authorized Context="admin">
+        
+<div class="d-block pa-2 mr-5 ml-5">
+    <MudPaper Class="d-flex align-center flex-grow-1 gap-x-8" Elevation="20">
+        <div Class="d-flex flex-1">
+            <MudMenu StartIcon="@Icons.Filled.ManageAccounts" EndIcon="@Icons.Filled.KeyboardArrowDown" Label="User Management - Student" Color="Color.Primary" Variant="Variant.Filled">
+                <MudMenuItem OnClick="StartStudentPINsGenerator">Generate Student PINs</MudMenuItem>
+                <MudMenuItem OnClick="GenerateParentPIN">Generate Parent PINs</MudMenuItem>
+                <MudMenuItem OnClick="ExportStudentPINs">Export Student PINs As A List</MudMenuItem>
+                <MudMenuItem OnClick="ExportStudentPINsPrint">Export Student PINs For Distribution</MudMenuItem>
+                <MudMenuItem OnClick="ExportParentPINs">Export Parent PINs  As A List</MudMenuItem>
+                <MudMenuItem OnClick="ExportParentPINsPrint">Export Parent PINs For Distribution</MudMenuItem>
+                <MudMenuItem OnClick="AccessInfo">Access Information</MudMenuItem>
+            </MudMenu>
+        </div>
+        <div Class="d-flex flex-1">
+            <MudTooltip Text="Refresh">
+                <MudIconButton OnClick="Refresh" Icon="@Icons.Material.Filled.Refresh" Color="Color.Success" />
+            </MudTooltip>
+        </div>
+    </MudPaper>
+</div>
+
+
+<div class="d-block pa-2  mr-5 ml-5">
+    <div class="container-fluid" hidden="@IsShowProgress">
+        <MudText Typo="Typo.subtitle2" Color="Color.Inherit">
+            <b>@progressbarInfo @Math.Round(x)%</b>
+        </MudText>
+        <MudProgressLinear Color="Color.Info" Size="Size.Large" Value="@Convert.ToDouble(x)" Rounded="true" Striped="true">
+        </MudProgressLinear>
+    </div>
+</div>
+
+@if (menuId == 1)
+{
+    <div class="d-block pa-2  mr-5 ml-5">
+        <MudGrid>
+            <MudItem xs="12" sm="12" md="4">
+                <MudSelect T="string" Label="School" Strict="true" Dense="true" @bind-Value="selectedSchool"
+                           SelectedValuesChanged="OnSelectedSchoolChanged">
+                    @foreach (var item in schools)
+                    {
+                        <MudSelectItem T="string" Value="@item.School">@item.School</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="4">
+                <MudSelect T="string" Label="Class" Strict="true" Dense="true" @bind-Value="selectedClass"
+                           SelectedValuesChanged="OnSelectedClassChanged">
+                    @foreach (var item in classList)
+                    {
+                        <MudSelectItem T="string" Value="@item.ClassName">@item.ClassName</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="3">
+                <MudSwitch Color="Color.Primary" Checked="@_lockcbt" CheckedChanged="@((bool value) => LockCBT(value))">@cbtLockState</MudSwitch>
+            </MudItem>
+        </MudGrid>
+    </div>
+
+    <div class="d-block pa-2  mr-5 ml-5">
+        <MudTable Elevation="20" Items="@students" Dense="true" Hover="true" Breakpoint="Breakpoint.Sm"
+                  Striped="true" @bind-SelectedItem="selectedStudent" CommitEditTooltip="Update"
+                  OnCommitEditClick="@(() => UpdateStudentEntry())">
+            <HeaderContent>
+                @*<MudTh>Class</MudTh>*@
+                <MudTh>S/N</MudTh>
+                <MudTh>Admission No.</MudTh>
+                <MudTh>Student Name</MudTh>
+                <MudTh>Parent PIN</MudTh>
+                <MudTh>Student PIN</MudTh>
+                <MudTh Style="width:20px;">Lock CBT</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                @*<MudTd DataLabel="Class">@context.ClassName</MudTd>*@
+                <MudTd DataLabel="S/N">@context.SN</MudTd>
+                <MudTd DataLabel="Admission No.">@context.AdmissionNo</MudTd>
+                <MudTd DataLabel="Student Name">@context.StudentName</MudTd>
+                <MudTd DataLabel="Parent PIN">@context.ParentPin</MudTd>
+                <MudTd DataLabel="Student PIN">@context.StudentPin</MudTd>
+                @if (@context.CBTLock)
+                    {
+                    <MudTd DataLabel="Lock CBT" Style="text-align:center; width:20px;">Yes</MudTd>
+                    }
+                    else
+                    {
+                    <MudTd DataLabel="Lock CBT" Style="text-align:center; width:20px;">No</MudTd>
+                    }
+            </RowTemplate>
+            <RowEditingTemplate>
+                @*<MudTd DataLabel="Class">
+                        <MudTextField @bind-Value="@context.ClassName" ReadOnly="true" />
+                    </MudTd>*@
+                <MudTd DataLabel="S/N">
+                    <MudTextField @bind-Value="@context.SN" ReadOnly="true" />
+                </MudTd>
+                <MudTd DataLabel="Admission No.">
+                    <MudTextField @bind-Value="@context.AdmissionNo" ReadOnly="true" />
+                </MudTd>
+                <MudTd DataLabel="Student Name">
+                    <MudTextField @bind-Value="@context.StudentName" ReadOnly="true" />
+                </MudTd>
+                <MudTd DataLabel="Parent PIN">
+                    <MudTextField @bind-Value="@context.ParentPin" />
+                </MudTd>
+                <MudTd DataLabel="Student PIN">
+                    <MudTextField @bind-Value="@context.StudentPin" Required />
+                </MudTd>
+                <MudTd DataLabel="Lock CBT">
+                    <MudCheckBox @bind-Checked="@context.CBTLock"></MudCheckBox>
+                </MudTd>
+            </RowEditingTemplate>
+        </MudTable>
+    </div>
+}
+else
+{
+    <div class="d-block pa-2  mr-5 ml-5">
+        <MudGrid>
+            <MudItem xs="12" sm="12" md="6">
+                <MudCard Elevation="20">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.body2">Student CBT / Parent Result Checker Access Information</MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudTable Items="@cbtconnectionInfo" Dense="true" Hover="true" Breakpoint="Breakpoint.Sm"
+                                  Striped="true" @bind-SelectedItem="selectedConnectionInfo" CommitEditTooltip="Update"
+                                  OnCommitEditClick="@(() => UpdateConnectionInfo())">
+                            <HeaderContent>
+                                <MudTh>Access Type</MudTh>
+                                <MudTh>Value</MudTh>
+                            </HeaderContent>
+                            <RowTemplate>
+                                <MudTd DataLabel="S/N">@context.ConnectionName</MudTd>
+                                <MudTd DataLabel="Admission No.">@context.ConnectionValue</MudTd>
+                            </RowTemplate>
+                            <RowEditingTemplate>
+                                <MudTd DataLabel="S/N">
+                                    <MudTextField @bind-Value="@context.ConnectionName" ReadOnly="true" />
+                                </MudTd>
+                                <MudTd DataLabel="Admission No.">
+                                    <MudTextField @bind-Value="@context.ConnectionValue" Required="true" />
+                                </MudTd>
+                            </RowEditingTemplate>
+                        </MudTable>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+        </MudGrid>
+    </div>
+}
+
+<MudDialog @bind-IsVisible="visible" Options="dialogOptions">
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.WifiPassword" Class="mr-3 mb-n1" />
+            Set Password
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudTextField T="string" Label="Enter Password" TextChanged="GenerateStudentPIN" />
+        @*<MudTextField T="string" Label="Enter Password" Variant="Variant.Text" InputType="@PasswordInput"
+            Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ShowHidePassword"
+            AdornmentAriaLabel="Show Password" />*@
+    </DialogContent>
+    <DialogActions>
+        @*<MudButton OnClick="Cancel">Cancel</MudButton>*@
+        <MudButton Color="Color.Error">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+
+
+    </Authorized>
+     <NotAuthorized>
+        <div class="ma-10">
+            <p style="font-size:20px;">You Do Not Have Permission To Access This Section</p>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>

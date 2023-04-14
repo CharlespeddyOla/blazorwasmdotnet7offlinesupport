@@ -1,0 +1,653 @@
+﻿@page "/markssettings"
+@inject ISnackbar Snackbar
+
+<AuthorizeView Roles="Administrator">
+     <Authorized Context="admin">
+         
+<div class="d-block pa-2 mr-5 ml-5">
+    <MudPaper Class="d-flex align-center flex-grow-1 gap-x-8" Elevation="20">
+        <div Class="d-flex flex-1">
+            <MudMenu StartIcon="@Icons.Filled.SettingsApplications" EndIcon="@Icons.Filled.KeyboardArrowDown" Label="Mark Settings" Color="Color.Primary" Variant="Variant.Filled">
+                <MudMenuItem OnClick="SetAciveExamEvent">Set Active Exam Mark Entry</MudMenuItem>
+                <MudMenuItem OnClick="MarksSettingEvent">General Marks Setting</MudMenuItem>
+                <MudMenuItem OnClick="ResultHeaderFooterEvent">Result Header And Footer</MudMenuItem>                
+                <MudMenuItem OnClick="GeneralGradeEvent">General Grades</MudMenuItem>
+                <MudMenuItem OnClick="MockGradeSeniorEvent">Senior Mock Grades</MudMenuItem>
+                <MudMenuItem OnClick="MockGradeJuniorEvent">Junior Mock Grades</MudMenuItem>
+                <MudMenuItem OnClick="CheckPointGradeEvent">CheckPoint Grades</MudMenuItem>
+                <MudMenuItem OnClick="IGCSEGradeEvent">IGCSE Grades</MudMenuItem>
+                <MudMenuItem OnClick="RatingSettingEvent">Rating Setting</MudMenuItem>
+                <MudMenuItem OnClick="ResultsTitlesEvent">Results Titles</MudMenuItem>
+                <MudMenuItem OnClick="FlagsEvent">Academics Flags</MudMenuItem>
+            </MudMenu>
+        </div>
+    </MudPaper>       
+</div>
+
+
+@if (toolBarMenuId == 1)
+{
+    <div class="d-block pa-2 mr-5 ml-5">
+        <MudCard Elevation="20">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Set Active Exam Mark Entry</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudGrid>
+                    <MudItem xs="12" sm="12" md="6">
+                        @foreach (var item in resultTypeList)
+                        {
+                            <MudRadioGroup @bind-SelectedOption="reportTypeID" @onclick="SetActiveExam">
+                                <MudRadio Option="@item.ReportTypeID" Color="Color.Primary" Size="Size.Small">@item.ReportType</MudRadio>
+                            </MudRadioGroup>
+                        }
+                    </MudItem>
+                </MudGrid>
+            </MudCardContent>
+        </MudCard>
+    </div>
+}
+else if (toolBarMenuId == 2)
+{
+    <div class="d-block pa-2 mr-5 ml-5">
+        <MudCard Elevation="20">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Genera Grades</MudText>
+                </CardHeaderContent>
+                <CardHeaderActions>
+                    <MudTooltip Text="Save">
+                        <MudButton OnClick="SaveAllEntriesGrade" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Success" Size="Size.Large">Update</MudButton>
+                    </MudTooltip>
+                </CardHeaderActions>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudGrid>
+                    <MudItem xs="12" sm="12" md="12">
+                        <MudTable Items="@gradeList" Dense="true" Hover="true" Breakpoint="Breakpoint.Sm"
+                                  @bind-SelectedItem="selectedItemGrade" CommitEditTooltip="Update"
+                                  OnCommitEditClick="@(() => UpdateEntryGrade())">
+                            <HeaderContent>
+                                <MudTh>Grade Mark Begin</MudTh>
+                                <MudTh>Grade Mark End</MudTh>
+                                <MudTh>Grade Letter</MudTh>
+                                <MudTh>Grade Remark</MudTh>
+                                <MudTh>Teacher's Comment</MudTh>
+                                <MudTh>Principal's Comment</MudTh>
+                                <MudTh></MudTh>
+                            </HeaderContent>
+                            <RowTemplate>
+                                <MudTd DataLabel="Grade Mark Begin">@context.LowerGrade</MudTd>
+                                <MudTd DataLabel="Grade Mark End">@context.HigherGrade</MudTd>
+                                <MudTd DataLabel="Grade Letter">@context.GradeLetter</MudTd>
+                                <MudTd DataLabel="Grade Remark">@context.GradeRemark</MudTd>
+                                <MudTd DataLabel="Teacher's Comment">@context.TeachersComment</MudTd>
+                                <MudTd DataLabel="Principal's Comment">@context.PrincipalComment</MudTd>
+                                <MudTh></MudTh>
+                            </RowTemplate>
+                            <RowEditingTemplate>
+                                <MudTd DataLabel="Grade Mark Begin">
+                                    <MudTextField @bind-Value="@context.LowerGrade" Required />
+                                </MudTd>
+                                <MudTd DataLabel="Grade Mark End">
+                                    <MudTextField @bind-Value="@context.HigherGrade" Required />
+                                </MudTd>
+                                <MudTd DataLabel="Grade Letter">
+                                    <MudTextField @bind-Value="@context.GradeLetter" Required />
+                                </MudTd>
+                                <MudTd DataLabel="Grade Remark">
+                                    <MudTextField @bind-Value="@context.GradeRemark" Required />
+                                </MudTd>
+                                <MudTd DataLabel="Teacher's Comment">
+                                    <MudTextField @bind-Value="@context.TeachersComment" Required />
+                                </MudTd>
+                                <MudTd DataLabel="Principal's Comment">
+                                    <MudTextField @bind-Value="@context.PrincipalComment" Required />
+                                </MudTd>
+                            </RowEditingTemplate>
+                        </MudTable>
+                    </MudItem>
+                </MudGrid>
+            </MudCardContent>
+        </MudCard>
+    </div>
+}
+else if (toolBarMenuId == 3)
+{
+    <div class="d-block pa-2 mr-5 ml-5">
+        <MudCard Elevation="20">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Senior Mock Grades</MudText>
+                </CardHeaderContent>
+                <CardHeaderActions>
+                    <MudTooltip Text="Save">
+                        <MudButton OnClick="SaveAllEntriesMockGrade" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Success" Size="Size.Large">Update</MudButton>
+                    </MudTooltip>
+                </CardHeaderActions>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudGrid>
+                    <MudItem xs="12" sm="12" md="12">
+                        <MudTable Items="@mockGradeList" Dense="true" Hover="true" Breakpoint="Breakpoint.Sm"
+                                  @bind-SelectedItem="selectedItemMockGrade" CommitEditTooltip="Update"
+                                  OnCommitEditClick="@(() => UpdateEntryMockGrade())">
+                            <HeaderContent>
+                                <MudTh>Score Range Lower</MudTh>
+                                <MudTh>Score Range Upper</MudTh>
+                                <MudTh>Grade</MudTh>
+                                <MudTh>Remark</MudTh>
+                                <MudTh></MudTh>
+                            </HeaderContent>
+                            <RowTemplate>
+                                <MudTd DataLabel="Score Range Lower">@context.LowerGrade</MudTd>
+                                <MudTd DataLabel="Score Range Upper">@context.HigherGrade</MudTd>
+                                <MudTd DataLabel="Grade">@context.GradeLetter</MudTd>
+                                <MudTd DataLabel="Remark">@context.GradeRemark</MudTd>
+                                <MudTh></MudTh>
+                            </RowTemplate>
+                            <RowEditingTemplate>
+                                <MudTd DataLabel="Score Range Lower">
+                                    <MudTextField @bind-Value="@context.LowerGrade" Required />
+                                </MudTd>
+                                <MudTd DataLabel="Score Range Upper">
+                                    <MudTextField @bind-Value="@context.HigherGrade" Required />
+                                </MudTd>
+                                <MudTd DataLabel="Grade">
+                                    <MudTextField @bind-Value="@context.GradeLetter" Required />
+                                </MudTd>
+                                <MudTd DataLabel="Remark">
+                                    <MudTextField @bind-Value="@context.GradeRemark" Required />
+                                </MudTd>
+                            </RowEditingTemplate>
+                        </MudTable>
+                    </MudItem>
+                </MudGrid>
+            </MudCardContent>
+        </MudCard>
+    </div>
+}
+else if (toolBarMenuId == 4)
+{
+    <div class="d-block pa-2 mr-5 ml-5">
+        <MudCard Elevation="20">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Junior Mock Grades</MudText>
+                </CardHeaderContent>
+                <CardHeaderActions>
+                    <MudTooltip Text="Save">
+                        <MudButton OnClick="SaveAllEntriesOtherGrade" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Success" Size="Size.Large">Update</MudButton>
+                    </MudTooltip>
+                </CardHeaderActions>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudGrid>
+                    <MudItem xs="12" sm="12" md="12">
+                        <MudTable Items="@otherGradeList" Dense="true" Hover="true" Breakpoint="Breakpoint.Sm"
+                                  @bind-SelectedItem="selectedItemOtherGrade" CommitEditTooltip="Update"
+                                  OnCommitEditClick="@(() => UpdateEntryOtherGrade())">
+                            <HeaderContent>
+                                <MudTh>Score Range Lower</MudTh>
+                                <MudTh>Score Range Upper</MudTh>
+                                <MudTh>Grade</MudTh>
+                                <MudTh>Remark</MudTh>
+                                <MudTh></MudTh>
+                            </HeaderContent>
+                            <RowTemplate>
+                                <MudTd DataLabel="Score Range Lower">@context.LowerGrade</MudTd>
+                                <MudTd DataLabel="Score Range Upper">@context.HigherGrade</MudTd>
+                                <MudTd DataLabel="Grade">@context.GradeLetter</MudTd>
+                                <MudTd DataLabel="Remark">@context.GradeRemark</MudTd>
+                                <MudTh></MudTh>
+                            </RowTemplate>
+                            <RowEditingTemplate>
+                                <MudTd DataLabel="Score Range Lower">
+                                    <MudTextField @bind-Value="@context.LowerGrade" Required />
+                                </MudTd>
+                                <MudTd DataLabel="Score Range Upper">
+                                    <MudTextField @bind-Value="@context.HigherGrade" Required />
+                                </MudTd>
+                                <MudTd DataLabel="Grade">
+                                    <MudTextField @bind-Value="@context.GradeLetter" Required />
+                                </MudTd>
+                                <MudTd DataLabel="Remark">
+                                    <MudTextField @bind-Value="@context.GradeRemark" Required />
+                                </MudTd>
+                            </RowEditingTemplate>
+                        </MudTable>
+                    </MudItem>
+                </MudGrid>
+            </MudCardContent>
+        </MudCard>
+    </div>
+}
+else if (toolBarMenuId == 5)
+{
+    <div class="d-block pa-2 mr-5 ml-5">
+        <MudCard Elevation="20">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">CheckPoint Grades</MudText>
+                </CardHeaderContent>
+                <CardHeaderActions>
+                    <MudTooltip Text="Save">
+                        <MudButton OnClick="SaveAllEntriesCheckPointGrade" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Success" Size="Size.Large">Update</MudButton>
+                    </MudTooltip>
+                </CardHeaderActions>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudGrid>
+                    <MudTable Items="@checkpointGradeList" Dense="true" Hover="true" Breakpoint="Breakpoint.Sm"
+                              @bind-SelectedItem="selectedItemCheckPointGrade" CommitEditTooltip="Update"
+                              OnCommitEditClick="@(() => UpdateEntryCheckPointGrade())">
+                        <HeaderContent>
+                            <MudTh>Score Range Upper</MudTh>
+                            <MudTh>Score Range Lower</MudTh>
+                            <MudTh>Score Rating Upper</MudTh>
+                            <MudTh>Score Rating Lower</MudTh>
+                            <MudTh>Grade</MudTh>
+                            <MudTh>Remark</MudTh>
+                            <MudTh>Auto Comments</MudTh>
+                            <MudTh></MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="Score Range Upper">@context.HigherGrade</MudTd>
+                            <MudTd DataLabel="Score Range Lower">@context.LowerGrade</MudTd>
+                            <MudTd DataLabel="Score Rating Upper">@context.HigherRating</MudTd>
+                            <MudTd DataLabel="Score Rating Upper">@context.LowerRating</MudTd>
+                            <MudTd DataLabel="Grade">@context.GradeLetter</MudTd>
+                            <MudTd DataLabel="Remark">@context.GradeRemark</MudTd>
+                            <MudTd DataLabel=">Auto Comments">@context.AutoComments</MudTd>
+                            <MudTh></MudTh>
+                        </RowTemplate>
+                        <RowEditingTemplate>
+                            <MudTd DataLabel="Score Range Upper">
+                                <MudTextField @bind-Value="@context.HigherGrade" Required />
+                            </MudTd>
+                            <MudTd DataLabel="Score Range Lower">
+                                <MudTextField @bind-Value="@context.LowerGrade" Required />
+                            </MudTd>
+                            <MudTd DataLabel="Score Rating Upper">
+                                <MudTextField @bind-Value="@context.HigherRating" Required />
+                            </MudTd>
+                            <MudTd DataLabel="Score Rating Upper">
+                                <MudTextField @bind-Value="@context.LowerRating" Required />
+                            </MudTd>
+                            <MudTd DataLabel="Grade">
+                                <MudTextField @bind-Value="@context.GradeLetter" Required />
+                            </MudTd>
+                            <MudTd DataLabel="Remark">
+                                <MudTextField @bind-Value="@context.GradeRemark" Required />
+                            </MudTd>
+                            <MudTd DataLabel=">Auto Comments">
+                                <MudTextField @bind-Value="@context.AutoComments" Required />
+                            </MudTd>
+                        </RowEditingTemplate>
+                    </MudTable>
+                </MudGrid>
+            </MudCardContent>
+        </MudCard>
+    </div>
+}
+else if (toolBarMenuId == 6)
+{
+    <div class="d-block pa-2 mr-5 ml-5">
+        <MudCard Elevation="20">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">IGCSE Grades</MudText>
+                </CardHeaderContent>
+                <CardHeaderActions>
+                    <MudTooltip Text="Save">
+                        <MudButton OnClick="SaveAllEntriesIGCSEGrade" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Success" Size="Size.Large">Update</MudButton>
+                    </MudTooltip>
+                </CardHeaderActions>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudGrid>
+                    <MudTable Items="@igcseGradeList" Dense="true" Hover="true" Breakpoint="Breakpoint.Sm"
+                              @bind-SelectedItem="selectedItemIGCSEGrade" CommitEditTooltip="Update"
+                              OnCommitEditClick="@(() => UpdateEntryIGCSEGrade())">
+                        <HeaderContent>
+                            <MudTh>Score Range Lower</MudTh>
+                            <MudTh>Score Range Upper</MudTh>
+                            <MudTh>Grade</MudTh>
+                            <MudTh>Remark</MudTh>
+                            <MudTh>Auto Comments</MudTh>
+                            <MudTh></MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="Score Range Lower">@context.LowerGrade</MudTd>
+                            <MudTd DataLabel="Score Range Upper">@context.HigherGrade</MudTd>
+                            <MudTd DataLabel="Grade">@context.GradeLetter</MudTd>
+                            <MudTd DataLabel="Remark">@context.GradeRemark</MudTd>
+                            <MudTd DataLabel=">Auto Comments">@context.AutoComments</MudTd>
+                            <MudTh></MudTh>
+                        </RowTemplate>
+                        <RowEditingTemplate>
+                            <MudTd DataLabel="Score Range Lower">
+                                <MudTextField @bind-Value="@context.LowerGrade" Required />
+                            </MudTd>
+                            <MudTd DataLabel="Score Range Upper">
+                                <MudTextField @bind-Value="@context.HigherGrade" Required />
+                            </MudTd>
+                            <MudTd DataLabel="Grade">
+                                <MudTextField @bind-Value="@context.GradeLetter" Required />
+                            </MudTd>
+                            <MudTd DataLabel="Remark">
+                                <MudTextField @bind-Value="@context.GradeRemark" Required />
+                            </MudTd>
+                            <MudTd DataLabel=">Auto Comments">
+                                <MudTextField @bind-Value="@context.AutoComments" Required />
+                            </MudTd>
+                        </RowEditingTemplate>
+                    </MudTable>
+                </MudGrid>
+            </MudCardContent>
+        </MudCard>
+    </div>
+}
+else if (toolBarMenuId == 7)
+{
+    <div class="d-block pa-2 mr-5 ml-5">
+        <MudCard Elevation="20">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Marks Setting</MudText>
+                </CardHeaderContent>
+                <CardHeaderActions>
+                    <MudTooltip Text="Save">
+                        <MudButton OnClick="SaveAllEntriesMarkSettings" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Success" Size="Size.Large">Update</MudButton>
+                    </MudTooltip>
+                </CardHeaderActions>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudGrid>
+                    <MudTable Items="@markSettingsList" Dense="true" Hover="true" Breakpoint="Breakpoint.Sm"
+                              @bind-SelectedItem="selectedItemMarkSettings" CommitEditTooltip="Update"
+                              OnCommitEditClick="@(() => UpdateEntryMarkSettings())">
+                        <HeaderContent>
+                            <MudTh>Mark Type</MudTh>
+                            <MudTh>Maximum Mark</MudTh>
+                            <MudTh>Conversion Factor</MudTh>
+                            <MudTh>Lock Mark Columns</MudTh>
+                            <MudTh>Use Mark Type</MudTh>
+                            <MudTh></MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="Mark Type">@context.MarkType</MudTd>
+                            <MudTd DataLabel="Maximum Mark">@context.Mark</MudTd>
+                            <MudTd DataLabel="Conversion Factor">@context.PassMark</MudTd>
+                            @if (@context.ApplyPassMark)
+                                {
+                                <MudTd DataLabel="Lock Mark Columns" Style="text-align:center; width:20px;">Yes</MudTd>
+                                }
+                                else
+                                {
+                                <MudTd DataLabel="Lock Mark Columns" Style="text-align:center; width:20px;">No</MudTd>
+                                }
+                            @if (@context.ApplyCBT)
+                                {
+                                <MudTd DataLabel="Use Mark Type" Style="text-align:center; width:20px;">Yes</MudTd>
+                                }
+                                else
+                                {
+                                <MudTd DataLabel="Use Mark Type" Style="text-align:center; width:20px;">No</MudTd>
+                                }
+                            <MudTh></MudTh>
+                        </RowTemplate>
+                        <RowEditingTemplate>
+                            <MudTd DataLabel="Mark Type">
+                                <MudTextField @bind-Value="@context.MarkType" ReadOnly="true" />
+                            </MudTd>
+                            <MudTd DataLabel="Mark">
+                                <MudTextField @bind-Value="@context.Mark" Required />
+                            </MudTd>
+                            <MudTd DataLabel="Pass Mark">
+                                <MudTextField @bind-Value="@context.PassMark" Required />
+                            </MudTd>
+                            <MudTd DataLabel="Lock Mark Columns">
+                                <MudCheckBox @bind-Checked="@context.ApplyPassMark"></MudCheckBox>
+                            </MudTd>
+                            <MudTd DataLabel="Use Mark Type">
+                                <MudCheckBox @bind-Checked="@context.ApplyCBT"></MudCheckBox>
+                            </MudTd>
+                        </RowEditingTemplate>
+                    </MudTable>
+                </MudGrid>
+            </MudCardContent>
+        </MudCard>
+    </div>
+}
+else if (toolBarMenuId == 8)
+{
+    <div class="d-block pa-2 mr-5 ml-5">
+        <MudCard Elevation="20">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Rating Setting</MudText>
+                </CardHeaderContent>
+                <CardHeaderActions>
+                    <MudTooltip Text="Save">
+                        <MudButton OnClick="SaveAllEntriesRating" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Success" Size="Size.Large">Update</MudButton>
+                    </MudTooltip>
+                </CardHeaderActions>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudGrid>
+                    <MudItem xs="12" sm="12" md="12">
+                        <MudTable Items="@ratingList" Dense="true" Hover="true" Breakpoint="Breakpoint.Sm"
+                                  @bind-SelectedItem="selectedItemRating" CommitEditTooltip="Update"
+                                  OnCommitEditClick="@(() => UpdateEntryRating())">
+                            <HeaderContent>
+                                <MudTh>Rating</MudTh>
+                                <MudTh>Lower Score</MudTh>
+                                <MudTh>Higher Score</MudTh>
+                                <MudTh>Grade Letter</MudTh>
+                                <MudTh>Rating Remark</MudTh>
+                                <MudTh>Rating Key</MudTh>
+                                <MudTh></MudTh>
+                            </HeaderContent>
+                            <RowTemplate>
+                                <MudTd DataLabel="Rating">@context.Rating</MudTd>
+                                <MudTd DataLabel="Lower Score">@context.LowScore</MudTd>
+                                <MudTd DataLabel="Higher Score">@context.HighScore</MudTd>
+                                <MudTd DataLabel="Grade Letter">@context.GradeLetter</MudTd>
+                                <MudTd DataLabel="Rating Remark">@context.RatingLevel</MudTd>
+                                <MudTd DataLabel="Rating Key">@context.RatingKey</MudTd>
+                                <MudTh></MudTh>
+                            </RowTemplate>
+                            <RowEditingTemplate>
+                                <MudTd DataLabel="Rating">
+                                    <MudTextField @bind-Value="@context.Rating" Required />
+                                </MudTd>
+                                <MudTd DataLabel="Lower Score">
+                                    <MudTextField @bind-Value="@context.LowScore" Required />
+                                </MudTd>
+                                <MudTd DataLabel="Higher Score">
+                                    <MudTextField @bind-Value="@context.HighScore" Required />
+                                </MudTd>
+                                <MudTd DataLabel="Grade Letter">
+                                    <MudTextField @bind-Value="@context.GradeLetter" Required />
+                                </MudTd>
+                                <MudTd DataLabel="Rating Remark">
+                                    <MudTextField @bind-Value="@context.RatingLevel" Required />
+                                </MudTd>
+                                <MudTd DataLabel="Rating Key">
+                                    <MudTextField @bind-Value="@context.RatingKey" Required />
+                                </MudTd>
+                            </RowEditingTemplate>
+                        </MudTable>
+                    </MudItem>
+                </MudGrid>
+            </MudCardContent>
+        </MudCard>
+    </div>
+
+    <div class="d-block pa-2 mr-5 ml-5">
+        <MudGrid>
+            <MudItem xs="12" sm="12" md="6">
+                <MudPaper Elevation="20">
+                    @foreach (var item in ratingOptionsList)
+                    {
+                        <MudRadioGroup @bind-SelectedOption="ratingOptionID" @onclick="UpdateEntryRatingOptions">
+                            <MudRadio Option="@item.OptionID" Color="Color.Primary" Size="Size.Small">@item.RatingOption</MudRadio>
+                        </MudRadioGroup>
+                    }
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="6">
+                <MudPaper Elevation="20">
+                    @foreach (var item in ratingTextList)
+                    {
+                        <MudRadioGroup @bind-SelectedOption="ratingTextID" @onclick="UpdateEntryRatingText">
+                            <MudRadio Option="@item.TextID" Color="Color.Primary" Size="Size.Small">@item.RatingText</MudRadio>
+                        </MudRadioGroup>
+                    }
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </div>
+}
+else if (toolBarMenuId == 9)
+{
+    <div class="d-block pa-2 mr-5 ml-5">
+        <MudCard Elevation="20">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Result Header And Footer Setting</MudText>
+                </CardHeaderContent>
+                <CardHeaderActions>
+                    <MudTooltip Text="Save">
+                        <MudButton OnClick="UpdateReportFooter" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Success" Size="Size.Large">Update</MudButton>
+                    </MudTooltip>
+                </CardHeaderActions>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudGrid>
+                    <MudItem xs="12" sm="12" md="12">
+                        <MudTextField Label="Result Header - CA" @bind-Value="@reportFooter.HeaderCA" />
+                    </MudItem>
+                </MudGrid>
+                <MudGrid>
+                    <MudItem xs="12" sm="12" md="12">
+                        <MudTextField Label="Result Header - Exam" @bind-Value="@reportFooter.HeaderExam" />
+                    </MudItem>
+                </MudGrid>
+                <MudGrid>
+                    <MudItem xs="12" sm="12" md="12">
+                        <MudTextField Label="Result Footer" @bind-Value="@reportFooter.Footer" Lines="3" />
+                    </MudItem>
+                </MudGrid>
+            </MudCardContent>
+        </MudCard>
+    </div>
+}
+else if (toolBarMenuId == 10)
+{
+    <div class="d-block pa-2 mr-5 ml-5">
+        <MudCard Elevation="20">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Results Titles</MudText>
+                </CardHeaderContent>
+                <CardHeaderActions>
+                    <MudTooltip Text="Update">
+                        <MudButton OnClick="UpdateResultsTitles" StartIcon="@Icons.Material.Outlined.Save" Color="Color.Success" Size="Size.Large">Update</MudButton>
+                    </MudTooltip>
+                </CardHeaderActions>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudGrid>
+                    <MudItem xs="12" sm="12" md="12">
+                        <MudTable Items="@reportTitles" Dense="true" Hover="true" Breakpoint="Breakpoint.Sm"
+                                  @bind-SelectedItem="selectedReportTitle" CommitEditTooltip="Update"
+                                  OnCommitEditClick="@(() => UpdateResultTitle())">
+                            <HeaderContent>
+                                <MudTh>Result Name</MudTh>
+                                <MudTh>Result Title</MudTh>
+                                <MudTh></MudTh>
+                            </HeaderContent>
+                            <RowTemplate>
+                                <MudTd DataLabel="Result Name">@context.ReportFileName</MudTd>
+                                <MudTd DataLabel="Result Title">@context.ReportDescr</MudTd>
+                                <MudTh></MudTh>
+                            </RowTemplate>
+                            <RowEditingTemplate>
+                                <MudTd DataLabel="Result Name">
+                                    <MudTextField @bind-Value="@context.ReportFileName" Required />
+                                </MudTd>
+                                <MudTd DataLabel="Result Title">
+                                    <MudTextField @bind-Value="@context.ReportDescr" Required />
+                                </MudTd>                               
+                            </RowEditingTemplate>
+                        </MudTable>
+                    </MudItem>
+                </MudGrid>
+            </MudCardContent>
+        </MudCard>
+    </div>
+}
+else if (toolBarMenuId == 11)
+{
+      <div class="d-block pa-2 mr-5 ml-5">
+           <MudCard Elevation="20">
+                 <MudCardHeader>
+                      <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Academics Flags</MudText>
+                </CardHeaderContent>
+                 </MudCardHeader>               
+                 <MudCardContent>
+                      <MudGrid>
+                    <MudItem xs="12" sm="12" md="12">
+                        <MudTable Items="@flagList" Dense="true" Hover="true" Breakpoint="Breakpoint.Sm"
+                                  @bind-SelectedItem="selectedFlag" CommitEditTooltip="Update" OnCommitEditClick="@(() => UpdateFlag())">
+                            <HeaderContent>
+                                <MudTh>Flag Name</MudTh>
+                                <MudTh>Description</MudTh>
+                                 <MudTh>Set Flag</MudTh>
+                                <MudTh></MudTh>
+                            </HeaderContent>
+                            <RowTemplate>
+                                <MudTd DataLabel="Flag Name">@context.FlagType</MudTd>
+                                <MudTd DataLabel="Description">@context.Description</MudTd>
+                                             <MudTd DataLabel="Default" Style="text-align:center; width:20px;">
+                                     @if (@context.Flag)
+                                     {
+                                         <MudTd DataLabel="Default" Style="text-align:center; width:20px;">Yes</MudTd>
+                                     }
+                                     else
+                                     {
+                                         <MudTd DataLabel="Default" Style="text-align:center; width:20px;">No</MudTd>
+                                     }
+                                </MudTd>
+                                <MudTh></MudTh>
+                            </RowTemplate>
+                            <RowEditingTemplate>
+                                <MudTd DataLabel="Flag Nam">
+                                    <MudTextField @bind-Value="@context.FlagType" ReadOnly />
+                                </MudTd>
+                                <MudTd DataLabel="Description">
+                                    <MudTextField @bind-Value="@context.Description" ReadOnly />
+                                </MudTd> 
+                                 <MudTd DataLabel="Default">
+                                    <MudCheckBox @bind-Checked="@context.Flag"></MudCheckBox>
+                                </MudTd>
+                            </RowEditingTemplate>
+                        </MudTable>
+                    </MudItem>
+                </MudGrid>
+                 </MudCardContent>
+           </MudCard>
+      </div>
+}
+     </Authorized>
+    <NotAuthorized>
+        <div class="ma-10">
+            <p style="font-size:20px;">You Do Not Have Permission To Access This Page</p>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>

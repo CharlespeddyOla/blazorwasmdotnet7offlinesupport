@@ -1,0 +1,18 @@
+﻿@inject AuthenticationStateProvider authStateProvider
+
+<MudAppBar Elevation="3">
+    <MudText Typo="Typo.subtitle1" Class="ml-5">
+        Welcome to Student Results Checker
+    </MudText>
+    <MudSpacer />
+    <MudTooltip Duration="1000" Text="@(_isLightMode ? "Switch to Dark Theme" : "Switch to Light Theme")">
+        @if (_isLightMode)
+        {
+            <MudIconButton Icon="@Icons.Material.Filled.DarkMode" Color="Color.Inherit" OnClick="ToggleTheme" />
+        }
+        else
+        {
+            <MudIconButton Icon="@Icons.Material.Filled.LightMode" Color="Color.Inherit" OnClick="ToggleTheme" />
+        }
+    </MudTooltip>
+</MudAppBar>

@@ -1,0 +1,41 @@
+﻿@page "/"
+@implements IDisposable
+
+<PageTitle>Academics</PageTitle>
+
+<EditForm Model="@loginRequest" OnValidSubmit="Authenticate">
+   <FluentValidationValidator />
+    <MudText Typo="Typo.h5">Staff Login</MudText>
+    <br />
+    <MudGrid>
+        <MudItem xs="12" sm="6" md="12">
+            <MudTextField Label="Email" @bind-Value="@loginRequest.Email" For="@(() => loginRequest.Email)"></MudTextField>
+        </MudItem>
+    </MudGrid>
+    <MudGrid>
+        <MudItem xs="12" sm="6" md="12">
+            <MudTextField @bind-Value="@loginRequest.Password" Label="Password" Variant="Variant.Text" InputType="@PasswordInput"
+                          Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ShowHidePassword"
+                          AdornmentAriaLabel="Show Password" For="@(() => loginRequest.Password)" />
+        </MudItem>
+    </MudGrid>
+    <MudGrid>
+        <MudItem xs="12" sm="6" md="12" Class="d-flex justify-center flex-grow-1 gap-4" Elevation="0">
+            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Login" Class="align-self-center mr-3"
+                       Color="Color.Primary">Login</MudButton>
+        </MudItem>
+    </MudGrid>
+    <br />
+    @if (IsOnline)
+    {
+        <div Class="d-flex justify-center flex-grow-1 gap-4" Elevation="0">
+            <a href="/registration" style="font-size:medium;margin:0px 10px 0px 0px;">Register</a>
+            <a href="/resetpassword" style="font-size:medium;">Reset Password</a>
+        </div>
+    } 
+    <br/>
+    <div Class="d-flex justify-center flex-grow-1 gap-4" Elevation="0">
+
+    </div>
+
+</EditForm>

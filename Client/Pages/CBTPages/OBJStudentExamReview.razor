@@ -1,0 +1,84 @@
+﻿@layout CBTLayout
+
+<MudDialog DisableSidePadding="true">
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Reviews" Class="mr-3 mb-n1"/>
+            CBT Exam Review
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudContainer Style="max-height: 300px; overflow-y: scroll">
+            @foreach (var item in Questions)
+            {
+                <MudDivider />
+                if (!String.IsNullOrWhiteSpace(item.Section))
+                {
+                    <div class="d-block pa-2 mr-5 ml-5" style="font-size: 18px;">
+                        <p>
+                            @((MarkupString)item.Section)
+                        </p>
+                        @if (item.SImage != null)
+                        {
+                            imgSrc = string.Format("data:image/png;base64,{0}", Convert.ToBase64String((item.SImage)));
+                            <img src="@imgSrc" Elevation="25" Class="align-self-center rounded-lg ml-5" />
+                        }
+                    </div>
+                }
+
+                if (!String.IsNullOrWhiteSpace(item.CurrentQuestion))
+                {
+                    <div class="d-block pa-2 mr-5 ml-5" style="font-size: 18px;">
+                        <p>
+                            @((MarkupString)item.CurrentQuestion) &ensp;  <Equation TeXDisplay="false" Value="@item.Equation"></Equation>
+                        </p>
+                    </div>
+                }
+                else
+                {
+                    <div class="d-block pa-2 mr-5 ml-5" style="font-size: 18px;">
+                        <p>
+                            <Equation TeXDisplay="false" Value="@item.Equation"></Equation>
+                        </p>
+                    </div>
+                }
+
+                @if (item.QImage != null)
+                {
+                    imgSrc = string.Format("data:image/png;base64,{0}", Convert.ToBase64String((item.QImage)));
+                    <img src="@imgSrc" Elevation="25" Class="align-self-center rounded-lg ml-5" />
+                }
+                <div class="d-block pa-2 mr-5 ml-2" style="font-size: 16px;">
+                    @foreach (var answer in Answers.Where(ans => ans.QID == item.QID).ToList())
+                    {
+                        bool IsSelectedAnswerBlank = _selectedAnsers.Where(s => s.QID == item.QID && s.AnsID == answer.AnsID).Any();
+
+                        if (IsSelectedAnswerBlank)
+                        {
+                            selectedAnsID = _selectedAnsers.FirstOrDefault(a => a.QID == item.QID).AnsID;
+                        }
+
+                        <MudRadioGroup @bind-SelectedOption="@selectedAnsID">
+                            <div class="d-inline">
+                                <MudRadio Option="@answer.AnsID" Color="Color.Primary" Size="Size.Small" Disabled="true">
+                                    <div class="d-inline pa-2">@answer.AnsLetter &ensp;  @((MarkupString)answer.Answers) &ensp;  <Equation Value="@answer.Equation" TeXDisplay="false"></Equation> </div>
+                                </MudRadio>
+                            </div>
+                            <br />
+                            <div class="d-inline">
+                                @if (answer.AnsImage != null)
+                                {
+                                    imgSrc = string.Format("data:image/png;base64,{0}", Convert.ToBase64String((answer.AnsImage)));
+                                    <img src="@imgSrc" Elevation="25" Class="align-self-center rounded-lg ml-5" />
+                                }
+                            </div>
+                        </MudRadioGroup>
+                    }
+                </div>
+            }
+        </MudContainer>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+</MudDialog>

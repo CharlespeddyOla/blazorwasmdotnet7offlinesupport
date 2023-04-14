@@ -1,0 +1,242 @@
+﻿@layout CBTExamLayout
+@page "/obtexamstudentresult/{examid:int}/{stdid:int}"
+
+<PageTitle>CBT Score</PageTitle>
+
+<MudGrid>
+    <MudItem xs="12" sm="12">
+        <MudPaper Class="pa-4 my-2" Style="position: relative;">
+            <div style="background: ghostwhite; margin: 10px;">
+                <MudGrid>
+        <MudItem xs="12" sm="6" md="10">
+            <MudGrid>
+                <MudItem xs="12" sm="6" md="12">
+                    <div Class="d-flex justify-center">
+                        @academicSession
+                    </div>
+                </MudItem>
+            </MudGrid>
+            <MudGrid>
+                <MudItem xs="5" sm="3" md="2">
+                    <div class="d-flex justify-end" Style="font-weight:bold;">
+                        <MudText>Admission No.:</MudText>
+                    </div>
+                </MudItem>
+                <MudItem xs="5" sm="3" md="2">
+                    <div class="d-flex justify-start">
+                        <MudText>@admissionNo</MudText>
+                    </div>
+                </MudItem>
+                <MudItem xs="5" sm="3" md="3">
+                    <div class="d-flex justify-end" Style="font-weight:bold;">
+                        <MudText>Student Name:</MudText>
+                    </div>
+                </MudItem>
+                <MudItem xs="5" sm="3" md="5">
+                    <div class="d-flex justify-start">
+                        <MudText>@studentName</MudText>
+                    </div>
+                </MudItem>
+            </MudGrid>   
+             <MudGrid>
+                <MudItem xs="5" sm="3" md="2">
+                    <div class="d-flex justify-end" Style="font-weight:bold;">
+                        <MudText>Exam Date:</MudText>
+                    </div>
+                </MudItem>
+                <MudItem xs="5" sm="3" md="2">
+                    <div class="d-flex justify-start">
+                        <MudText>@examDate</MudText>
+                    </div>
+                </MudItem>
+                <MudItem xs="5" sm="3" md="3">
+                    <div class="d-flex justify-end" Style="font-weight:bold;">
+                        <MudText>Subject:</MudText>
+                    </div>
+                </MudItem>
+                <MudItem xs="5" sm="3" md="5">
+                    <div class="d-flex justify-start">
+                        <MudText>@subject</MudText>
+                    </div>
+                </MudItem>
+            </MudGrid>         
+        </MudItem>
+    </MudGrid>   
+
+                <MudGrid>
+                    <MudItem xs="12" sm="6" md="10">
+                        <MudGrid>
+                            <MudItem xs="5" sm="3" md="2">
+                                <div class="d-flex justify-end" Style="font-weight:bold;">
+                                    <MudText>Questions:</MudText>
+                                </div>
+                            </MudItem>
+                            <MudItem xs="5" sm="3" md="2">
+                                <div class="d-flex justify-start">
+                                    <MudText>@studentScore.NQuestions</MudText>
+                                </div>
+                            </MudItem>
+                            <MudItem xs="5" sm="3" md="3">
+                                <div class="d-flex justify-end" Style="font-weight:bold;">
+                                    <MudText>Answered:</MudText>
+                                </div>
+                            </MudItem>
+                            <MudItem xs="5" sm="3" md="1">
+                                <div class="d-flex justify-start">
+                                    <MudText>@questionsAnswered</MudText>
+                                </div>
+                            </MudItem>
+                            <MudItem xs="5" sm="3" md="3">
+                                <div class="d-flex justify-end" Style="font-weight:bold;">
+                                    <MudText>Correct Answers:</MudText>
+                                </div>
+                            </MudItem>
+                            <MudItem xs="5" sm="3" md="1">
+                                <div class="d-flex justify-start">
+                                    <MudText>@studentScore.NCorrectAns</MudText>
+                                </div>
+                            </MudItem>
+                        </MudGrid>
+                        <MudGrid>
+                            <MudItem xs="5" sm="3" md="2">
+                                <div class="d-flex justify-end" Style="font-weight:bold;">
+                                    <MudText>Duration (mins):</MudText>
+                                </div>
+                            </MudItem>
+                            <MudItem xs="5" sm="3" md="2">
+                                <div class="d-flex justify-start">
+                                    <MudText> @studentScore.TimeAllocated</MudText>
+                                </div>
+                            </MudItem>
+                            <MudItem xs="5" sm="3" md="3">
+                                <div class="d-flex justify-end" Style="font-weight:bold;">
+                                    <MudText>Time Used (mins):</MudText>
+                                </div>
+                            </MudItem>
+                            <MudItem xs="5" sm="3" md="5">
+                                <div class="d-flex justify-start">
+                                    <MudText>@studentScore.TimeUsed</MudText>
+                                </div>
+                            </MudItem>
+                        </MudGrid>
+                        <MudGrid>
+                            <MudItem xs="5" sm="3" md="2">
+                                <div class="d-flex justify-end" Style="font-weight:bold;">
+                                    <MudText>Passing Score (%):</MudText>
+                                </div>
+                            </MudItem>
+                            <MudItem xs="5" sm="3" md="2">
+                                <div class="d-flex justify-start">
+                                    <MudText> @studentScore.PassingPercentage</MudText>
+                                </div>
+                            </MudItem>
+                            <MudItem xs="5" sm="3" md="3">
+                                <div class="d-flex justify-end" Style="font-weight:bold;">
+                                    <MudText>Your Score (%):</MudText>
+                                </div>
+                            </MudItem>
+                            <MudItem xs="5" sm="3" md="2">
+                                <div class="d-flex justify-start">
+                                    <MudText>@studentScore.ScorePercentage</MudText>
+                                </div>
+                            </MudItem>
+                        </MudGrid>
+                    </MudItem>
+                </MudGrid>
+
+                <MudGrid>
+                    <MudItem xs="12" sm="12" md="12">
+                        @foreach (var item in Questions)
+                        {
+                            <MudDivider />
+                            @if (!String.IsNullOrWhiteSpace(item.Section))
+                            {
+                                <div class="d-block pa-2 mr-5 ml-5" style="font-size: 18px;">
+                                    <p>
+                                        @((MarkupString)item.Section)
+                                    </p>
+                                </div>
+                            }
+                            <div class="d-block pa-2 mr-5 ml-5" style="font-size: 18px;">
+
+                                <p>
+                                    @((MarkupString)item.CurrentQuestion) &ensp;  <Equation TeXDisplay="false" Value="@item.Equation"></Equation>
+                                </p>
+                                @if (item.QImage != null)
+                                {
+                                    imgSrc = string.Format("data:image/png;base64,{0}", Convert.ToBase64String((item.QImage)));
+                                    <img src="@imgSrc" Elevation="25" Class="align-self-center rounded-lg ml-5" Width="250" Height="200" />
+                                }
+                            </div>
+                            <div class="d-block pa-2 mr-5 ml-2" style="font-size: 18px;">
+                                @{
+                                    string studentAnswerLetter = string.Empty;
+                                    string correctAnswerLetter = string.Empty;
+                                }
+
+                                @foreach (var ans in Answers.Where(ans => ans.QID == item.QID).ToList())
+                                {
+                                    studentAnswerLetter = studentAnswers.FirstOrDefault(a => a.QID == ans.QID).Answer;
+                                    if (ans.CorrectAns)
+                                    {
+                                        correctAnswerLetter = ans.AnsLetter;
+                                    }
+
+                                    if (studentAnswerLetter == ans.AnsLetter)
+                                    {
+                                        selectedAnsID = ans.AnsID;
+                                    }
+
+                                    <MudRadioGroup @bind-SelectedOption="@selectedAnsID">
+                                        <div class="d-inline">
+                                            <MudRadio Option="@ans.AnsID" Color="Color.Primary" Size="Size.Small">
+                                                <div class="d-inline pa-2">@ans.AnsLetter &ensp; @((MarkupString)ans.Answers) &ensp;  <Equation Value="@ans.Equation" TeXDisplay="false"></Equation> </div>
+                                            </MudRadio>
+                                        </div>
+                                        <br />
+                                        <div class="d-inline">
+                                            @if (ans.AnsImage != null)
+                                                    {
+                                                        imgSrc = string.Format("data:image/png;base64,{0}", Convert.ToBase64String((ans.AnsImage)));
+                                                <img src="@imgSrc" Elevation="25" Class="align-self-center rounded-lg ml-5" Width="250" Height="200" />
+                                                    }
+                                        </div>
+                                    </MudRadioGroup>
+                                }
+                            </div>
+
+                            <div class="d-block pa-2 mr-5 ml-2" style="font-size: 16px;">
+                                @{
+                                    string answerRemark = "(Wrong)";
+                                    bool correctAnswer = studentAnswers.Where(ans => ans.QID == item.QID && ans.Correct == true).Any();
+
+                                    if (correctAnswer)
+                                    {
+                                        answerRemark = "(Correct)";
+                                    }
+                                }
+                                <MudGrid>
+                                    <MudItem xs="12" sm="12" md="3">
+                                        <div>
+                                            <label style="width: 150px; text-align: right;">Your Answer:</label>
+                                            <span>@studentAnswers.FirstOrDefault(ans => ans.QID == item.QID).Answer @answerRemark</span>
+                                        </div>
+                                    </MudItem>
+                                </MudGrid>
+                                <MudGrid>
+                                    <MudItem xs="12" sm="12" md="3">
+                                        <div hidden="@IsShow" style="font-weight: bold; color: forestgreen;">
+                                            <label style="width: 150px; text-align: right;">Correct Answer:</label>
+                                            <span>@correctAnswerLetter</span>
+                                        </div>
+                                    </MudItem>
+                                </MudGrid>
+                            </div>
+                        }
+                    </MudItem>
+                </MudGrid>
+
+            </div>
+        </MudPaper>
+    </MudItem>
+</MudGrid>

@@ -1,0 +1,216 @@
+﻿@page "/subjectlist"
+@inject ISnackbar Snackbar
+
+<AuthorizeView Roles="Administrator, Secretary">
+    <Authorized>
+        <div class="d-block pa-2 mr-5 ml-5">
+            <MudPaper Class="d-flex align-center flex-grow-1 gap-x-8" Elevation="20">
+                 <MudGrid>
+            <MudItem xs="12" sm="12" md="3">
+               <MudTooltip Text="Subject List">
+                        <MudIconButton OnClick="SubjectListEvent" Icon="@Icons.Material.Filled.FormatLineSpacing" Color="Color.Success" />
+                    </MudTooltip>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="3">
+                        <MudTooltip Text="Add A New Subject">
+                            <MudIconButton OnClick="AddNewSubject" Icon="@Icons.Material.Outlined.LibraryAdd" Color="Color.Success" />
+                        </MudTooltip>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="3">
+               <MudTooltip Text="Save">
+                        <button type="submit" form="@editFormId">
+                            <MudButton Disabled="@disableSaveButton" StartIcon="@Icons.Material.Outlined.Save"
+                                       Color="Color.Success" Size="Size.Large">Save</MudButton>
+                        </button>
+                    </MudTooltip>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="3">
+                <MudTooltip Text="Export To Exel">
+                        <MudButton StartIcon="@Icons.Material.Outlined.ImportExport" Color="Color.Success" Size="Size.Large">Export</MudButton>
+                    </MudTooltip>
+            </MudItem>               
+        </MudGrid>
+        </MudPaper>
+    </div>
+    </Authorized>
+</AuthorizeView>
+
+@if (toolBarMenuId == 1)
+{
+    <div class="d-block pa-2  mr-5 ml-5">
+        <MudGrid>
+            <MudItem xs="12" sm="12" md="3">
+                <MudSelect T="string" Label="School" Strict="true" Dense="true" @bind-Value="selectedSchool" HelperText="@schoolCountDisplay"
+                           SelectedValuesChanged="OnSelectedSchoolChanged">
+                    @foreach (var item in schools)
+                    {
+                        <MudSelectItem T="string" Value="@item.School">@item.School</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="3">
+                <MudSelect T="string" Label="Department" Strict="true" Dense="true" @bind-Value="selectedSubjectDept" HelperText="@subjectDeptCountDisplay"
+                           SelectedValuesChanged="OnSelectedDepartmentChanged">
+                    @foreach (var item in sbjdepts)
+                    {
+                        <MudSelectItem T="string" Value="@item.SbjDept">@item.SbjDept</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="3">
+                <MudSelect T="string" Label="Subject Classification" Strict="true" Dense="true" @bind-Value="selectedSubjectClass" HelperText="@subjectClassCountDisplay"
+                           SelectedValuesChanged="OnSelectedClassificationChanged">
+                    @foreach (var item in sbjclasslist)
+                    {
+                        <MudSelectItem T="string" Value="@item.SbjClassification">@item.SbjClassification</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="3">
+                <MudSelect T="string" Label="Subject Status" Dense="true" @bind-Value="selectedStatusType" HelperText="@statusTypeCountDisplay"
+                           SelectedValuesChanged="OnSelectedStatusTypeChanged">
+                    @foreach (var item in statusType)
+                    {
+                        <MudSelectItem T="string" Value="@item.StatusType">@item.StatusType</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+        </MudGrid>
+    </div>
+
+    <div class="d-block pa-2  mr-5 ml-5">
+        <MudTable Items="@subjects" Elevation="20" Dense="true" Hover="true" Striped="true"  @bind-SelectedItem="selectedItem" CommitEditTooltip="Update"
+                  OnCommitEditClick="@(() => UpdateEntry())" Filter="new Func<ACDSubjects,bool>(FilterFunc)" Breakpoint="Breakpoint.Sm" SortLabel="Sort By">
+            <ToolBarContent>
+                <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search"
+                              IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                <MudSpacer />
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<ACDSubjects, object>(x=>x.School)">School</MudTableSortLabel></MudTh>
+                <MudTh>Department</MudTh>
+                <MudTh>Classification</MudTh>
+                <MudTh>Subject Code</MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<ACDSubjects, object>(x=>x.Subject)">Subject</MudTableSortLabel></MudTh>
+                <MudTh>Sort No.</MudTh>
+                <MudTh Style="text-align:center; width:20px;">Active</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="School"> @context.School</MudTd>
+                <MudTd DataLabel="Department"> @context.SubjectDepartment</MudTd>
+                <MudTd DataLabel="Classification"> @context.SubjectClassification</MudTd>
+                <MudTd DataLabel="Subject Code"> @context.SubjectCode</MudTd>
+                <MudTd DataLabel="Subject">@context.Subject</MudTd>
+                <MudTd DataLabel="Sort No."> @context.SortID</MudTd>
+                @if (@context.SubjectStatus)
+                    {
+                    <MudTd DataLabel="Active" Style="text-align:center; width:20px;">Yes</MudTd>
+                    }
+                    else
+                    {
+                    <MudTd DataLabel="Active" Style="text-align:center; width:20px;">No</MudTd>
+                    }
+            </RowTemplate>
+            <RowEditingTemplate>
+                <AuthorizeView Roles="Administrator">
+                    <Authorized Context="admin">
+                        <MudTd>
+                            <MudSelect T="string" Dense="true" OffsetY="true" @bind-Value="@context.School">
+                                @foreach (var item in schools)
+                                    {
+                                    <MudSelectItem T="string" Value="@item.School">@item.School</MudSelectItem>
+                                    }
+                            </MudSelect>
+                        </MudTd>
+                        <MudTd>
+                            <MudSelect T="string" Dense="true" OffsetY="true" @bind-Value="@context.SubjectDepartment">
+                                @foreach (var item in sbjdepts)
+                                    {
+                                    <MudSelectItem T="string" Value="@item.SbjDept">@item.SbjDept</MudSelectItem>
+                                    }
+                            </MudSelect>
+                        </MudTd>
+                        <MudTd>
+                            <MudSelect T="string" Dense="true" OffsetY="true" @bind-Value="@context.SubjectClassification">
+                                @foreach (var item in sbjclasslist)
+                                    {
+                                    <MudSelectItem T="string" Value="@item.SbjClassification">@item.SbjClassification</MudSelectItem>
+                                    }
+                            </MudSelect>
+                        </MudTd>
+                        <MudTd DataLabel="Subject Code">
+                            <MudTextField @bind-Value="@context.SubjectCode" Required />
+                        </MudTd>
+                        <MudTd DataLabel="Subject">
+                            <MudTextField @bind-Value="@context.Subject" Required />
+                        </MudTd>
+                        <MudTd DataLabel="Sort No.">
+                            <MudTextField @bind-Value="@context.SortID" Required />
+                        </MudTd>
+                        <MudTd DataLabel="Active">
+                            <MudCheckBox @bind-Checked="@context.SubjectStatus"></MudCheckBox>
+                        </MudTd>
+                    </Authorized>
+                </AuthorizeView>
+            </RowEditingTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </div>
+
+}
+else if (toolBarMenuId == 2)
+{
+<div class="d-block pa-2 mr-5 ml-5">
+    <EditForm id="@editFormId" Model="@subject" OnValidSubmit="@SubmitValidForm" OnInvalidSubmit="@InvalidEntries">
+        <FluentValidationValidator />
+        <MudCard Elevation="20">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Create A New Subject</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudGrid>
+                    <MudItem xs="12" sm="6" md="4">
+                        <MudSelect T="string" Label="School" Dense="true" OffsetY="true" @bind-Value="@subject.School"
+                                   SelectedValuesChanged="OnSchoolChanged" For="() => subject.School">
+                            @foreach (var item in schools)
+                            {
+                                <MudSelectItem T="string" Value="@item.School">@item.School</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="4">
+                        <MudSelect T="string" Label="Department" Dense="true" OffsetY="true" @bind-Value="@subject.SubjectDepartment"
+                                   SelectedValuesChanged="OnSubjectDepartmentChanged" For="() => subject.SubjectDepartment">
+                            @foreach (var item in sbjdepts)
+                            {
+                                <MudSelectItem T="string" Value="@item.SbjDept">@item.SbjDept</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="4">
+                        <MudSelect T="string" Label="Classification" Dense="true" OffsetY="true" @bind-Value="@subject.SubjectClassification"
+                                   SelectedValuesChanged="OnSubjectClassChanged" For="() => subject.SubjectClassification">
+                            @foreach (var item in sbjclasslist)
+                            {
+                                <MudSelectItem T="string" Value="@item.SbjClassification">@item.SbjClassification</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudItem>
+                </MudGrid>
+                <MudGrid>
+                    <MudItem xs="12" sm="6" md="4">
+                        <MudTextField Label="Subject" @bind-Value="@subject.Subject" For="() => subject.Subject" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="2">
+                        <MudTextField Label="Subject Code" @bind-Value="@subject.SubjectCode" For="() => subject.SubjectCode" />
+                    </MudItem>
+                </MudGrid>
+            </MudCardContent>
+        </MudCard>
+    </EditForm>
+</div>
+}

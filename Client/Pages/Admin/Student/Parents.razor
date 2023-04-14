@@ -1,0 +1,268 @@
+﻿@page "/parents"
+
+<div class="d-block pa-2 mr-5 ml-5">
+    <MudPaper Class="d-flex align-center flex-grow-1 gap-x-8" Elevation="20">
+         <MudGrid>
+            <MudItem xs="12" sm="12" md="3">
+                  <MudTooltip Text="Go Back">
+                <MudIconButton OnClick="GoBack" Icon="@Icons.Material.Outlined.ArrowBack" Color="Color.Success" />
+            </MudTooltip>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="3">
+                <MudTooltip Text="Parent List">
+                    <MudIconButton OnClick="ParentListEvent" Icon="@Icons.Material.Outlined.FormatLineSpacing" Color="Color.Success" />
+                </MudTooltip>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="3">
+                 <MudTooltip Text="Add A New Parent">
+                <MudIconButton OnClick="CreateNewParent" Icon="@Icons.Material.Outlined.LibraryAdd" Color="Color.Success" />
+            </MudTooltip>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="3">
+                 <MudTooltip Text="Save">
+                <button type="submit" form="@editFormId">
+                    <MudButton Disabled="@disableSaveButton" StartIcon="@Icons.Material.Outlined.Save"
+                               Color="Color.Success" Size="Size.Large">@buttontitle</MudButton>
+                        </button>
+                    </MudTooltip>
+            </MudItem>               
+        </MudGrid>
+    </MudPaper>
+</div>
+
+
+
+@if (toolBarMenuId == 1)
+{
+
+    <div class="d-block pa-2  mr-5 ml-5">
+        <MudGrid>
+            <MudItem xs="12" sm="12" md="3">
+                <MudSelect T="string" Label="Status Type" Dense="true" @bind-Value="selectedStatusType" HelperText="@statusTypeCountDisplay"
+                           SelectedValuesChanged="OnSelectedStatusTypeChanged">
+                    @foreach (var item in statusType)
+                    {
+                        <MudSelectItem T="string" Value="@item.StatusType">@item.StatusType</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+        </MudGrid>
+    </div>
+
+    <div class="d-block pa-2  mr-5 ml-5">
+        <MudTable Elevation="20" Items="@parents" Dense="true" Hover="true" Breakpoint="Breakpoint.Sm"
+              Filter="new Func<ADMSchParents,bool>(FilterFunc)" SortLabel="Sort By">
+            <ToolBarContent>
+                <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search"
+                          IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                <MudSpacer />
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh><MudTableSortLabel SortBy="new Func<ADMSchParents, object>(x=>x.ParentNo)">Parent No.</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<ADMSchParents, object>(x=>x.ParentSurname)">Parent Surname</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<ADMSchParents, object>(x=>x.FatherName)">Father's Name</MudTableSortLabel></MudTh>
+                <MudTh>Father's Phone No.</MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<ADMSchParents, object>(x=>x.MotherName)">Mother's Name</MudTableSortLabel></MudTh>
+                <MudTh>Mother's Phone No.</MudTh>
+                <MudTh>Edit</MudTh>
+                <MudTh>Delete</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Parent No.">@context.ParentNo</MudTd>
+                <MudTd DataLabel="Parent Surname">@context.ParentSurname</MudTd>
+                <MudTd DataLabel="Father's Name">@context.FatherName</MudTd>
+                <MudTd DataLabel="Father's Phone No.">@context.FatherPhones</MudTd>
+                <MudTd DataLabel="Mother's Name">@context.MotherName</MudTd>
+                <MudTd DataLabel="Mother's Phone No.">@context.MotherPhones</MudTd>
+                <AuthorizeView Roles="Administrator">
+                    <Authorized Context="admin">
+                        <MudTd DataLabel="Edit">
+                            <MudFab @onclick="@(()=>UpdateParentDetails(@context.PayeeID))" Color="Color.Primary" Icon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small" />
+                        </MudTd>
+                        <MudTd DataLabel="Delete">
+                            <MudFab @onclick="@(()=>DeleteParent(@context.PayeeID))" Color="Color.Primary" Icon="@Icons.Material.Filled.Delete" Size="Size.Small" IconSize="Size.Small" />
+                        </MudTd>
+                    </Authorized>
+                </AuthorizeView>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </div>
+}
+else if (toolBarMenuId == 2)
+{
+<div class="d-block pa-2 mr-5 ml-5">
+    <EditForm id="@editFormId" Model="@parent" OnValidSubmit="@SubmitValidForm" OnInvalidSubmit="@InvalidEntries">
+        <FluentValidationValidator />
+
+        <MudCard Elevation="20">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">@pagetitle</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudGrid>
+                    <MudItem xs="12" sm="6" md="12">
+                        <div class="py-4 px-6 mx-4 rounded-tl-xl" style="border:1px solid;">
+                            <MudGrid>
+                                <MudItem xs="12" sm="6" md="2">
+                                    <MudTextField Label="Parent ID" @bind-Value="@parent.PayeeID" ReadOnly="true" />
+                                </MudItem>
+                                <MudItem xs="12" sm="6" md="2">
+                                    <MudTextField Label="Title" @bind-Value="@parent.ParentTitle" />
+                                </MudItem>
+                                <MudItem xs="12" sm="6" md="4">
+                                    <MudTextField Label="Parent Surname" @bind-Value="@parent.ParentSurname" For="() => parent.ParentSurname" />
+                                </MudItem>
+                                <MudItem xs="12" sm="6" md="3">
+                                    Parent Status
+                                    <MudElement>
+                                        <MudCheckBox @bind-Checked="@parentStatuschecked" Color="Color.Tertiary" Disabled="@disableControl">
+                                            @parentStatus
+                                        </MudCheckBox>
+                                    </MudElement>
+                                </MudItem>
+                            </MudGrid>
+                        </div>
+                    </MudItem>
+                </MudGrid>
+
+                <MudGrid>
+                    <MudItem xs="12" sm="6" md="12">
+                        <div class="py-4 px-6 mx-4 rounded-tl-xl" style="border:1px solid;">
+                            <MudGrid Spacing="1" Justify="Justify.Center">
+                                <MudItem xs="12" sm="6" md="2">
+                                    <div class="d-block pa-0 justify-center">
+                                        @if (payeeid != 0)
+                                        {
+                                            <img src="@imgSrc" id="image" width="150" height="150" style="border:1px solid #000000;margin-top:10px " />
+                                        }
+                                        else
+                                        {
+                                            if (file != null)
+                                            {
+                                                <img src="@imgSrc" id="image" width="150" height="150" style="border:1px solid #000000;margin-top:10px " />
+                                            }
+                                            else
+                                            {
+                                                <img src="assets/defaultphoto.png" id="image" width="150" height="150" style="border:1px solid #000000;margin-top:10px " />
+                                            }
+                                        }
+                                    </div>
+                                    <div class="d-block pa-0 justify-center">
+                                        <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Filled.Image"
+                                                   for="fileInput" Style="width:150px">Photo</MudButton>
+                                    </div>
+                                </MudItem>
+
+                                <MudItem xs="12" sm="6" md="10">
+                                    <MudGrid>
+                                        <MudItem xs="12" sm="6" md="6">
+                                            <MudTextField Label="Father's Name" @bind-Value="@parent.FatherName" For="() => parent.FatherName" />
+                                        </MudItem>
+                                        <MudItem xs="12" sm="6" md="6">
+                                            <MudTextField Label="Father's Occupation" @bind-Value="@parent.FatherOccupation" />
+                                        </MudItem>
+                                    </MudGrid>
+                                    <MudGrid>
+                                        <MudItem xs="12" sm="6" md="4">
+                                            <MudTextField Label="Father's Phone Number" @bind-Value="@parent.FatherPhones" For="() => parent.FatherPhones" />
+                                        </MudItem>
+                                        <MudItem xs="12" sm="6" md="4">
+                                            <MudTextField Label="Father's Phone Number" @bind-Value="@parent.FatherPhonesAlternate" For="() => parent.FatherPhonesAlternate" />
+                                        </MudItem>
+                                        <MudItem xs="12" sm="6" md="4">
+                                            <MudTextField Label="Father's Email" @bind-Value="@parent.FatherEmail" For="() => parent.FatherEmail" />
+                                        </MudItem>
+                                    </MudGrid>
+                                    <MudGrid>
+                                        <MudItem xs="12" sm="6" md="12">
+                                            <MudTextField Label="Father's Address (Home)" @bind-Value="@parent.FatherAddrHome" For="() => parent.FatherAddrHome" />
+                                        </MudItem>
+                                    </MudGrid>
+                                    <MudGrid>
+                                        <MudItem xs="12" sm="6" md="12">
+                                            <MudTextField Label="Father's Address (Place of Work)" @bind-Value="@parent.FatherAddrWork" />
+                                        </MudItem>
+                                    </MudGrid>
+                                </MudItem>
+                            </MudGrid>
+                        </div>
+                    </MudItem>
+                </MudGrid>
+               
+                <br /> <br />
+                       <MudGrid>
+                           <MudItem xs="12" sm="6" md="12">
+                               <div class="py-4 px-6 mx-4 rounded-tl-xl" style="border:1px solid;">
+                                   <MudGrid Spacing="1" Justify="Justify.Center">
+                                       <MudItem xs="12" sm="6" md="2">
+                                           <div class="d-block pa-0 justify-center">
+                                               @if (payeeid != 0)
+                                               {
+                                                   <img src="@imgSrcM" id="image" width="150" height="150" style="border:1px solid #000000;margin-top:10px " />
+                                               }
+                                               else
+                                               {
+                                                   if (fileM != null)
+                                                   {
+                                                       <img src="@imgSrcM" id="image" width="150" height="150" style="border:1px solid #000000;margin-top:10px " />
+                                                   }
+                                                   else
+                                                   {
+                                                       <img src="assets/defaultphoto.png" id="image" width="150" height="150" style="border:1px solid #000000;margin-top:10px " />
+                                                   }
+                                               }
+                                           </div>
+                                           <div class="d-block pa-0 justify-center">
+                                               <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Filled.Image"
+                                                          for="fileInputM" Style="width:150px">Photo</MudButton>
+                                           </div>
+                                       </MudItem>
+                                       <MudItem xs="12" sm="6" md="10">
+                                           <MudGrid>
+                                               <MudItem xs="12" sm="6" md="6">
+                                                   <MudTextField Label="Mother's Name" @bind-Value="@parent.MotherName" For="() => parent.MotherName" />
+                                               </MudItem>
+                                               <MudItem xs="12" sm="6" md="6">
+                                                   <MudTextField Label="Mother's Occupation" @bind-Value="@parent.MotherOccupation" />
+                                               </MudItem>
+                                           </MudGrid>
+                                           <MudGrid>
+                                               <MudItem xs="12" sm="6" md="4">
+                                                   <MudTextField Label="Mother's Phone Number" @bind-Value="@parent.MotherPhones" For="() => parent.MotherPhones" />
+                                               </MudItem>
+                                               <MudItem xs="12" sm="6" md="4">
+                                                   <MudTextField Label="Mother's Phone Number" @bind-Value="@parent.MotherPhonesAlternate" For="() => parent.MotherPhonesAlternate" />
+                                               </MudItem>
+                                               <MudItem xs="12" sm="6" md="4">
+                                                   <MudTextField Label="Mother's Email" @bind-Value="@parent.MotherEmail" For="() => parent.MotherEmail" />
+                                               </MudItem>
+                                           </MudGrid>
+                                           <MudGrid>
+                                               <MudItem xs="12" sm="6" md="12">
+                                                   <MudTextField Label="Mother's Address (Home)" @bind-Value="@parent.MotherAddrHome" For="() => parent.MotherAddrHome" />
+                                               </MudItem>
+                                           </MudGrid>
+                                           <MudGrid>
+                                               <MudItem xs="12" sm="6" md="12">
+                                                   <MudTextField Label="Mother's Address (Place of Work)" @bind-Value="@parent.MotherAddrWork" />
+                                               </MudItem>
+                                           </MudGrid>
+                                       </MudItem>
+                                   </MudGrid>
+                               </div>
+                           </MudItem>
+                       </MudGrid>
+            </MudCardContent>
+        </MudCard>
+    </EditForm>
+</div>
+}
+
+
+<InputFile id="fileInput" OnChange="UploadFatherPhoto" hidden multiple />
+<InputFile id="fileInputM" OnChange="UploadMotherPhoto" hidden multiple />

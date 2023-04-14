@@ -1,0 +1,50 @@
+﻿@page "/schtermselection"
+@implements IDisposable
+
+<PageTitle>Academics</PageTitle>
+
+<MudText Typo="Typo.h5">Academic Sessions</MudText>
+<br />
+<MudGrid>
+    <MudItem xs="12" sm="6" md="12">
+        <MudSelect T="string" Label="Academic Year" Strict="true" Dense="true" @bind-Value="@selectedSession"
+                   SelectedValuesChanged="OnSelectedAcademicYearChanged">
+            @foreach (var item in academicyearlist)
+            {
+                <MudSelectItem T="string" Value="@item.AcademicYear">@item.AcademicYear</MudSelectItem>
+            }
+        </MudSelect>
+    </MudItem>
+</MudGrid>
+<MudGrid>
+    <MudItem xs="12" sm="6" md="12">
+        <MudSelect T="string" Label="Academic Session" Strict="true" Dense="true" @bind-Value="@selectedTerm"
+                   SelectedValuesChanged="OnSelectedAcademicSessionChanged">
+            @foreach (var item in schTermlist)
+            {
+                <MudSelectItem T="string" Value="@item.AcademicSession">@item.AcademicSession</MudSelectItem>
+            }
+        </MudSelect>
+    </MudItem>
+</MudGrid>
+<br />
+<div Class="d-flex justify-center flex-grow-1 gap-4" Elevation="0">
+    <MudButton OnClick="Continue" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.ArrowForward"
+               Class="align-self-center mr-3"
+               Color="Color.Primary">Continue</MudButton>
+</div>
+@*
+<AuthorizeView>
+    <Authorized>
+        
+    </Authorized>
+    <NotAuthorized>
+        <a href="/">Log in</a>
+        <div class="m-1 p-1 text-white">
+            Not Logged In
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+*@
+
+

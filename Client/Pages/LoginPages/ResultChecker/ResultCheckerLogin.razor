@@ -1,0 +1,24 @@
+﻿@page "/resultchecker"
+
+<PageTitle>Result Checker</PageTitle>
+
+
+<EditForm Model="@resultRequest" OnValidSubmit="@Authenticate">
+    <FluentValidationValidator />
+    <MudText Typo="Typo.h5">Result Checker</MudText>
+    <br />
+    <MudGrid Class="pa-4">
+        <MudGrid>
+            <MudItem xs="12" sm="6" md="12">
+                <MudTextField Label="PIN" @bind-Value="@resultRequest.ParentPin" For="() => resultRequest.ParentPin"></MudTextField>
+            </MudItem>
+        </MudGrid>
+        <MudGrid Class="mt-5">
+            <MudItem xs="12" sm="6" md="12" Class="d-flex justify-center py-2 px-1 mt-2">
+                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Login" Class="align-self-center mr-3" Color="Color.Primary">Login</MudButton>
+            </MudItem>
+        </MudGrid>
+    </MudGrid>
+    <br />
+</EditForm>
+

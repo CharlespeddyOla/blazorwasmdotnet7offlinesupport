@@ -1,0 +1,59 @@
+﻿@page "/homepage"
+
+<PageTitle>Home</PageTitle>
+
+<AuthorizeView>
+    <Authorized>
+        <h1>School Magnets, Academics!</h1>
+        You are currently logged in with the following details:
+        <br />
+        <div class="alert alert-secondary mt-4">
+            <span class="oi oi-pencil me-2" aria-hidden="true"></span>
+            <span class="text-nowrap">
+                <MudGrid>
+                    <MudItem xs="12" sm="6" md="12">
+                        <MudText Typo="Typo.body1"> <strong>Currently Logged On User Details:</strong></MudText>
+                    </MudItem>
+                </MudGrid>
+                <MudGrid>
+                    <MudItem xs="12" sm="6" md="2">
+                        <MudText Typo="Typo.body1">Name:</MudText>
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="8">
+                        <MudText Typo="Typo.body1">@staffName</MudText>
+                    </MudItem>
+                </MudGrid>
+                <MudGrid>
+                    <MudItem xs="12" sm="6" md="2">
+                        <MudText Typo="Typo.body1">Email:</MudText>
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="8">
+                        <MudText Typo="Typo.body1">@staffEmail</MudText>
+                    </MudItem>
+                </MudGrid>
+                <MudGrid>
+                    <MudItem xs="12" sm="6" md="2">
+                        <MudText Typo="Typo.body1">Academic Session:</MudText>
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="8">
+                        <MudText Typo="Typo.body1">@academicYear</MudText>
+                    </MudItem>
+                </MudGrid>
+                <MudGrid>
+                    <MudItem xs="12" sm="6" md="2">
+                        <MudText Typo="Typo.body1">Role:</MudText>
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="8">
+                        <MudText Typo="Typo.body1">@staffRole</MudText>
+                    </MudItem>
+                </MudGrid>
+            </span>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <a href="/">Log in</a>
+        <div class="m-1 p-1 text-white">
+            Not Logged In
+        </div>
+    </NotAuthorized>
+</AuthorizeView>

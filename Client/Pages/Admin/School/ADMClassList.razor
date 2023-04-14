@@ -1,0 +1,205 @@
+﻿@page "/classlist"
+
+
+<AuthorizeView Roles="Administrator">
+    <Authorized>
+        <div class="d-block pa-2 mr-5 ml-5">
+            <MudPaper Class="d-flex align-center flex-grow-1 gap-x-8" Elevation="20">
+                <div Class="d-flex flex-1">
+                    <MudTooltip Text="Class List">
+                        <MudIconButton OnClick="ClassListEvent" Icon="@Icons.Material.Outlined.FormatLineSpacing" Color="Color.Success" />
+                    </MudTooltip>
+                </div>
+                <div Class="d-flex flex-1">
+                    <MudTooltip Text="Create A New Class">
+                        <MudIconButton OnClick="CreateNewClass" Icon="@Icons.Material.Outlined.LibraryAdd" Color="Color.Success" />
+                    </MudTooltip>
+                </div>
+                <div Class="d-flex flex-1">
+                    <MudTooltip Text="Save">
+                        <button type="submit" form="@editFormId">
+                             <MudButton Disabled="@disableSaveButton" StartIcon="@Icons.Material.Outlined.Save" 
+                                        Color="Color.Success" Size="Size.Large">@buttontitle</MudButton>
+                        </button>                           
+                    </MudTooltip>
+                </div>
+            </MudPaper>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <div class="ma-10">
+            <p style="font-size:20px;">You Do Not Have Permission To Access This Page</p>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+
+@if (toolBarMenuId == 1)
+{
+
+    <div class="d-block pa-2  mr-5 ml-5">
+        <MudGrid>
+            <MudItem xs="12" sm="12" md="3">
+                <MudSelect T="string" Label="School" Strict="true" Dense="true" @bind-Value="selectedSchool" SelectedValuesChanged="OnSelectedSchoolChanged">
+                    @foreach (var item in schools)
+                    {
+                        <MudSelectItem T="string" Value="@item.School">@item.School</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="9">
+                @if (_processing)
+                {
+                    <MudAlert Severity="Severity.Normal" Variant="Variant.Filled">
+                        @timerDisplay @stopwatchvalue
+                    </MudAlert>
+                }
+            </MudItem>
+        </MudGrid>
+    </div>
+
+    <div class="d-block pa-2  mr-5 ml-5">
+        <MudTable Elevation="20" Items="@classList" Dense="true" Hover="true" SortLabel="Sort By" Breakpoint="Breakpoint.Sm">
+            <HeaderContent>
+                <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<ADMSchClassList, object>(x=>x.School)">School</MudTableSortLabel></MudTh>
+                <MudTh>Class</MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<ADMSchClassList, object>(x=>x.ClassCount)">Student Count</MudTableSortLabel></MudTh>
+                <MudTh>Class Discipline</MudTh>
+                <MudTh>Class Tearcher</MudTh>
+                <MudTh>Principal</MudTh>
+                <AuthorizeView Roles="Administrator">
+                    <Authorized Context="admin">
+                        <MudTh>Edit</MudTh>
+                    </Authorized>
+                </AuthorizeView>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="School">@context.School</MudTd>
+                <MudTd DataLabel="Class">@context.ClassName</MudTd>
+                <MudTd DataLabel="Student Count" Style="text-align:center; width:20px">@context.ClassCount</MudTd>
+                <MudTd DataLabel="Class Discipline">@context.Discipline</MudTd>
+                <MudTd DataLabel="Class Tearcher">@context.ClassTeacherInitials</MudTd>
+                <MudTd DataLabel="Principal">@context.PrincipalInitials</MudTd>
+                <AuthorizeView Roles="Administrator">
+                    <Authorized Context="admin">
+                        <MudTd DataLabel="Edit">
+                            <MudFab @onclick="@(()=>UpdateClassDetails(@context.ClassID))" Color="Color.Primary" Icon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small" />
+                        </MudTd>
+                    </Authorized>
+                </AuthorizeView>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </div>
+}
+else if (toolBarMenuId == 2)
+{
+    <div class="d-block pa-2 mr-5 ml-5">
+        <EditForm  id="@editFormId" Model="@classDetails" OnValidSubmit="SubmitValidForm" OnInvalidSubmit="InvalidEntries">
+            <FluentValidationValidator />
+            <MudCard Elevation="20">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">@pagetitle</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudGrid>
+                        <MudItem xs="12" sm="12" md="3">
+                            @if (classid == 0)
+                            {
+                                <MudSelect T="string" Label="School" Dense="true" OffsetY="true" @bind-Value="@classDetails.School"
+                                           SelectedValuesChanged="OnSchoolChanged" For="() => classDetails.School">
+                                    @foreach (var item in schools)
+                                    {
+                                        <MudSelectItem T="string" Value="@item.School">@item.School</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            }
+                            else
+                            {
+                                <MudTextField Label="School" @bind-Value="@classDetails.School" ReadOnly="true" />
+                            }
+                        </MudItem>
+                        <MudItem xs="12" sm="12" md="3">
+                            @if (classid == 0)
+                            {
+                                <MudSelect T="string" Label="Class" Dense="true" OffsetY="true" @bind-Value="@classDetails.ClassGroupName"
+                                           SelectedValuesChanged="OnClassChanged" For="() => classDetails.ClassGroupName">
+                                    @foreach (var item in classGrouplist)
+                                    {
+                                        <MudSelectItem T="string" Value="@item.ClassGroupName">@item.ClassGroupName</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            }
+                            else
+                            {
+                                <MudTextField Label="Class" @bind-Value="@classDetails.ClassGroupName" ReadOnly="true" />
+                            }
+                        </MudItem>
+                        <MudItem xs="12" sm="12" md="3">
+                            @if (classid == 0)
+                            {
+                                <MudSelect T="string" Label="Class Name" Dense="true" OffsetY="true" @bind-Value="@classDetails.CATName"
+                                           SelectedValuesChanged="OnClassNameChanged" For="() => classDetails.CATName">
+                                    @foreach (var item in classNames)
+                                    {
+                                        <MudSelectItem T="string" Value="@item.CATName">@item.CATName</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            }
+                            else
+                            {
+                                <MudTextField Label="Class Name" @bind-Value="@classDetails.CATName" ReadOnly="true" />
+                            }
+                        </MudItem>
+                        <MudItem xs="12" sm="12" md="3">
+                            <MudSelect T="string" Label="Class Discipline" Dense="true" OffsetY="true"
+                                       @bind-Value="@classDetails.Discipline" SelectedValuesChanged="OnDisciplineChanged"
+                                       For="() => classDetails.Discipline">
+                                @foreach (var item in classDisciplinelist)
+                                {
+                                    <MudSelectItem T="string" Value="@item.Discipline">@item.Discipline</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </MudItem>
+                    </MudGrid>
+                    <MudGrid>
+                        <MudItem xs="12" sm="12" md="6">
+                            <MudSelect T="string" Label="Class Teacher" Dense="true" OffsetY="true"
+                                       @bind-Value="@classDetails.ClassTeacherWithNo" SelectedValuesChanged="OnClassTeacherChanged"
+                                       For="() => classDetails.ClassTeacherWithNo">
+                                @foreach (var item in staffs)
+                                {
+                                    <MudSelectItem T="string" Value="@item.StaffNameWithNo">@item.StaffNameWithNo</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </MudItem>
+                    </MudGrid>
+                    <MudGrid>
+                        <MudItem xs="12" sm="12" md="6">
+                            <MudCheckBox @bind-Checked="classDetails.JuniorFinalYearClass" Color="Color.Tertiary">Tick Here for Junior Final Year Class</MudCheckBox>
+                        </MudItem>
+                    </MudGrid>
+                    <MudGrid>
+                        <MudItem xs="12" sm="12" md="6">
+                            <MudCheckBox @bind-Checked="classDetails.FinalYearClass" Color="Color.Tertiary">Tick Here for Senior Final Year Class</MudCheckBox>
+                        </MudItem>
+                    </MudGrid>
+                    <MudGrid>
+                        <MudItem xs="12" sm="12" md="6">
+                            <MudCheckBox @bind-Checked="classDetails.CheckPointClass" Color="Color.Tertiary">Tick Here for CheckPoint Class</MudCheckBox>
+                        </MudItem>
+                    </MudGrid>
+                    <MudGrid>
+                        <MudItem xs="12" sm="12" md="6">
+                            <MudCheckBox @bind-Checked="classDetails.IGCSEClass" Color="Color.Tertiary">Tick Here for IGCSE Class</MudCheckBox>
+                        </MudItem>
+                    </MudGrid>
+                </MudCardContent>
+            </MudCard>
+        </EditForm>
+    </div>
+}
+

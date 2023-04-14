@@ -1,0 +1,246 @@
+﻿@page "/countrylist"
+
+
+<AuthorizeView Roles="Administrator, Secretary">
+    <Authorized Context="admin">
+        <div class="d-block pa-2 mr-5 ml-5">
+            <MudPaper Class="d-flex align-center flex-grow-1 gap-x-8" Elevation="20">
+                <MudGrid>
+                    <MudItem xs="12" sm="12" md="3">
+                        <MudTooltip Text="Go Back">
+                            <MudIconButton OnClick="GoBack" Icon="@Icons.Material.Outlined.ArrowBack" Color="Color.Success" />
+                        </MudTooltip>
+                    </MudItem>
+                    <MudItem xs="12" sm="12" md="3">
+                        <MudTooltip Text="Country List">
+                            <MudIconButton OnClick="CountryEvent" Icon="@Icons.Material.Outlined.Filter1" Color="Color.Success" />
+                        </MudTooltip>
+                    </MudItem>
+                    <MudItem xs="12" sm="12" md="3">
+                        <MudTooltip Text="State List">
+                            <MudIconButton OnClick="StateEvent" Icon="@Icons.Material.Outlined.Filter2" Color="Color.Success" />
+                        </MudTooltip>
+                    </MudItem>
+                    <MudItem xs="12" sm="12" md="3">
+                        <MudTooltip Text="LGA List">
+                            <MudIconButton OnClick="LGAEvent" Icon="@Icons.Material.Outlined.Filter3" Color="Color.Success" />
+                        </MudTooltip>
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+        </div>
+
+        @if (toolBarMenuId == 1)
+        {
+            <div class="d-block pa-2  mr-5 ml-5">
+                <MudGrid Spacing="1" Justify="Justify.Center">
+                    <MudItem xs="12" sm="6" md="6">
+                        <MudTable Elevation="20" Items="@countries" T="SETCountries" Dense="true" Hover="true" Breakpoint="Breakpoint.Sm"
+                              OnRowClick="@(args => SelectedCountryRow(args))">
+                            <HeaderContent>
+                                <MudTh>Code</MudTh>
+                                <MudTh>Country</MudTh>
+                            </HeaderContent>
+                            <RowTemplate Context="countrycontext">
+                                <MudTd DataLabel="Code">@countrycontext.CountryCode</MudTd>
+                                <MudTd DataLabel="Country">@countrycontext.Country</MudTd>
+                            </RowTemplate>
+                            <PagerContent>
+                                <MudTablePager />
+                            </PagerContent>
+                        </MudTable>
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="6">
+                        <EditForm Model="@countrydetails" OnValidSubmit="@SubmitValidFormCountry" OnInvalidSubmit="@InvalidEntries">
+                            <FluentValidationValidator />
+                            <MudCard Elevation="20">
+                                <MudCardHeader>
+                                    <CardHeaderContent>
+                                        <MudText Typo="Typo.h6">Country List</MudText>
+                                    </CardHeaderContent>
+                                    <CardHeaderActions>
+                                        <MudTooltip Text="Save" Color="Color.Tertiary" Placement="Placement.Bottom" Arrow="true">
+                                            <MudIconButton Icon="@Icons.Material.Filled.Save" Color="Color.Success" ButtonType="ButtonType.Submit" />
+                                        </MudTooltip>
+                                        <MudTooltip Text="Reset" Color="Color.Tertiary" Placement="Placement.Bottom" Arrow="true">
+                                            <MudIconButton Icon="@Icons.Material.Filled.FormatColorReset" Color="Color.Success" OnClick="CountryReset" />
+                                        </MudTooltip>
+                                    </CardHeaderActions>
+                                </MudCardHeader>
+                                <MudCardContent>
+                                    <MudGrid>
+                                        <MudItem xs="12" sm="12" md="12">
+                                            <MudTextField Label="Country Code" @bind-Value="@countrydetails.CountryCode" For="() => countrydetails.CountryCode" />
+                                        </MudItem>
+                                    </MudGrid>
+                                    <MudGrid>
+                                        <MudItem xs="12" sm="12" md="12">
+                                            <MudTextField Label="Country Name" @bind-Value="@countrydetails.Country" For="() => countrydetails.Country" />
+                                        </MudItem>
+                                    </MudGrid>
+                                </MudCardContent>
+                            </MudCard>
+                        </EditForm>
+                    </MudItem>
+                </MudGrid>
+            </div>
+        }
+        else if (toolBarMenuId == 2)
+        {
+            <div class="d-block pa-2  mr-5 ml-5">
+                <MudGrid Spacing="1" Justify="Justify.Center">
+                    <MudItem xs="12" sm="6" md="6">
+                        <MudGrid>
+                            <MudItem xs="12" sm="6" md="6">
+                                <MudSelect T="string" Label="Country" Dense="true" OffsetY="true" @bind-Value="@selectedCountry"
+                                       SelectedValuesChanged="OnCountryChanged">
+                                    @foreach (var item in countries)
+                                    {
+                                        <MudSelectItem T="string" Value="@item.Country">@item.Country</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudItem>
+                        </MudGrid>
+                        <MudGrid>
+                            <MudItem xs="12" sm="6" md="12">
+                                <MudTable Elevation="20" Items="@states" T="SETStates" Dense="true" Hover="true" Breakpoint="Breakpoint.Sm"
+                                      OnRowClick="@(args => SelectedStateRow(args))">
+                                    <HeaderContent>
+                                        <MudTh>Code</MudTh>
+                                        <MudTh>State</MudTh>
+                                    </HeaderContent>
+                                    <RowTemplate Context="statecontext">
+                                        <MudTd DataLabel="Code">@statecontext.StateCode</MudTd>
+                                        <MudTd DataLabel="State">@statecontext.State</MudTd>
+                                    </RowTemplate>
+                                    <PagerContent>
+                                        <MudTablePager />
+                                    </PagerContent>
+                                </MudTable>
+                            </MudItem>
+                        </MudGrid>
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="6">
+                        <EditForm Model="@statedetails" OnValidSubmit="@SubmitValidFormState" OnInvalidSubmit="@InvalidEntries">
+                            <FluentValidationValidator />
+                            <MudCard Elevation="20">
+                                <MudCardHeader>
+                                    <CardHeaderContent>
+                                        <MudText Typo="Typo.h6">State List</MudText>
+                                    </CardHeaderContent>
+                                    <CardHeaderActions>
+                                        <MudTooltip Text="Save" Color="Color.Tertiary" Placement="Placement.Bottom" Arrow="true">
+                                            <MudIconButton Icon="@Icons.Material.Filled.Save" Color="Color.Success" ButtonType="ButtonType.Submit" />
+                                        </MudTooltip>
+                                        <MudTooltip Text="Reset" Color="Color.Tertiary" Placement="Placement.Bottom" Arrow="true">
+                                            <MudIconButton Icon="@Icons.Material.Filled.FormatColorReset" Color="Color.Success" OnClick="StateReset" />
+                                        </MudTooltip>
+                                    </CardHeaderActions>
+                                </MudCardHeader>
+                                <MudCardContent>
+                                    <MudGrid>
+                                        <MudItem xs="12" sm="12" md="12">
+                                            <MudTextField Label="State Code" @bind-Value="@statedetails.StateCode" For="() => statedetails.StateCode" />
+                                        </MudItem>
+                                    </MudGrid>
+                                    <MudGrid>
+                                        <MudItem xs="12" sm="12" md="12">
+                                            <MudTextField Label="State Name" @bind-Value="@statedetails.State" For="() => statedetails.State" />
+                                        </MudItem>
+                                    </MudGrid>
+                                </MudCardContent>
+                            </MudCard>
+                        </EditForm>
+                    </MudItem>
+                </MudGrid>
+            </div>
+        }
+        else if (toolBarMenuId == 3)
+        {
+            <div class="d-block pa-2  mr-5 ml-5">
+                <MudGrid Spacing="1" Justify="Justify.Center">
+                    <MudItem xs="12" sm="6" md="6">
+                        <MudGrid>
+                            <MudItem xs="12" sm="6" md="6">
+                                <MudSelect T="string" Label="Country" Dense="true" OffsetY="true" @bind-Value="@selectedCountry"
+                                       SelectedValuesChanged="OnCountryChangedForLGA">
+                                    @foreach (var item in countries)
+                                    {
+                                        <MudSelectItem T="string" Value="@item.Country">@item.Country</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudItem>
+                        </MudGrid>
+                        <MudGrid>
+                            <MudItem xs="12" sm="6" md="6">
+                                <MudSelect T="string" Label="States" Dense="true" OffsetY="true" @bind-Value="@selectedState"
+                                       SelectedValuesChanged="OnStateChanged">
+                                    @foreach (var item in states)
+                                    {
+                                        <MudSelectItem T="string" Value="@item.State">@item.State</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudItem>
+                        </MudGrid>
+                        <MudGrid>
+                            <MudItem xs="12" sm="6" md="12">
+                                <MudTable Elevation="20" Items="@lgas" T="SETLGA" Dense="true" Hover="true" Breakpoint="Breakpoint.Sm"
+                                      OnRowClick="@(args => SelectedLGARow(args))">
+                                    <HeaderContent>
+                                        <MudTh>Code</MudTh>
+                                        <MudTh>LGA</MudTh>
+                                    </HeaderContent>
+                                    <RowTemplate Context="lgacontext">
+                                        <MudTd DataLabel="Code">@lgacontext.LGACode</MudTd>
+                                        <MudTd DataLabel="LGA">@lgacontext.LGA</MudTd>
+                                    </RowTemplate>
+                                    <PagerContent>
+                                        <MudTablePager />
+                                    </PagerContent>
+                                </MudTable>
+                            </MudItem>
+                        </MudGrid>
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="6">
+                        <EditForm Model="@lgadetails" OnValidSubmit="@SubmitValidFormLGA" OnInvalidSubmit="@InvalidEntries">
+                            <FluentValidationValidator />
+                            <MudCard Elevation="20">
+                                <MudCardHeader>
+                                    <CardHeaderContent>
+                                        <MudText Typo="Typo.h6">Local Goverment Area List</MudText>
+                                    </CardHeaderContent>
+                                    <CardHeaderActions>
+                                        <MudTooltip Text="Save" Color="Color.Tertiary" Placement="Placement.Bottom" Arrow="true">
+                                            <MudIconButton Icon="@Icons.Material.Filled.Save" Color="Color.Success" ButtonType="ButtonType.Submit" />
+                                        </MudTooltip>
+                                        <MudTooltip Text="Reset" Color="Color.Tertiary" Placement="Placement.Bottom" Arrow="true">
+                                            <MudIconButton Icon="@Icons.Material.Filled.FormatColorReset" Color="Color.Success" OnClick="LGAReset" />
+                                        </MudTooltip>
+                                    </CardHeaderActions>
+                                </MudCardHeader>
+                                <MudCardContent>
+                                    <MudGrid>
+                                        <MudItem xs="12" sm="12" md="12">
+                                            <MudTextField Label="State Code" @bind-Value="@lgadetails.LGACode" For="() => lgadetails.LGACode" />
+                                        </MudItem>
+                                    </MudGrid>
+                                    <MudGrid>
+                                        <MudItem xs="12" sm="12" md="12">
+                                            <MudTextField Label="State Name" @bind-Value="@lgadetails.LGA" For="() => lgadetails.LGA" />
+                                        </MudItem>
+                                    </MudGrid>
+                                </MudCardContent>
+                            </MudCard>
+                        </EditForm>
+                    </MudItem>
+                </MudGrid>
+            </div>
+        }
+
+    </Authorized>
+    <NotAuthorized>
+        <div class="ma-10">
+            <p style="font-size:20px;">You Do Not Have Permission To Access This Page</p>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>

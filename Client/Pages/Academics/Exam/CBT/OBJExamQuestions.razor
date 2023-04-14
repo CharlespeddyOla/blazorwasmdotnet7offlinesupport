@@ -1,0 +1,484 @@
+﻿@page "/examsobjquestions/{examid:int}"
+
+<InputFile id="fileInput" OnChange="UploadImages" hidden multiple />
+
+<div class="d-block pa-2 mr-5 ml-5">
+    <MudPaper Elevation="20">
+        <MudTooltip Text="Go Back">
+            <MudIconButton OnClick="GoBack" Icon="@Icons.Material.Filled.ArrowBack" Color="Color.Success" />
+        </MudTooltip>
+
+        <MudTooltip Text="Questions">
+            <MudIconButton OnClick="CBTQuestions" Icon="@Icons.Material.Filled.FormatLineSpacing" Color="Color.Success" />
+        </MudTooltip>
+
+        <MudTooltip Text="Create A New Question">
+            <MudIconButton OnClick="CBTQuestion" Icon="@Icons.Material.Filled.LibraryAdd" Color="Color.Success" />
+        </MudTooltip>
+
+        <MudTooltip Text="Equation Editor">
+            <MudIconButton OnClick="EquationEditor" Icon="@Icons.Material.Filled.Equalizer" Color="Color.Success" />
+        </MudTooltip>
+
+        <MudTooltip Text="Text Formatting">
+            <MudIconButton OnClick="TextFormatting" Icon="@Icons.Material.Filled.TextFormat" Color="Color.Success" />
+        </MudTooltip>
+
+        <MudTooltip Text="Preview Questions">
+            <MudIconButton OnClick="PreviewQuestion" Icon="@Icons.Material.Filled.Preview" Color="Color.Success" />
+        </MudTooltip>
+
+    </MudPaper>
+</div>
+
+<div class="d-block pa-2 mr-5 ml-5">
+    <div class="container-fluid" hidden="@IsShow">
+        <MudText Typo="Typo.subtitle2" Color="Color.Inherit">
+            <b>@progressbarInfo @Math.Round(i)%</b>
+        </MudText>
+        <MudProgressLinear Color="Color.Info" Size="Size.Large" Value="@Convert.ToDouble(i)" Rounded="true" Striped="true">
+        </MudProgressLinear>
+    </div>
+</div>
+
+
+@if (toolBarMenuId == 1)
+{
+    <div class="d-block pa-2 mr-5 ml-5">
+        <MudTable Elevation="20" Items="@questions" T="CBTQuestions" Dense="true" Hover="true" Breakpoint="Breakpoint.Sm"
+                  OnRowClick="@(args => OnSelectedQuestion(args))">
+            <ToolBarContent>
+                <MudText Typo="Typo.body1">@_ExamName</MudText>
+                <MudSpacer />
+                <MudTooltip Text="Update Student Scores When Teachers Update Questions And Answers">
+                    <MudIconButton OnClick="UpdateStudentScores" Icon="@Icons.Material.Filled.Update" Color="Color.Success" />
+                </MudTooltip>
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh>No.</MudTh>
+                <MudTh>Question</MudTh>
+                <MudTh>Equation</MudTh>
+                <MudTh Style="text-align:center;">Delete</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="No.">
+                    @context.QNo
+                </MudTd>
+                <MudTd DataLabel="Question">
+                    @context.Question
+                </MudTd>
+                <MudTd DataLabel="Equation">
+                    <Equation Value="@context.Equation" TeXDisplay="false"></Equation>
+                </MudTd>
+                <MudTd DataLabel="" Style="text-align:center;">
+                    <MudFab @onclick="@(()=>DeleteQuestion(@context.QID))" Color="Color.Tertiary"
+                            Icon="@Icons.Material.Filled.Delete"
+                            Size="Size.Small" IconSize="Size.Small" />
+                </MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </div>
+}
+else if (toolBarMenuId == 2)
+{
+    <div class="d-block pa-2 mr-5 ml-5">
+        <EditForm Model="@question" OnValidSubmit="@Save">
+            <FluentValidationValidator />
+            <MudCard Elevation="20">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">@pagetitle</MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudTooltip Text="Save" Color="Color.Tertiary" Placement="Placement.Bottom" Arrow="true">
+                            <MudIconButton Icon="@Icons.Material.Filled.Save" Color="Color.Success" ButtonType="ButtonType.Submit" />
+                        </MudTooltip>
+                        <MudTooltip Text="Click To Add More Question" Color="Color.Tertiary" Placement="Placement.Bottom" Arrow="true">
+                            <MudToggleIconButton Toggled="@AddMoreQuestion" ToggledChanged="OnToggledChanged" Title="Add More Question"
+                                                 Icon="@Icons.Material.Filled.ModeEdit" Color="@Color.Success" Disabled="@DisabledAddMoreQuestion"
+                                                 ToggledIcon="@Icons.Material.Filled.ModeEdit" ToggledColor="@Color.Error" />
+                        </MudTooltip>
+                        <MudTooltip Text="Cancel" Color="Color.Tertiary" Placement="Placement.Bottom" Arrow="true">
+                            <MudIconButton Icon="@Icons.Material.Filled.Cancel" Color="Color.Success" OnClick="Cancel" />
+                        </MudTooltip>
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudGrid>
+                        <MudItem xs="12" sm="12" md="2">
+                            <MudTextField Label="No. of Choice" @bind-Value="@question.NAns" />
+                        </MudItem>
+                        <MudItem xs="12" sm="12" md="3">
+                            <MudSelect T="string" Label="Question Type" Strict="true" Dense="true" @bind-Value="@question.QType"
+                                       For="() => question.QType" SelectedValuesChanged="OnQuestionTypeChanged"
+                                       Disabled="@DisabledQuestionType">
+                                @foreach (var item in questionTypeList)
+                                {
+                                    <MudSelectItem T="string" Value="@item.QType">@item.QType</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </MudItem>
+                        <MudItem xs="12" sm="12" md="7">
+                            <MudToolBar>
+                                <MudTooltip Text="Load Question Image" Color="Color.Tertiary" Placement="Placement.Bottom" Arrow="true">
+                                    <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary"
+                                               StartIcon="@Icons.Filled.Image" for="fileInput" OnClick="QuestionImageSelected">
+                                        Question Image
+                                    </MudButton>
+                                </MudTooltip>
+                                <MudTooltip Text="View Question Image" Color="Color.Tertiary" Placement="Placement.Bottom" Arrow="true">
+                                    <MudChip Color="Color.Info" Size="Size.Small" OnClick="ShowQuestionImage">View Image</MudChip>
+                                </MudTooltip>
+                            </MudToolBar>
+                        </MudItem>
+                    </MudGrid>
+
+                    <MudGrid>
+                        <MudItem xs="12" sm="12" md="8">
+                            <MudTextField @onmouseup="@GetSelectedText" Label="Section (If Any)" @bind-Value="@question.Section"
+                                          Variant="Variant.Outlined" Lines="3" @onclick="OnSectionTextBoxClick" />
+                        </MudItem>
+                        <MudItem xs="12" sm="12" md="4">
+                            <MudToolBar>
+                                <MudTooltip Text="Load Section Image" Color="Color.Tertiary" Placement="Placement.Bottom" Arrow="true">
+                                    <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary"
+                                               StartIcon="@Icons.Filled.Image" for="fileInput" OnClick="SectionImageSelection">
+                                        Section Image
+                                    </MudButton>
+                                </MudTooltip>
+                                <MudTooltip Text="View Section Image" Color="Color.Tertiary" Placement="Placement.Bottom" Arrow="true">
+                                    <MudChip Color="Color.Info" Size="Size.Small" OnClick="ShowSectionImage">View Image</MudChip>
+                                </MudTooltip>
+                            </MudToolBar>
+                        </MudItem>
+                    </MudGrid>
+
+                    <MudGrid>
+                        <MudItem xs="12" sm="12" md="7">
+                            <MudTextField @onmouseup="@GetSelectedText" Label="@questionNo" @bind-Value="@question.Question" Variant="Variant.Outlined" Lines="7"
+                                          For="() => question.Question" @onclick="OnSQuestionTextBoxClick" />
+                        </MudItem>
+                        <MudItem xs="12" sm="12" md="5">
+                            <MudTextField Label="Please, Paste Your Equation Here." @bind-Value="@question.Equation" Variant="Variant.Outlined" Lines="7" />
+                        </MudItem>
+                    </MudGrid>
+
+                    <MudGrid>
+                        <MudItem xs="12" sm="12" md="12">
+                            @if (questions.Count() == 0)
+                            {
+                                <!--Add New Question-->
+                                switch (questionTypeID)
+                                {
+                                    case 1: //Multiple Choice Single Answer
+                                        <MudRadioGroup @bind-SelectedOption="@selectedAnswerLetter">
+                                            @foreach (var item in alphabet)
+                                                            {
+                                                <MudGrid>
+                                                    <MudItem xs="12" sm="12" md="1">
+                                                        <MudRadio Option="@item.ToString()" Color="Color.Primary" Size="Size.Small">
+                                                            @item.ToString()
+                                                        </MudRadio>
+                                                    </MudItem>
+                                                    <MudItem xs="12" sm="12" md="3">
+                                                        <MudTextField T="string" Label="Answer" TextChanged="EventArgs => { OnChanged(item.ToString(), EventArgs); }"
+                                                                      Variant="Variant.Outlined"></MudTextField>
+                                                    </MudItem>
+                                                    <MudItem xs="12" sm="12" md="3">
+                                                        <MudTextField T="string" Label="Equation" TextChanged="EventArgs => { OnEquationChanged(item.ToString(), EventArgs); }"
+                                                                      Variant="Variant.Outlined"></MudTextField>
+                                                    </MudItem>
+                                                    <MudItem xs="12" sm="12" md="4">
+                                                        <MudToolBar>
+                                                            <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Tertiary"
+                                                                       StartIcon="@Icons.Filled.Image" for="fileInput"
+                                                                       OnClick="@(() => AnswerImageLoader(@item.ToString()))">
+                                                                Load Image
+                                                            </MudButton>
+                                                            <MudTooltip Text="View Answer Image" Color="Color.Tertiary" Placement="Placement.Bottom" Arrow="true">
+                                                                <MudIconButton Icon="@Icons.Material.Filled.ViewStream" Color="Color.Tertiary" Size="Size.Medium"
+                                                                               @onclick="@(()=>ShowAnswersImage(@item.ToString()))" />
+                                                            </MudTooltip>
+                                                        </MudToolBar>
+
+                                                    </MudItem>
+                                                </MudGrid>
+                                                            }
+                                        </MudRadioGroup>
+                                        break;
+                                }
+                            }
+                            else
+                            {
+                                if (AddMoreQuestion)
+                                {
+                                    <!--Add More Question-->
+                                    switch (questionTypeID)
+                                    {
+                                        case 1: //Multiple Choice Single Answer
+                                            <MudRadioGroup @bind-SelectedOption="@selectedAnswerLetter">
+                                                @foreach (var item in alphabet)
+                                                                    {
+                                                    <MudGrid>
+                                                        <MudItem xs="12" sm="12" md="1">
+                                                            <MudRadio Option="@item.ToString()" Color="Color.Primary" Size="Size.Small">
+                                                                @item.ToString()
+                                                            </MudRadio>
+                                                        </MudItem>
+                                                        <MudItem xs="12" sm="12" md="3">
+                                                            <MudTextField T="string" Label="Answer" TextChanged="EventArgs => { OnChanged(item.ToString(), EventArgs); }"
+                                                                          Variant="Variant.Outlined"></MudTextField>
+                                                        </MudItem>
+                                                        <MudItem xs="12" sm="12" md="3">
+                                                            <MudTextField T="string" Label="Equation" TextChanged="EventArgs => { OnEquationChanged(item.ToString(), EventArgs); }"
+                                                                          Variant="Variant.Outlined"></MudTextField>
+                                                        </MudItem>
+                                                        <MudItem xs="12" sm="12" md="4">
+                                                            <MudToolBar>
+                                                                <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Tertiary"
+                                                                           StartIcon="@Icons.Filled.Image" for="fileInput"
+                                                                           OnClick="@(() => AnswerImageLoader(@item.ToString()))">
+                                                                    Load Image
+                                                                </MudButton>
+                                                                <MudTooltip Text="View Question Image" Color="Color.Tertiary" Placement="Placement.Bottom" Arrow="true">
+                                                                    <MudIconButton Icon="@Icons.Material.Filled.ViewStream" Color="Color.Tertiary" Size="Size.Medium"
+                                                                                   @onclick="@(()=>ShowAnswersImage(@item.ToString()))" />
+                                                                </MudTooltip>
+                                                            </MudToolBar>
+
+                                                        </MudItem>
+                                                    </MudGrid>
+                                                                    }
+                                            </MudRadioGroup>
+                                            break;
+                                    }
+                                }
+                                else
+                                {
+                                    switch (questionTypeID)
+                                    {
+                                        case 1:
+                                            <MudRadioGroup @bind-SelectedOption="@selectedAnswerLetter">
+                                                @foreach (var item in ansStorage)
+                                                                    {
+                                                    <MudGrid>
+                                                        <MudItem xs="12" sm="12" md="1">
+                                                            <MudRadio Option="@item.Options" Color="Color.Primary" Size="Size.Small">
+                                                                @item.Options
+                                                            </MudRadio>
+                                                        </MudItem>
+                                                        <MudItem xs="12" sm="12" md="3">
+                                                            <MudTextField T="string" Label="Answer" @bind-Value="@item.Answers" Variant="Variant.Outlined"></MudTextField>
+                                                        </MudItem>
+                                                        <MudItem xs="12" sm="12" md="3">
+                                                            <MudTextField T="string" Label="Equation" @bind-Value="@item.Equation" Variant="Variant.Outlined"></MudTextField>
+                                                        </MudItem>
+                                                        <MudItem xs="12" sm="12" md="4">
+                                                            <MudToolBar>
+                                                                <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Tertiary"
+                                                                           StartIcon="@Icons.Filled.Image" for="fileInput"
+                                                                           OnClick="@(() => AnswerImageLoader(@item.Options))">
+                                                                    Load Image
+                                                                </MudButton>
+                                                                <MudTooltip Text="View Question Image" Color="Color.Tertiary" Placement="Placement.Bottom" Arrow="true">
+                                                                    <MudIconButton Icon="@Icons.Material.Filled.ViewStream" Color="Color.Tertiary" Size="Size.Medium"
+                                                                                   @onclick="@(()=>ShowAnswersImage(@item.Options))" />
+                                                                </MudTooltip>
+                                                            </MudToolBar>
+
+                                                        </MudItem>
+                                                    </MudGrid>
+                                                                    }
+                                            </MudRadioGroup>
+                                            break;
+                                    }
+                                }
+                            }
+                        </MudItem>
+                    </MudGrid>
+
+                </MudCardContent>
+            </MudCard>
+        </EditForm>
+    </div>
+}
+else if (toolBarMenuId == 3)
+{
+    <div class="d-block pa-2 mr-5 ml-5">
+        <MudGrid>
+            <MudItem xs="12" sm="12" md="12">
+                <MudPaper Elevation="20">
+                    <div class="d-block pa-2 mr-5 ml-5">
+                        <MudTextField Label="Input" @bind-Value="@equation" Lines="2"
+                                      HelperText="Please Select Equation Components To Build Your Equation then Copy And Paste Your Equation Into the Question Box">
+                        </MudTextField>
+                    </div>
+                    <div class="d-block pa-2 mr-5 ml-5">
+                        <MudGrid>
+                            <MudItem xs="12" sm="12" md="2">
+                                <MudButton OnClick="@(() => DisplayEquation())">Display</MudButton>
+                            </MudItem>
+                            <MudItem xs="12" sm="12" md="2">
+                                <MudButton OnClick="@(() => ResetEquation())">Reset</MudButton>
+                            </MudItem>
+                        </MudGrid>
+                    </div>
+                    <div class="d-flex justify-center mud-theme-info py-4 px-1 pa-2 mr-5 ml-5 rounded-lg" style="font-size: 18px;">
+                        @*<Equation Value="@equation" TeXDisplay="false"></Equation>*@
+                        <Equation Value="@equation"></Equation>
+                        @*<Equation Value="\frac{2a}{b+3}" TeXDisplay="false" />
+
+                            <Equation Value="$$x = {-b \pm \sqrt{b^2-4ac} \over 2a}.$$" />*@
+
+                    </div>
+                    <div class="d-block align-content-start flex-wrap py-2 px-1 pa-2 mr-5 ml-5">
+                        @foreach (var item in latexlist)
+                        {
+                            <MudTooltip Text="@item.Description" Arrow="true" Placement="Placement.Bottom"
+                                        @onclick="@(() => InsertEquationComponent(@item.LatexSymbol))">
+                                <MudPaper Class="pa-2 mx-2 my-1 mud-theme-primary" Style="width:120px; text-align:center;">@item.LatexSymbol</MudPaper>
+                            </MudTooltip>
+                        }
+                    </div>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </div>
+}
+else if (toolBarMenuId == 4)
+{
+    <div class="d-block pa-2 mr-5 ml-5">
+        <MudGrid>
+            <MudItem xs="12">
+                <MudPaper Elevation="20">
+                    <div class="d-block pa-2 mr-5 ml-5" style="font-size: 16px;">
+                        <MudText Typo="Typo.body1">CBT Exam Questions & Answers</MudText>
+                        <MudText Typo="Typo.body1">@_ExamName</MudText>
+                    </div>
+                    @foreach (var item in questions)
+                    {
+                        <MudDivider />
+                        <div class="d-block pa-2 mr-5 ml-5" style="font-size: 18px;">
+                            <p>
+                                @((MarkupString)item.Section)
+                            </p>
+                            @if (item.SImage != null)
+                            {
+                                imgSrc = string.Format("data:image/png;base64,{0}", Convert.ToBase64String((item.SImage)));
+                                <img src="@imgSrc" Elevation="25" Class="align-self-center rounded-lg ml-5" @onclick="@((e) => EnlargeImage(fullScreen, item.SImage))" />
+                                @*<img src="@imgSrc" Elevation="25" Class="align-self-center rounded-lg ml-5" Width="250" Height="200" @onclick="@((e) => EnlargeImage(fullScreen, item.SImage))" />*@
+                            }
+                        </div>
+                        <div class="d-block pa-2 mr-5 ml-5" style="font-size: 18px;">
+                            <p>
+                                @((MarkupString)item.CurrentQuestion) &ensp;  <Equation TeXDisplay="false" Value="@item.Equation"></Equation>
+                            </p>
+                            @if (item.QImage != null)
+                            {
+                                imgSrc = string.Format("data:image/png;base64,{0}", Convert.ToBase64String((item.QImage)));
+                                <img src="@imgSrc" Elevation="25" Class="align-self-center rounded-lg ml-5" Width="250" Height="200" @onclick="@((e) => EnlargeImage(fullScreen, item.QImage))" />
+                            }
+                        </div>
+                        <div class="d-block pa-2 mr-5 ml-2" style="font-size: 18px;">
+                            @foreach (var ans in answers.Where(ans => ans.QID == item.QID).ToList())
+                            {
+                                selectedAnsID = answers.Where(ans => ans.QID == item.QID).FirstOrDefault(a => a.CorrectAns == true).AnsID;
+                                <MudRadioGroup @bind-SelectedOption="@selectedAnsID">
+                                    <div class="d-inline">
+                                        <MudRadio Option="@ans.AnsID" Color="Color.Primary" Size="Size.Small">
+                                            <div class="d-inline pa-2">@ans.AnsLetter &ensp;  @((MarkupString)ans.Answers) &ensp;  <Equation Value="@ans.Equation" TeXDisplay="false"></Equation> </div>
+                                        </MudRadio>
+                                    </div>
+                                    <br />
+                                    <div class="d-inline">
+                                        @if (ans.AnsImage != null)
+                                                    {
+                                                        imgSrc = string.Format("data:image/png;base64,{0}", Convert.ToBase64String((ans.AnsImage)));
+                                            <img src="@imgSrc" Elevation="25" Class="align-self-center rounded-lg ml-5" />
+                                            @*<img src="@imgSrc" Elevation="25" Class="align-self-center rounded-lg ml-5" Width="250" Height="200" />*@
+
+                                                    }
+                                    </div>
+                                </MudRadioGroup>
+                            }
+                        </div>
+                    }
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </div>
+}
+
+
+<MudDialog @bind-IsVisible="visible" Options="dialogOptions" Style="width:350px">
+    <TitleContent>
+        <MudText Typo="Typo.body1">
+            <MudIcon Icon="@Icons.Material.Filled.DomainVerification" Class="mr-3" />Selected Question Image
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <div class="d-flex flex-column">
+            <img src="@imgSrc" id="image" style="border:1px solid #000000;margin-top:10px " />
+            @*<img src="@imgSrc" id="image" width="300" height="300" style="border:1px solid #000000;margin-top:10px " />*@
+        </div>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Submit" Class="px-10" Style="margin:0px 15px 0px 0px">Close</MudButton>
+    </DialogActions>
+</MudDialog>
+
+<MudDialog @bind-IsVisible="textFormatVisible" Options="dialogOptions">
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.TextFormat" Color="Color.Success" Class="mr-3" />Text Formatting
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <div class="d-flex justify-center">
+            <MudGrid>
+                <MudItem xs="12" md="12">
+                    <div Class="d-flex align-content-start flex-wrap py-2 px-1" Style="height:75px;">
+                        <MudTooltip Text="@textFormattingToolTip" Arrow="true" Placement="Placement.Bottom" @onclick="Bold">
+                            <MudPaper Class="pa-2 mx-2 my-1 mud-theme-primary" Style="width:36px; text-align:center;">B</MudPaper>
+                        </MudTooltip>
+                        <MudTooltip Text="Underline" Arrow="true" Placement="Placement.Bottom" @onclick="Underline">
+                            <MudPaper Class="pa-2 mx-2 my-1 mud-theme-secondary" Style="width:36px; text-align:center;">U</MudPaper>
+                        </MudTooltip>
+                        <MudTooltip Text="Italics" Arrow="true" Placement="Placement.Bottom" @onclick="Italics">
+                            <MudPaper Class="pa-2 mx-2 my-1 mud-theme-info" Style="width:36px; text-align:center;">I</MudPaper>
+                        </MudTooltip>
+                        <MudTooltip Text="Strike-Through" Arrow="true" Placement="Placement.Bottom" @onclick="StrikeThrough">
+                            <MudPaper Class="pa-2 mx-2 my-1 mud-theme-primary" Style="width:36px; text-align:center;">ST</MudPaper>
+                        </MudTooltip>
+                        <MudTooltip Text="Spacing" Arrow="true" Placement="Placement.Bottom" @onclick="Spacing">
+                            <MudPaper Class="pa-2 mx-2 my-1 mud-theme-secondary" Style="width:36px; text-align:center;">SC</MudPaper>
+                        </MudTooltip>
+                        <MudTooltip Text="Line Break" Arrow="true" Placement="Placement.Bottom" @onclick="LineBreak">
+                            <MudPaper Class="pa-2 mx-2 my-1 mud-theme-info" Style="width:36px; text-align:center;">LB</MudPaper>
+                        </MudTooltip>
+                        <MudTooltip Text="Smaller Text" Arrow="true" Placement="Placement.Bottom" @onclick="SmallerText">
+                            <MudPaper Class="pa-2 mx-2 my-1 mud-theme-primary" Style="width:36px; text-align:center;">SM</MudPaper>
+                        </MudTooltip>
+                        <MudTooltip Text="Subscript" Arrow="true" Placement="Placement.Bottom" @onclick="Subscript">
+                            <MudPaper Class="pa-2 mx-2 my-1 mud-theme-primary" Style="width:36px; text-align:center;">SU</MudPaper>
+                        </MudTooltip>
+                        <MudTooltip Text="Superscript" Arrow="true" Placement="Placement.Bottom" @onclick="Superscript">
+                            <MudPaper Class="pa-2 mx-2 my-1 mud-theme-secondary" Style="width:36px; text-align:center;">SP</MudPaper>
+                        </MudTooltip>
+                        <MudTooltip Text="Right Arrow" Arrow="true" Placement="Placement.Bottom" @onclick="RightArrow">
+                            <MudPaper Class="pa-2 mx-2 my-1 mud-theme-secondary" Style="width:36px; text-align:center;">RA</MudPaper>
+                        </MudTooltip>
+                    </div>
+                </MudItem>
+            </MudGrid>
+        </div>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="SelectTextFormating" Class="px-10">Close</MudButton>
+    </DialogActions>
+</MudDialog>
+
+
