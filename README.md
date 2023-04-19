@@ -6,7 +6,7 @@ Being Hosted Blazor PWA, it has the Client Side and Server Side. The ASP.NET Cor
 
 Client Side
 * MudBlazor - All Forms, Tables, Button etc. are MudBlazor Components
-* BlazorIndexedDB
+* BlazorIndexedDB - This is used for the Web App Offline Support. The package along with a C# Method run a Javascript function that determines when the app is Online or Offline using MudBlazor WiFi Icon.
 * Blazored.LocalStorage and Blazored.SessionStorage
 * SweetAlert2
 * EPPlus
