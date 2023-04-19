@@ -6,7 +6,10 @@ The application is a School Management Academics Web App with ***3 SPAs (Single 
 2. [Computer-Base Test for Students (CBT)](https://schoolwebapps.com.ng/cbt) - PINs: TA37WQ, YZK4LF, DK738R, RDG8TH and Password: honey
 3. [Result Checker (Checking/Downloading Students Rsults Online by Parents)](https://schoolwebapps.com.ng/resultchecker) - PINs: MST7R, CVHF6X, 0FB6KM, RJ0D3
 
-The above PINS 
+The following should be noted about the sample information given above to explore the Web App: 
+- 2022/2023 - First Term Academic  Session has been used to generate the above sample information for the CBT and Result Checker.
+- Academics Data are only available for the Academic Year 2020/2021, 2021/2022 and 2022/2023 even though Academic Years 2013 to 2023 were listed for selection when the Staff login to the Web App.
+- The above sample will be override under the following situations:
 
 The Offline Mode is only available for some pages of the application. Though it can be applied to all the pages in the application. The pages that have Offline Mode supports are
 * Mark entr
