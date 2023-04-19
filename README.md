@@ -2,8 +2,17 @@
 This application was developed using ASP.NET Core 7 Hosted Blazor PWA with Offline Support using the following components
  
 Client Side
-* Custom Authentication using Json Web Token (JWT)
 * MudBlazor
-* Dapper
+* BlazorIndexedDB
+* Blazored.LocalStorage and Blazored.SessionStorage
+* SweetAlert2
+* EPPlus
+* Blazored.FluentValidation
+* MathJaxBlazor
+* System.Security.Claims
 
 Server Side
+* Custom thentication using Json Web Token (JWT)
+* Dapper
+* iTextSharp.LGPLv2.Core
+* Microsoft.AspNetCore.Authentication.JwtBearer and System.IdentityModel.Tokens.Jwt
