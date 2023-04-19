@@ -1,6 +1,7 @@
 # **Hosted ASP.NET Core 7 Blazor WebAssembly PWA Application with Offline Support using C#**
 ## Overview ##
-The application is a School Management Academics Web App with ***3 SPAs (Single Page Applications)*** in ***One Hosted Blazor PWA***.
+The application is a School Management Academics Web App with ***3 SPAs (Single Page Applications)*** in ***One Hosted Blazor PWA***. This was developed using ASP.NET Core 6/7 and C#. The completed project in this repository is in ASP.NET Core 7 while the deployed applications is in ASP.NET Core 6. The project development started with ASP.NET Core 6 and with the release of ASP.NET Core 7 last November 2022, I re-developed the application using ASP.NET Core 7. The Windows Hosting provider did not have provision for ASP.NET Core 7 when I was about to deploy the application and that was what prompted me to Build and Published the ASP.NET Core 6 version of the project. 
+
 ## Instructions on How to Explore the Deployed Web App ##
 This Web Application can be explore at the following URLs with sample information given below:
 
