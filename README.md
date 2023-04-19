@@ -1,6 +1,8 @@
 # **Hosted ASP.NET Core 7 Blazor WebAssembly PWA Application with Offline Support using C#**
 ## Overview ##
-The application is a School Management Academics Web App with ***3 SPAs (Single Page Applications)*** in ***One Hosted Blazor PWA*** and can be explore at the following URLs with different login credentials as given:
+The application is a School Management Academics Web App with ***3 SPAs (Single Page Applications)*** in ***One Hosted Blazor PWA***.
+## Instructions on How to Explore the Deployed Web App ##
+This Web Application can be explore at the following URLs with sample information given below:
 
 1. [Staff Login](https://schoolwebapps.com.ng/) - Email: admin@schoolwebapps.com.ng and Password: 1234567890 
 2. [Computer-Base Test for Students (CBT)](https://schoolwebapps.com.ng/cbt) - PINs: TA37WQ, YZK4LF, DK738R, RDG8TH and Password: honey
