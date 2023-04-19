@@ -5,13 +5,13 @@ The application is a School Management Academics Web App with ***3 SPAs (Single 
 Being Hosted Blazor PWA, it has the Client Side and Server Side. The ASP.NET Core 7 project in this repository was designed and developed with the following web components and packages:
 
 Client Side
-* MudBlazor - All Forms, Tables, Button etc. are MudBlazor Components
-* BlazorIndexedDB - This is used for the Web App Offline Support. The package along with a C# Method run a Javascript function that determines when the app is Online or Offline using MudBlazor WiFi Icon.
-* Blazored.LocalStorage and Blazored.SessionStorage
-* SweetAlert2
-* EPPlus
-* Blazored.FluentValidation
-* MathJaxBlazor
+* MudBlazor - All Forms, Tables, Editable Table like Data Grid, Button etc. are MudBlazor Components
+* BlazorIndexedDB - This is used for the Web App Offline Support. The package along with a C# Method run a JavaScript  function that determines when the app is Online or Offline using MudBlazor WiFi Icon.
+* Blazored.LocalStorage and Blazored.SessionStorage - Used to store session data like User Session, Claims data, Role ID etc. All session data are encrypted before they are stored and decryot when they are to be used.
+* SweetAlert2 - Used to display beautiful alert during form validation, data submission etc.
+* EPPlus - Used for Exporting records to Excel along with JavaScript  Functions for SaveAs, Download. Example usage  is Exporting Students/Staff List to Excel etc.
+* Blazored.FluentValidation - This is used for Form Validation
+* MathJaxBlazor - This is used in the Custom Equation Editor I built in the app to Generate Mathematical Equations. It is also used in displaying Mathematical equation for the CBT Exams module of the web app.
 * System.Security.Claims
 
 Server Side
