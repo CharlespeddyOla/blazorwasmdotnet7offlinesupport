@@ -12,7 +12,7 @@ Being Hosted Blazor PWA, it has the Client Side and Server Side. The ASP.NET Cor
 * **EPPlus** - Used for Exporting records to Excel along with JavaScript  Functions for SaveAs, Download. Example usage  is Exporting Students/Staff List to Excel etc.
 * **Blazored.FluentValidation** - This is used for Form Validation
 * **MathJaxBlazor** - This is used in the Custom Equation Editor I built in the app to Generate Mathematical Equations. It is also used in displaying Mathematical equation for the CBT Exams module of the web app.
-* **System.Security.Claims** - Used in the Cust
+* **System.Security.Claims** - Used in the CustomAuthStateProvider Class for user authentication. The CustomAuthStateProvider Class contains the asynchronous methods used to Authenticate user in the Staff Login Form, CBT Login Form and Result Checker PINs confirmation form.
 
 ### **Server Side** ###
 * **Custom Authentication using Json Web Token (JWT)**
