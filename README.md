@@ -20,8 +20,9 @@ Being Hosted Blazor PWA, it has the Client Side and Server Side. The ASP.NET Cor
 * **Dapper** - Dapper is used in this application for Data Access Layer between the Client Side and the Database. I created an Interface Class that handles Generic Dapper Repository along with Unit of Work. This is used to separate and handle each Database Table CRUD operation. A ServiceRegistration Class with a static void method called AddDataAccess was created to collate all the Data Access Repository classes using IServiceCollection with an AddTransient service. The AddDataAccess method is then added to the Build Service in Program.cs file to provide Dependency Injection in the Controllers.
 * **iTextSharp.LGPLv2.Core** - This is used for the Reporting Service in the Web App. All the different types of Student Results are created in ***PDF format*** using this package and these were achieved by creating different Controllor Methods for the results. 
 
-
-
+## Application Offline Support ##
+The Offline Mode is only available for some pages of the application. Though it can be applied to all the pages in the application. The pages that have Offline Mode supports are
+* Mark entr
 
 ## Instructions on How to Explore the Deployed Web App ##
 This Web Application can be explore at the following URLs with sample information given below:
@@ -38,11 +39,9 @@ The following should be noted about the sample information given above to explor
   - When New PINs are generated for CBT and Result Checker, the above PINs becomes Invalid. New PINS can be generated for CBT and Result Checker by using the submenu ***Student*** under the submenu ***Manager Users*** which is under the main menu ***SETTINGS***. The ***Parent PIN*** column is for Result Checker while the ***Student PIN*** column is for CBT.
   - After successful login to the CBT, the ***Examination Instructions*** page opened with a list of Subjects where the student can select a CBT Exam Subject to be taken. Once the CBT exam starts and the ***Submit*** button is selected to end the exam, another page is opened displaying the Student CBT Scores. Click on the ***Close*** button to return back to the ***Examination Instructions*** page but this time around the completed CBT Exam Subject will have been removed from the list of subjects. To return the removed subject(s) back to the list, the administrator will have to use the ***CBT Exams*** submenu under the main menu ***ACADEMICS***. On the CBT Exams page, there are 5 toolbar Icon buttons with Tool Tip to show what the button is for. Click on the 4th Icon button with the Tool Tip ***Lock Exams Taken***. Selecting a School and then a Class with option to a select a student from the selected class will list all the subjects that were removed from the list of subjects on the CBT ***Examination Instructions*** page. On the CBT Exams page, selecteing a row will present an option to Check(Yes) or Uncheck(No). Yes remove the subject while No returns the subject. After Check or Uncheck , selecte the Mark Icon to the right to update your selection.
 
-The Offline Mode is only available for some pages of the application. Though it can be applied to all the pages in the application. The pages that have Offline Mode supports are
-* Mark entr
 
 
-### [This is the deployed application on a Windows Hosting](https://schoolwebapps.com.ng/)   ###
-This application was built using ASP.NET Core 7 Hosted Blazor PWA with Offline Support using the following components
+
+
  
 
