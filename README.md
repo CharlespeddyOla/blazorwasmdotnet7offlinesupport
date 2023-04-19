@@ -21,9 +21,15 @@ Being Hosted Blazor PWA, it has the Client Side and Server Side. The ASP.NET Cor
 * **iTextSharp.LGPLv2.Core** - This is used for the Reporting Service in the Web App. All the different types of Student Results are created in ***PDF format*** using this package and these were achieved by creating different Controllor Methods for the results. 
 
 ## Application Offline Support ##
-The Offline Mode is only available for some pages of the application. Though it can be applied to all the pages in the application. The pages that have Offline Mode supports are
-* Mark entr
-
+The Offline Mode is only available for some pages of the application. Though it can be applied to all the pages in the application. The pages that have Offline Mode supports can be access under the following menus:
+* ACADEMICS - Mark Entry
+  - Cognitive Mark Entry
+  - Psychomotor Mark Entry
+  - CheckPoint and IGCSE Mark Entry
+* ACDEMICS - Comments Entry
+  - Mid-Term Comments
+  - End of Term Comments
+  
 ## Instructions on How to Explore the Deployed Web App ##
 This Web Application can be explore at the following URLs with sample information given below:
 
