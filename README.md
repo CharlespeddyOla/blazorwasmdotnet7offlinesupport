@@ -7,9 +7,10 @@ The application is a School Management Academics Web App with ***3 SPAs (Single 
 3. [Result Checker (Checking/Downloading Students Rsults Online by Parents)](https://schoolwebapps.com.ng/resultchecker) - PINs: MST7R, CVHF6X, 0FB6KM, RJ0D3
 
 The following should be noted about the sample information given above to explore the Web App: 
-- 2022/2023 - First Term Academic Session has been used to generate the above sample information for the CBT and Result Checker.
+- 2022/2023 - First Term Academic Session has been used to generate the above sample information for the CBT and Result Checker for Students in Year 10 SAPHIRE and Year 12 SADIUS.
 - Academics Data are only available for the Academic Year 2020/2021, 2021/2022 and 2022/2023 even though Academic Years 2013 to 2023 were listed for selection when the Staff login to the Web App. This is because there was significant change in the database used for the Desktop version of this Web App which was developed prior to the deployment in 2013. The data in the Database are life data from the school using my Desktop Windows Form Application since 2013 to date. The Desktop Windows Form Application consists of Administration, Financial and Academics Modules with Crystal Reports.
 - The above sample will be override under the following situations:
+  - When a New Academic Results are processed for a selected Academic Session. Academics Results are generated using the ***Academic Results*** submenu under the ***ACADEMICS*** main menu.
 
 The Offline Mode is only available for some pages of the application. Though it can be applied to all the pages in the application. The pages that have Offline Mode supports are
 * Mark entr
