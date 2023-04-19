@@ -48,6 +48,22 @@ The following should be noted about the sample information given above to explor
 ## Up Coming Projects ##
 The Hosted Blazor PWA project in this repository was design and developed to test ASP.NET Core, Hosted Blazor Application, MudBlazor and BlazorIndexedDB to achieve the above sucessfull result.
 
+The next project is the Web Application version of my Financial Desktop Windows Form Application which will be design and developed using ASP.NET Core 7 or possibly ASP.NET Core 8 Preview. It will demonstrate the following:
+- Software Design Pattern - Factory Method Theory
+- Test Driven Development - TDD
+- Onion Architecture with the approach to split the architecture into 4 layers
+  - Domain Layer
+  - Service Layer
+  - Infrastructure Layer
+  - Presentation Layer
+- I will start with any one of the folllwoing. Though, I am still going to develop the Web App using the two approach below.
+  - Hosted Blazor WebAssembly
+  - Angular & ASP.NET Core
+
+
+
+
+
 
  
 
