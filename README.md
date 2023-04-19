@@ -1,5 +1,6 @@
 # **Hosted ASP.NET Core 7 Blazor WebAssembly PWA Application with Offline Support**
-This application was developed using ASP.NET Core 7 Hosted Blazor PWA with Offline Support using the following components
+### [This is the deployed application on a Windows Hosting](https://schoolwebapps.com.ng/)   ###
+This application was built using ASP.NET Core 7 Hosted Blazor PWA with Offline Support using the following components
  
 Client Side
 * MudBlazor
