@@ -1,6 +1,26 @@
 # **Hosted ASP.NET Core 7 Blazor WebAssembly PWA Application with Offline Support using C#**
 ## Overview ##
-The application is a School Management Academics Web App with ***3 SPAs (Single Page Applications)*** in ***One Hosted Blazor PWA***. This was developed using ASP.NET Core 6/7 and C#. The completed project in this repository is in ASP.NET Core 7 while the deployed applications is in ASP.NET Core 6. The project development started with ASP.NET Core 6 and with the release of ASP.NET Core 7 last November 2022, I re-developed the application using ASP.NET Core 7. The Windows Hosting provider did not have provision for ASP.NET Core 7 when I was about to deploy the application and that was what prompted me to Build and Published the ASP.NET Core 6 version of the project. 
+The application is a School Management Academics Web App with ***3 SPAs (Single Page Applications)*** in ***One Hosted Blazor PWA***. This was developed using ASP.NET Core 6/7 and C#. The completed project in this repository is in ASP.NET Core 7 while the deployed applications is in ASP.NET Core 6. The project development started with ASP.NET Core 6 and with the release of ASP.NET Core 7 last November 2022, I re-developed the application using ASP.NET Core 7. The Windows Hosting provider did not have provision for ASP.NET Core 7 when I was about to deploy the application and that was what prompted me to Build and Published the ASP.NET Core 6 version of the project with the instructions to explore the deployed application below. 
+
+Being Hosted Blazor PWA, it has the Client Side and Server Side. The APS.NET Core 7 project in this repository was designed and developed with the following web components and packages:
+
+Client Side
+* MudBlazor
+* BlazorIndexedDB
+* Blazored.LocalStorage and Blazored.SessionStorage
+* SweetAlert2
+* EPPlus
+* Blazored.FluentValidation
+* MathJaxBlazor
+* System.Security.Claims
+
+Server Side
+* Custom thentication using Json Web Token (JWT)
+* Dapper
+* iTextSharp.LGPLv2.Core
+* Microsoft.AspNetCore.Authentication.JwtBearer and System.IdentityModel.Tokens.Jwt
+
+
 
 ## Instructions on How to Explore the Deployed Web App ##
 This Web Application can be explore at the following URLs with sample information given below:
@@ -24,18 +44,4 @@ The Offline Mode is only available for some pages of the application. Though it 
 ### [This is the deployed application on a Windows Hosting](https://schoolwebapps.com.ng/)   ###
 This application was built using ASP.NET Core 7 Hosted Blazor PWA with Offline Support using the following components
  
-Client Side
-* MudBlazor
-* BlazorIndexedDB
-* Blazored.LocalStorage and Blazored.SessionStorage
-* SweetAlert2
-* EPPlus
-* Blazored.FluentValidation
-* MathJaxBlazor
-* System.Security.Claims
 
-Server Side
-* Custom thentication using Json Web Token (JWT)
-* Dapper
-* iTextSharp.LGPLv2.Core
-* Microsoft.AspNetCore.Authentication.JwtBearer and System.IdentityModel.Tokens.Jwt
