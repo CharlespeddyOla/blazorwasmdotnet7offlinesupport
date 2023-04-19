@@ -15,10 +15,10 @@ Being Hosted Blazor PWA, it has the Client Side and Server Side. The ASP.NET Cor
 * **System.Security.Claims** - Used in the CustomAuthStateProvider Class for user authentication. The CustomAuthStateProvider Class contains the asynchronous methods used to Authenticate user in the Staff Login Form, CBT Login Form and Result Checker PINs confirmation form along with Authorization which is used to Hide or Show Menu Items bases on the authenticated user role using AuthorizeView & Authorized components of ASP.NET Core AuthenticationStateProvider.
 
 ### **Server Side** ###
-* **Custom Authentication using Json Web Token (JWT)** - This is the server side Authentication against the Database User Table.
+* **Custom Authentication using Json Web Token (JWT)** - This is the server side Authentication providing authentication service for Staff Login, CBT Login and Result Checker PINs authentication.
 * **Dapper**
 * **iTextSharp.LGPLv2.Core**
-* **Microsoft.AspNetCore.Authentication.JwtBearer and System.IdentityModel.Tokens.Jwt**
+* **Microsoft.AspNetCore.Authentication.JwtBearer and System.IdentityModel.Tokens.Jwt** - Along with the JWT, this contains types that enable support for JWT bearer based authentication which performs authentication by extracting and validating a JWT token from the Authorization request header. The  System.IdentityModel.Tokens.Jwt provide support for creating, serializing and validating JSON Web Tokens.
 
 
 
