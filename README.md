@@ -61,10 +61,4 @@ The next project is the Web Application version of my Financial Desktop Windows 
   - Angular & ASP.NET Core
 
 ## Job Search ##
-The first purpose of pushing this project to GiTHub is for a Remote Job Search with a reference for my ***Resume*** or ***CV***. The Up Coming Projects will keep me busy while searching for a Remote Job. Once I secure a Remote Job, I will continue the Up Coming Projects as a part-time or over the weekend development.
-
-
-
-
- 
-
+The first purpose of pushing this project to GitHub is for a Remote Job Search with a reference for my ***Resume*** or ***CV***. The Up Coming Projects will keep me busy while searching for a Remote Job. Once I secure a Remote Job, I will continue the Up Coming Projects as a part-time or over the weekend development.
