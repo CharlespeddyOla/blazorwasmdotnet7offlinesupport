@@ -60,6 +60,7 @@ The next project is the Web Application version of my Financial Desktop Windows 
 - I will start with any one of the folllwoing. Though, I am still going to develop the Web App using the two approach below.
   - Hosted Blazor WebAssembly
   - Angular & ASP.NET Core
+  - EF Core and/Or Dapper
 
 ## Job Search ##
 The first purpose of pushing this project to GitHub is for a Remote Job Search with a reference for my ***Resume*** or ***CV***. The Up Coming Projects will keep me busy while searching for a Remote Job. Once I secure a Remote Job, I will continue the Up Coming Projects as a part-time or over the weekend development.
