@@ -22,6 +22,7 @@ Being Hosted Blazor PWA, it has the Client Side and Server Side. The ASP.NET Cor
 
 ## Application Offline Support ##
 The Offline Mode is only available for some pages of the application. Though it can be applied to all the pages in the application. The pages that have Offline Mode supports can be access under the following menus:
+- Staff Login Page and Academic Year/Academic Session Selection Page
 * ACADEMICS - Mark Entry
   - Cognitive Mark Entry
   - Psychomotor Mark Entry
